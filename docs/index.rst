@@ -2,10 +2,12 @@
 
 .. _home:
 
-Copyme
+Babilonia
 ############################################
 
-Welcome to ``babilonia`` documentation! A simple template for python development.
+Welcome to ``babilonia`` documentation!
+
+Handle accounting and finances in Brazil using Python.
 
 Contents
 ********************************************

@@ -145,7 +145,9 @@ html_static_path = ["_static"]
 html_context = {"default_mode": "light"}
 
 # [CHECK THIS] adding the logo to the header
-html_logo = "https://github.com/iporepos/babilonia/blob/main/docs/figs/logo.png?raw=true"
+html_logo = (
+    "https://github.com/iporepos/babilonia/blob/main/docs/figs/logo.png?raw=true"
+)
 
 html_theme_options = {
     "github_url": "https://github.com/iporepos/babilonia",  # <-- [CHANGE THIS] set the actual url for the repo
