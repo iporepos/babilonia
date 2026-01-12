@@ -1,7 +1,7 @@
-﻿copyme.mypackage.submodule
-==========================
+﻿babilonia.mypackage.submodule
+=============================
 
-.. automodule:: copyme.mypackage.submodule
+.. automodule:: babilonia.mypackage.submodule
 
    
    .. rubric:: Functions
