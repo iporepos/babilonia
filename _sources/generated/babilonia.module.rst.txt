@@ -1,0 +1,20 @@
+﻿babilonia.module
+================
+
+.. automodule:: babilonia.module
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      add
+      multiply
+      myfunc
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      MyClass
+   

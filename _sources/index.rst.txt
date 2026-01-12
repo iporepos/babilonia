@@ -5,9 +5,7 @@
 Copyme
 ############################################
 
-.. adapt this welcoming message [CHANGE THIS]:
-
-Welcome to ``copyme`` documentation! A simple template for python development.
+Welcome to ``babilonia`` documentation! A simple template for python development.
 
 Contents
 ********************************************
@@ -22,4 +20,3 @@ Contents
    usage
    api
    development
-   dummy
