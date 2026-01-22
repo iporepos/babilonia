@@ -313,7 +313,294 @@ class Budget(RecordTable):
         return annual_budget
 
 
-class CashFlowBBCC(DataSet):
+class CashFlow(DataSet):
+    """
+    A primitive class for handling Cash flow analysis
+
+    .. dropdown:: Cashflow Analysis Example
+        :icon: code-square
+        :open:
+
+        .. code-block:: python
+
+            from babilonia.accounting import CashFlow
+
+            # create an empty class
+            cf = CashFlow()
+
+            # set the file for CSV
+            file_csv = "path/to/file.csv" # [change this]
+
+            # load data
+            cf.load_data(file_csv)
+
+            # call method
+            dc = cf.cashflow_analysis(df=cf.data, category="Custeio")
+
+            # print data
+            print(dc["monthly"])
+            print(dc["yearly"])
+
+    """
+
+    def __init__(self, name="CashFlow", alias="CF"):
+        super().__init__(name=name, alias=alias)
+
+    def load_data(self, file_data):
+        # overwrite relative path inputs
+        # ----------------------------------------------
+        self.file_data = os.path.abspath(file_data)
+
+        # implement loading logic
+        # ----------------------------------------------
+        df = pd.read_csv(
+            self.file_data,
+            sep=self.file_csv_sep,
+            encoding=self.file_encoding,
+            dtype=str,
+        )
+
+        df = df[["Data", "Categoria", "Valor", "Descricao"]].copy()
+
+        # make conversions
+        df["Data"] = pd.to_datetime(df["Data"])
+        df["Valor"] = df["Valor"].astype(float)
+
+        # post-loading logic
+        # ----------------------------------------------
+        self.data = df.copy()
+
+        # update other mutables
+        # ----------------------------------------------
+        self.update()
+
+        # ... continues in downstream objects ... #
+
+    @staticmethod
+    def cashflow_analysis(df, category=None):
+        """
+        Perform cash flow analysis with monthly and yearly aggregation.
+
+        This method classifies cash flows into inputs and outputs, aggregates
+        values on a monthly and yearly basis, and computes cumulative balances.
+        The analysis is fully independent from class state and inheritance
+        behavior.
+
+        :param df:
+            Input cash flow data containing at least the columns
+            ``Data``, ``Categoria`` and ``Valor``.
+        :type df: pandas.DataFrame
+
+        :param category:
+            Optional category filter. If ``None``, all categories are grouped
+            under ``"Geral"``.
+        :type category: str or None
+
+        :returns:
+            Dictionary with monthly and yearly cash flow summaries.
+        :rtype: dict
+        """
+        df = CashFlow.enrich_time_index(df)
+        df = CashFlow.classify_flows(df)
+        df, category = CashFlow.filter_category(df, category)
+
+        df_monthly = CashFlow.monthly_summary(df, category)
+        df_yearly = CashFlow.yearly_summary(df_monthly, category)
+
+        return {
+            "monthly": df_monthly.round(decimals=2),
+            "yearly": df_yearly.round(decimals=2),
+        }
+
+    @staticmethod
+    def enrich_time_index(df):
+        """
+        Add year and year-month time indices to the cash flow data.
+
+        This method extracts the calendar year and a ``YYYY-MM`` monthly
+        identifier from the ``Data`` column.
+
+        :param df:
+            Input cash flow data.
+        :type df: pandas.DataFrame
+
+        :returns:
+            Copy of the input data with additional ``Ano`` and ``Mes`` columns.
+        :rtype: pandas.DataFrame
+        """
+        df = df.copy()
+        df["Ano"] = df["Data"].dt.year
+        df["Mes"] = df["Data"].dt.strftime("%Y-%m")
+        return df
+
+    @staticmethod
+    def classify_flows(df):
+        """
+        Classify cash flows as inputs or outputs.
+
+        Positive or zero values are classified as ``"In"`` and negative values
+        as ``"Out"``.
+
+        :param df:
+            Cash flow data containing a ``Valor`` column.
+        :type df: pandas.DataFrame
+
+        :returns:
+            Copy of the input data with an additional ``Flow`` column.
+        :rtype: pandas.DataFrame
+        """
+        df = df.copy()
+        df["Flow"] = np.where(df["Valor"] >= 0, "In", "Out")
+        return df
+
+    @staticmethod
+    def filter_category(df, category):
+        """
+        Filter cash flow data by category.
+
+        If no category is provided, all records are grouped under the
+        default category ``"Geral"``.
+
+        :param df:
+            Cash flow data.
+        :type df: pandas.DataFrame
+
+        :param category:
+            Category name used to filter the data.
+        :type category: str or None
+
+        :returns:
+            Tuple containing the filtered data and the resolved category name.
+        :rtype: tuple
+        """
+        if category is None:
+            return df.copy(), "Geral"
+
+        return df.query("Categoria == @category").copy(), category
+
+    @staticmethod
+    def monthly_summary(df, category):
+        """
+        Compute monthly cash flow summaries for each year.
+
+        This method aggregates cash flow inputs and outputs on a monthly basis,
+        ensures that all calendar months are present, and computes annual
+        cumulative balances.
+
+        :param df:
+            Cash flow data enriched with time indices and flow classification.
+        :type df: pandas.DataFrame
+
+        :param category:
+            Category name associated with the analysis.
+        :type category: str
+
+        :returns:
+            Monthly cash flow summary table.
+        :rtype: pandas.DataFrame
+        """
+        years = range(df["Ano"].min(), df["Ano"].max() + 1)
+        monthly_frames = []
+
+        for year in years:
+            calendar = pd.DataFrame(
+                {
+                    "Ano": str(year),
+                    "Mes": [f"{year}-{str(m).zfill(2)}" for m in range(1, 13)],
+                    "Categoria": category,
+                }
+            )
+
+            df_year = df.query("Ano == @year")
+
+            inp = (
+                df_year.query("Flow == 'In'")
+                .groupby("Mes")["Valor"]
+                .agg(Entradas="sum", Entradas_N="count")
+                .reset_index()
+            )
+
+            out = (
+                df_year.query("Flow == 'Out'")
+                .groupby("Mes")["Valor"]
+                .agg(Saidas="sum", Saidas_N="count")
+                .reset_index()
+            )
+
+            df_year = (
+                calendar.merge(inp, on="Mes", how="left")
+                .merge(out, on="Mes", how="left")
+                .fillna(0)
+            )
+
+            for col in ["Entradas_N", "Saidas_N"]:
+                df_year[col] = df_year[col].astype(int)
+
+            df_year["Fluxo"] = df_year["Entradas"] + df_year["Saidas"]
+
+            df_year["Entradas_Acum"] = df_year["Entradas"].cumsum()
+            df_year["Saidas_Acum"] = df_year["Saidas"].cumsum()
+            df_year["Fluxo_Acum"] = df_year["Fluxo"].cumsum()
+
+            monthly_frames.append(df_year)
+
+        return pd.concat(monthly_frames, ignore_index=True)
+
+    @staticmethod
+    def yearly_summary(df_monthly, category):
+        """
+        Compute yearly cash flow summaries.
+
+        This method aggregates monthly cash flow data into yearly totals and
+        computes cumulative balances across years.
+
+        :param df_monthly:
+            Monthly cash flow summary table.
+        :type df_monthly: pandas.DataFrame
+
+        :param category:
+            Category name associated with the analysis.
+        :type category: str
+
+        :returns:
+            Yearly cash flow summary table.
+        :rtype: pandas.DataFrame
+        """
+        df = (
+            df_monthly.groupby("Ano")
+            .agg(
+                Entradas=("Entradas", "sum"),
+                Entradas_N=("Entradas_N", "sum"),
+                Saidas=("Saidas", "sum"),
+                Saidas_N=("Saidas_N", "sum"),
+                Fluxo=("Fluxo", "sum"),
+            )
+            .reset_index()
+        )
+
+        df["Categoria"] = category
+
+        df["Entradas_Acum"] = df["Entradas"].cumsum()
+        df["Saidas_Acum"] = df["Saidas"].cumsum()
+        df["Fluxo_Acum"] = df["Fluxo"].cumsum()
+
+        return df[
+            [
+                "Ano",
+                "Categoria",
+                "Entradas",
+                "Entradas_N",
+                "Saidas",
+                "Saidas_N",
+                "Fluxo",
+                "Entradas_Acum",
+                "Saidas_Acum",
+                "Fluxo_Acum",
+            ]
+        ]
+
+
+class CashFlowBBCC(CashFlow):
     """
     A class for handling CSV data from Banco do Brasil Conta Corrente.
 
@@ -361,10 +648,12 @@ class CashFlowBBCC(DataSet):
         :return: None
         :rtype: None
         """
-        # -------------- overwrite relative path inputs -------------- #
+        # overwrite relative path inputs
+        # ----------------------------------------------
         self.file_data = os.path.abspath(file_data)
 
-        # -------------- implement loading logic -------------- #
+        # implement loading logic
+        # ----------------------------------------------
         try:
             df = pd.read_csv(
                 self.file_data,
@@ -385,13 +674,15 @@ class CashFlowBBCC(DataSet):
                 keep_default_na=False,
             )
 
-        # -------------- post-loading logic -------------- #
+        # post-loading logic
+        # ----------------------------------------------
         df.dropna(inplace=True)
         self.data_raw = df.copy()
         self.data_parsed = None
         self.data = None
 
-        # -------------- update other mutables -------------- #
+        # update other mutables
+        # ----------------------------------------------
         self.update()
 
         # ... continues in downstream objects ... #

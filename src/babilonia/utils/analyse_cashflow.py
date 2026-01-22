@@ -4,6 +4,7 @@
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
 """
+todo refactor docstring
 Parse and standardize Banco do Brasil checking account statements.
 
 This script scans a target directory for Banco do Brasil Conta Corrente
@@ -64,6 +65,8 @@ import glob
 import argparse
 from pathlib import Path
 
+import pandas as pd
+
 # ... {develop}
 
 # External imports
@@ -74,7 +77,7 @@ from pathlib import Path
 # Project-level imports
 # =======================================================================
 # import {module}
-from babilonia.accounting import CashFlowBBCC, CashFlowBBCCPJ, CashFlowBBPP
+from babilonia.accounting import CashFlow
 
 # ... {develop}
 
@@ -85,14 +88,13 @@ from babilonia.accounting import CashFlowBBCC, CashFlowBBCCPJ, CashFlowBBPP
 def get_arguments():
     # 1. Initialize the Parser
     parser = argparse.ArgumentParser(
-        description="Handle BB files.",
+        description="Analyst for cashflow files",
         epilog="Usage example: python script.py path/data path/output",
     )
 
     # 2. Add Arguments
     # Positional argument (Required)
     parser.add_argument("folder", help="The path to folder you want to process.")
-
     parser.add_argument("type", help="The type of account.")
 
     # 3. Parse the Arguments
@@ -108,11 +110,13 @@ def main():
     s = dc["type"].upper()
     bank = s.split("-")[0]
     account = s.split("-")[1]
-    pattern = f"{dc['folder']}/*/EXTRATO_{bank}_{account}_*_T0.csv"
 
+    pattern = f"{dc['folder']}/*/EXTRATO_{bank}_{account}_*_T1.csv"
     ls_files = glob.glob(pattern)
 
     print(f"\nFound {len(ls_files)} file(s) to process.\n")
+
+    ls_dfs = []
 
     for i, f in enumerate(ls_files, start=1):
         fpath = Path(f)
@@ -122,43 +126,67 @@ def main():
         year = name.split("_")[-2].split("-")[-2]
         new_name = name.replace("T0", "T1")
 
-        file_out = root_folder / f"{new_name}.csv"
-
         print("=" * 60)
         print(
             f"[{i}/{len(ls_files)}] Processing {s} file --year {year} --month {month}"
         )
         print(f"  Input : {fpath}")
-        print(f"  Output: {file_out}")
 
-        if file_out.exists():
-            print("  ! Output file already exists. Skipping write.\n")
+        df = pd.read_csv(fpath, sep=";", dtype=str)
+        ls_dfs.append(df.copy())
 
-        else:
+    df_full = pd.concat(ls_dfs).reset_index(drop=True)
 
-            if s == "CC":
-                cf = CashFlowBBCC()
-            elif s == "CCPJ":
-                cf = CashFlowBBCCPJ()
-            elif s == "PP":
-                cf = CashFlowBBPP()
-            else:
-                cf = CashFlowBBCC()
+    ls_cols = list(df_full.columns)
+    ls_priority = [
+        "Data",
+        "Categoria",
+        "Valor",
+        "Descricao",
+    ]
+    ls_ordered = ls_priority + [c for c in ls_cols if c not in ls_priority]
 
-            print("  - Loading data...")
-            cf.load_data(file_data=f)
+    df_full = df_full[ls_ordered]
+    print("\n")
+    print("=" * 60)
+    print("   Daily Cash Flow\n")
+    print(df_full)
+    print("\n")
 
-            print("  - Standardizing data...")
-            cf.standardize()
+    # export to file
+    file_out = Path(dc["folder"]) / f"CAIXA_{bank}_{account}_DIARIO_T1.csv"
+    df_full.to_csv(file_out, sep=";", index=False)
+    print(f"  Output : {file_out}")
 
-            print("  - Writing output file...")
-            cf.data.to_csv(file_out, sep=";", index=False)
-            print("  ✓ File written successfully.")
-            print("  - Preview (first 10 rows):")
-            print(cf.data.head(10))
-            print()
+    #
+    cf = CashFlow()
+    cf.load_data(file_out)
 
-    print("\nDone.\n")
+    dc_cfa = cf.cashflow_analysis(df=cf.data, category=None)
+    print("\n")
+    print("=" * 60)
+    print("   Monthly Cash Flow\n")
+    for y in dc_cfa["monthly"]["Ano"].unique():
+        print("\n")
+        print(dc_cfa["monthly"].query(f"Ano == '{y}'"))
+
+    # exports
+    file_out = Path(dc["folder"]) / f"CAIXA_{bank}_{account}_MENSAL_T1.csv"
+    dc_cfa["monthly"].to_csv(file_out, sep=";", index=False)
+    print("\n")
+    print(f"  Output : {file_out}")
+
+    print("\n")
+    print("=" * 60)
+    print("   Yearly Cash Flow\n")
+    print(dc_cfa["yearly"])
+
+    file_out = Path(dc["folder"]) / f"CAIXA_{bank}_{account}_ANUAL_T1.csv"
+    dc_cfa["yearly"].to_csv(file_out, sep=";", index=False)
+    print("\n")
+    print(f"  Output : {file_out}")
+
+    print("\nDone.\n\n")
     return None
 
 
