@@ -131,13 +131,15 @@ class TestCashFlowBBCC(unittest.TestCase):
         """
         self.cashflow.load_data(self.file_bbcc)
 
+        print("********************** HEYyy")
+        print(self.cashflow.data_raw)
         # Minimal sanity check (optional but recommended)
-        self.assertIsInstance(self.cashflow.data, pd.DataFrame)
+        self.assertIsInstance(self.cashflow.data_raw, pd.DataFrame)
 
         # Visual inspection
         print("\n--- Load OUTPUT ---")
         print(self.cashflow)
-        print(self.cashflow.data.info())
+        print(self.cashflow.data_raw.info())
 
     def test_parse_data(self):
         self.cashflow.load_data(self.file_bbcc)

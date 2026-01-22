@@ -315,20 +315,58 @@ class Budget(RecordTable):
 
 class CashFlowBBCC(DataSet):
     """
-    Class for handling BB-CC CSV data.
+    A class for handling CSV data from Banco do Brasil (Conta Corrente).
+
+    .. dropdown:: Script example
+        :icon: code-square
+        :open:
+
+        .. code-block:: python
+
+            from babilonia.accounting import CashFlowBBCC
+
+            # create an empty class
+            cf = CashFlowBBCC()
+
+            # set the file for CSV
+            file_csv = "path/to/file.csv" # [change this]
+
+            # load data
+            cf.load_data(file_csv)
+
+            # standardize data
+            cf.standardize()
+
+            # print data
+            print(cf.data.head(10))
+
+            # save data
+            file_out = "path/to/output.csv" # [change this]
+            cf.data.to_csv(file_out, sep=";", index=False)
 
     """
 
     def __init__(self, name="CashFlowBBCC", alias="CFBBCC"):
         super().__init__(name=name, alias=alias)
+        # include the stages of data
+        self.data_raw = None
+        self.data_parsed = None
 
     def load_data(self, file_data):
+        """
+        Load raw data from bank CSV statement
+
+        :param file_data: Bank statement CSV file path
+        :type file_data: str or Path
+        :return: None
+        :rtype: None
+        """
         # -------------- overwrite relative path inputs -------------- #
         self.file_data = os.path.abspath(file_data)
 
         # -------------- implement loading logic -------------- #
         try:
-            self.data = pd.read_csv(
+            df = pd.read_csv(
                 self.file_data,
                 sep=",",
                 quotechar='"',
@@ -338,7 +376,7 @@ class CashFlowBBCC(DataSet):
             )
         except UnicodeDecodeError:
             # Fallback for alternative exports
-            self.data = pd.read_csv(
+            df = pd.read_csv(
                 self.file_data,
                 sep=",",
                 quotechar='"',
@@ -348,7 +386,10 @@ class CashFlowBBCC(DataSet):
             )
 
         # -------------- post-loading logic -------------- #
-        self.data.dropna(inplace=True)
+        df.dropna(inplace=True)
+        self.data_raw = df.copy()
+        self.data_parsed = None
+        self.data = None
 
         # -------------- update other mutables -------------- #
         self.update()
@@ -357,24 +398,49 @@ class CashFlowBBCC(DataSet):
 
         return None
 
-    def standardize(self):
-        df = self.parse_data()
-        self.data = df.copy()
+    def standardize(self, force=False):
+        """
+        Standardize data into canonical format.
 
-    def parse_data(self):
-        df = self.data.copy()
+        :param force: Rebuild parsed data even if it exists
+        """
+        if self.data_raw is None:
+            raise RuntimeError("No data loaded")
 
-        # clear up rows and columns
+        if self.data_parsed is None or force:
+            self.data_parsed = self.parse_data(self.data_raw)
+
+        self.data = self.data_parsed.copy()
+
+        return None
+
+    def parse_data(self, df=None):
+        """
+        Parse data to canonical format
+
+        :param df: Optional input data
+        :type df: ``pandas.DataFrame``
+        :return: Formated data
+        :rtype: ``pandas.DataFrame``
+        """
+        if df is None:
+            df = self.data_raw
+
+        df = df.copy()
+
+        # --- normalize legacy column names ---
+        df = self.normalize_columns(df)
+
         df = self.apply_drops(df)
 
-        # Parse dates (DD/MM/YYYY -> datetime)
         df["Data"] = self.parse_date(df["Data"])
-
-        # Parse Valor to float (keep column name)
         df["Valor"] = self.parse_valor(df["Valor"])
 
         df["Categoria"] = ""
         df["Descricao"] = ""
+
+        if "Detalhes" not in df.columns:
+            df["Detalhes"] = ""
 
         df = df[
             [
@@ -387,17 +453,21 @@ class CashFlowBBCC(DataSet):
                 "N° documento",
             ]
         ]
+
         df = df.rename(
             columns={"Lançamento": "Lancamento", "N° documento": "Documento"}
         )
 
         return df
 
-    def parse_date(self, series: pd.Series) -> pd.Series:
+    def parse_date(self, series):
         """
-        Parse BB date field from DD/MM/YYYY to datetime.
+        Parse BB date field from ``DD/MM/YYYY`` to datetime.
 
-        Raises if unexpected formats are found.
+        :param series: String series
+        :type series: ``pandas.Series``
+        :return: Datetime series
+        :rtype: ``pandas.Series``
         """
         dates = pd.to_datetime(
             series,
@@ -406,40 +476,84 @@ class CashFlowBBCC(DataSet):
         )
         return dates
 
-    def parse_valor(self, series: pd.Series) -> pd.Series:
+    def parse_valor(self, series):
         """
-        Convert BB 'Valor' field to float.
+        Convert ``Valor`` field to float.
 
-        Examples:
-        '5.000,00'   ->  5000.00
-        '-403,00'    ->  -403.00
+        .. dropdown:: Examples
+            :open:
+
+            .. list-table::
+               :widths: auto
+               :header-rows: 1
+
+               * - Input
+                 - Output
+               * - ``5.000,00``
+                 - ``5000.00``
+               * - ``-403,00``
+                 - ``-403.00``
+
+
+        :param series: String series
+        :type series: ``pandas.Series``
+        :return: Value series
+        :rtype: ``pandas.Series``
         """
-        s = series.str.strip()
+        s = series.astype(str).str.strip()
 
-        # Identify credit / debit
-        # is_credit = s.str.endswith("C")
-        # is_debit = s.str.endswith("D")
+        # Detect Brazilian format (comma as decimal separator)
+        is_br_format = s.str.contains(",")
 
-        # Remove currency markers and spaces
-        # s = s.str.replace(r"[CD]", "", regex=True).str.strip()
+        # Normalize only Brazilian-formatted values
+        s.loc[is_br_format] = (
+            s.loc[is_br_format]
+            .str.replace(".", "", regex=False)  # thousands separator
+            .str.replace(",", ".", regex=False)  # decimal separator
+        )
 
-        # Remove thousands separator and fix decimal separator
-        s = s.str.replace(".", "", regex=False)
-        s = s.str.replace(",", ".", regex=False)
-
-        # Convert to float (absolute value)
-        values = s.astype(float)  # .abs()
-
-        # Apply sign
-        # values[is_debit] *= -1
+        # Convert to float
+        values = s.astype(float)
 
         return values
 
     def apply_drops(self, df):
+        """
+        Filter dataframe for parsing
 
+        :param df: Input data
+        :type df: ``pandas.DataFrame``
+        :return: Output data
+        :rtype: ``pandas.DataFrame``
+        """
         df = df.query("Lançamento != 'Saldo do dia'")
         df = df.query("Lançamento != 'Saldo Anterior'")
         df = df.query("Lançamento != 'S A L D O'")
+        return df
+
+    def normalize_columns(self, df):
+        """
+        Normalize legacy / alternative column names to the current schema.
+
+        :param df: Input data
+        :type df: ``pandas.DataFrame``
+        :return: Output data
+        :rtype: ``pandas.DataFrame``
+        """
+        column_aliases = {
+            "Histórico": "Lançamento",
+            "Número do documento": "N° documento",
+        }
+
+        for old, new in column_aliases.items():
+            if old in df.columns and new not in df.columns:
+                df = df.rename(columns={old: new})
+
+        if "Lançamento" not in df.columns:
+            raise KeyError(
+                "Expected column 'Lançamento' (or legacy 'Histórico') not found in CSV."
+            )
+
         return df
 
 
@@ -452,13 +566,29 @@ class CashFlowBBCCPJ(CashFlowBBCC):
     def __init__(self, name="CashFlowBBCCPJ", alias="CFBBCCPJ"):
         super().__init__(name=name, alias=alias)
 
-    def parse_valor(self, series: pd.Series) -> pd.Series:
+    def parse_valor(self, series):
         """
-        Convert BB 'Valor' field to float.
+        Convert ``Valor`` field to float.
 
-        Examples:
-        '5.000,00 C'   ->  5000.00
-        '-403,00 D'    ->  -403.00
+        .. dropdown:: Examples
+            :open:
+
+            .. list-table::
+               :widths: auto
+               :header-rows: 1
+
+               * - Input
+                 - Output
+               * - ``5.000,00 C``
+                 - ``5000.00``
+               * - ``-403,00 D``
+                 - ``-403.00``
+
+
+        :param series: String series
+        :type series: ``pandas.Series``
+        :return: Value series
+        :rtype: ``pandas.Series``
         """
         s = series.str.strip()
 
@@ -497,37 +627,12 @@ class CashFlowBBPP(CashFlowBBCC):
     def __init__(self, name="CashFlowBBPP", alias="CFBBPP"):
         super().__init__(name=name, alias=alias)
 
-    def parse_valor(self, series: pd.Series) -> pd.Series:
-        """
-        Convert BB 'Valor' field to float.
+    def parse_data(self, df=None):
 
-        Examples:
-        '5.000,00 C'   ->  5000.00
-        '-403,00 D'    ->  -403.00
-        """
-        s = series.str.strip()
+        if df is None:
+            df = self.data_raw
 
-        # Identify credit / debit
-        is_credit = s.str.endswith("C")
-        is_debit = s.str.endswith("D")
-
-        # Remove currency markers and spaces
-        s = s.str.replace(r"[CD]", "", regex=True).str.strip()
-
-        # Remove thousands separator and fix decimal separator
-        s = s.str.replace(".", "", regex=False)
-        s = s.str.replace(",", ".", regex=False)
-
-        # Convert to float (absolute value)
-        values = s.astype(float).abs()
-
-        # Apply sign
-        values[is_debit] *= -1
-
-        return values
-
-    def parse_data(self):
-        df = self.data.copy()
+        df = df.copy()
 
         # clear up rows and columns
         df = self.apply_drops(df)
@@ -551,6 +656,51 @@ class CashFlowBBPP(CashFlowBBCC):
         ]
 
         return df
+
+    def parse_valor(self, series: pd.Series) -> pd.Series:
+        """
+        Convert ``Valor`` field to float.
+
+        .. dropdown:: Examples
+            :open:
+
+            .. list-table::
+               :widths: auto
+               :header-rows: 1
+
+               * - Input
+                 - Output
+               * - ``5.000,00 C``
+                 - ``5000.00``
+               * - ``-403,00 D``
+                 - ``-403.00``
+
+
+        :param series: String series
+        :type series: ``pandas.Series``
+        :return: Value series
+        :rtype: ``pandas.Series``
+        """
+        s = series.str.strip()
+
+        # Identify credit / debit
+        is_credit = s.str.endswith("C")
+        is_debit = s.str.endswith("D")
+
+        # Remove currency markers and spaces
+        s = s.str.replace(r"[CD]", "", regex=True).str.strip()
+
+        # Remove thousands separator and fix decimal separator
+        s = s.str.replace(".", "", regex=False)
+        s = s.str.replace(",", ".", regex=False)
+
+        # Convert to float (absolute value)
+        values = s.astype(float).abs()
+
+        # Apply sign
+        values[is_debit] *= -1
+
+        return values
 
     def apply_drops(self, df):
 
