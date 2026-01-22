@@ -315,7 +315,7 @@ class Budget(RecordTable):
 
 class CashFlowBBCC(DataSet):
     """
-    A class for handling CSV data from Banco do Brasil (Conta Corrente).
+    A class for handling CSV data from Banco do Brasil Conta Corrente.
 
     .. dropdown:: Script example
         :icon: code-square
