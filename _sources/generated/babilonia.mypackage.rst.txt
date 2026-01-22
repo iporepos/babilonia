@@ -1,6 +1,0 @@
-﻿babilonia.mypackage
-===================
-
-.. automodule:: babilonia.mypackage
-
-   

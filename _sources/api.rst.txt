@@ -27,17 +27,18 @@ Welcome to the API documentation for this project.
 .. autosummary::
    :toctree: generated
 
-   babilonia.module
+   babilonia.root
 
 
 .. autosummary::
    :toctree: generated
 
-   babilonia.mypackage
+   babilonia.accounting
 
 
 .. autosummary::
    :toctree: generated
 
-   babilonia.mypackage.submodule
+   babilonia.utils.parse_bb
+
 

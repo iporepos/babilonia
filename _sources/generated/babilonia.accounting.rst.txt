@@ -1,0 +1,17 @@
+﻿babilonia.accounting
+====================
+
+.. automodule:: babilonia.accounting
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Budget
+      CashFlowBBCC
+      CashFlowBBCCPJ
+      CashFlowBBPP
+      NFSe
+      NFSeColl
+   
