@@ -80,7 +80,6 @@ from babilonia.accounting import CashFlowBBCC, CashFlowBBCCPJ, CashFlowBBPP
 
 SUFFIXES = {
     "CC": "CC",
-
 }
 
 # FUNCTIONS
@@ -103,10 +102,7 @@ def get_arguments():
     # 3. Parse the Arguments
     args = parser.parse_args()
 
-    dc = {
-        "folder": args.folder,
-        "type": args.type
-    }
+    dc = {"folder": args.folder, "type": args.type}
     return dc
 
 
