@@ -583,6 +583,11 @@ under <code class="docutils literal notranslate"><span class="pre">&quot;Geral&q
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="babilonia.accounting.CashFlow.compute_oir">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">compute_oir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Entradas'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Saidas'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.compute_oir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.compute_oir" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="babilonia.accounting.CashFlow.enrich_time_index">
 <span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">enrich_time_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.enrich_time_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.enrich_time_index" title="Link to this definition">#</a></dt>
 <dd><p>Add year and year-month time indices to the cash flow data.</p>
@@ -683,6 +688,34 @@ computes cumulative balances across years.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="babilonia.accounting.CashFlow.get_cashflow_report">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get_cashflow_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_cash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.get_cashflow_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.get_cashflow_report" title="Link to this definition">#</a></dt>
+<dd><p>Build a yearly cash flow panel and summary by category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pandas.DataFrame</em>) – Cash flow DataFrame containing transactional data with date,
+category, and value information compatible with the
+<code class="docutils literal notranslate"><span class="pre">enrich_time_index</span></code>, <code class="docutils literal notranslate"><span class="pre">classify_flows</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">cashflow_analysis</span></code> methods.</p></li>
+<li><p><strong>year</strong> (<em>int</em><em>, </em><em>optional</em>) – Year to be analyzed. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the current calendar year
+(local time) is used.</p></li>
+<li><p><strong>initial_cash</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial account balance at the beginning of the selected year.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">0.0</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing: <code class="docutils literal notranslate"><span class="pre">&quot;Pannel&quot;</span></code>: monthly cash flow panel with totals, per-category
+flows, and running balance. <code class="docutils literal notranslate"><span class="pre">&quot;Summary&quot;</span></code>: yearly summary by category with total, mean, and
+percentage contribution to total inflows.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1138,11 +1171,13 @@ computes cumulative balances across years.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow"><code class="docutils literal notranslate"><span class="pre">CashFlow</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.load_data"><code class="docutils literal notranslate"><span class="pre">CashFlow.load_data()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.cashflow_analysis"><code class="docutils literal notranslate"><span class="pre">CashFlow.cashflow_analysis()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.compute_oir"><code class="docutils literal notranslate"><span class="pre">CashFlow.compute_oir()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.enrich_time_index"><code class="docutils literal notranslate"><span class="pre">CashFlow.enrich_time_index()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.classify_flows"><code class="docutils literal notranslate"><span class="pre">CashFlow.classify_flows()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.filter_category"><code class="docutils literal notranslate"><span class="pre">CashFlow.filter_category()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.monthly_summary"><code class="docutils literal notranslate"><span class="pre">CashFlow.monthly_summary()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.yearly_summary"><code class="docutils literal notranslate"><span class="pre">CashFlow.yearly_summary()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.get_cashflow_report"><code class="docutils literal notranslate"><span class="pre">CashFlow.get_cashflow_report()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlowBBCC"><code class="docutils literal notranslate"><span class="pre">CashFlowBBCC</span></code></a><ul class="nav section-nav flex-column">

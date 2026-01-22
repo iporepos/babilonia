@@ -1,11 +1,11 @@
 {
-    "about": 0.013,
+    "about": 0.012,
     "api": 0.01,
-    "development": 0.018,
-    "generated/babilonia": 0.005,
-    "generated/babilonia.accounting": 0.248,
-    "generated/babilonia.root": 0.269,
-    "generated/babilonia.utils.parse_bb": 0.017,
+    "development": 0.017,
+    "generated/babilonia": 0.006,
+    "generated/babilonia.accounting": 0.327,
+    "generated/babilonia.root": 0.245,
+    "generated/babilonia.utils.parse_bb": 0.015,
     "index": 0.003,
     "usage": 0.005
 }
