@@ -719,9 +719,320 @@
 
 
 
+<div class="viewcode-block" id="CashFlow">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CashFlow</span><span class="p">(</span><span class="n">DataSet</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A primitive class for handling Cash flow analysis</span>
+
+<span class="sd">    .. dropdown:: Cashflow Analysis Example</span>
+<span class="sd">        :icon: code-square</span>
+<span class="sd">        :open:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from babilonia.accounting import CashFlow</span>
+
+<span class="sd">            # create an empty class</span>
+<span class="sd">            cf = CashFlow()</span>
+
+<span class="sd">            # set the file for CSV</span>
+<span class="sd">            file_csv = &quot;path/to/file.csv&quot; # [change this]</span>
+
+<span class="sd">            # load data</span>
+<span class="sd">            cf.load_data(file_csv)</span>
+
+<span class="sd">            # call method</span>
+<span class="sd">            dc = cf.cashflow_analysis(df=cf.data, category=&quot;Custeio&quot;)</span>
+
+<span class="sd">            # print data</span>
+<span class="sd">            print(dc[&quot;monthly&quot;])</span>
+<span class="sd">            print(dc[&quot;yearly&quot;])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;CashFlow&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;CF&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CashFlow.load_data">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.load_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_data</span><span class="p">):</span>
+        <span class="c1"># overwrite relative path inputs</span>
+        <span class="c1"># ----------------------------------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_data</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">file_data</span><span class="p">)</span>
+
+        <span class="c1"># implement loading logic</span>
+        <span class="c1"># ----------------------------------------------</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_data</span><span class="p">,</span>
+            <span class="n">sep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_csv_sep</span><span class="p">,</span>
+            <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_encoding</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;Data&quot;</span><span class="p">,</span> <span class="s2">&quot;Categoria&quot;</span><span class="p">,</span> <span class="s2">&quot;Valor&quot;</span><span class="p">,</span> <span class="s2">&quot;Descricao&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># make conversions</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">])</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Valor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Valor&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+
+        <span class="c1"># post-loading logic</span>
+        <span class="c1"># ----------------------------------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># update other mutables</span>
+        <span class="c1"># ----------------------------------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+
+        <span class="c1"># ... continues in downstream objects ... #</span>
+
+<div class="viewcode-block" id="CashFlow.cashflow_analysis">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.cashflow_analysis">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cashflow_analysis</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform cash flow analysis with monthly and yearly aggregation.</span>
+
+<span class="sd">        This method classifies cash flows into inputs and outputs, aggregates</span>
+<span class="sd">        values on a monthly and yearly basis, and computes cumulative balances.</span>
+<span class="sd">        The analysis is fully independent from class state and inheritance</span>
+<span class="sd">        behavior.</span>
+
+<span class="sd">        :param df:</span>
+<span class="sd">            Input cash flow data containing at least the columns</span>
+<span class="sd">            ``Data``, ``Categoria`` and ``Valor``.</span>
+<span class="sd">        :type df: pandas.DataFrame</span>
+
+<span class="sd">        :param category:</span>
+<span class="sd">            Optional category filter. If ``None``, all categories are grouped</span>
+<span class="sd">            under ``&quot;Geral&quot;``.</span>
+<span class="sd">        :type category: str or None</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            Dictionary with monthly and yearly cash flow summaries.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">enrich_time_index</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">classify_flows</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">,</span> <span class="n">category</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">filter_category</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+
+        <span class="n">df_monthly</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">monthly_summary</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+        <span class="n">df_yearly</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">yearly_summary</span><span class="p">(</span><span class="n">df_monthly</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;monthly&quot;</span><span class="p">:</span> <span class="n">df_monthly</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="s2">&quot;yearly&quot;</span><span class="p">:</span> <span class="n">df_yearly</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+        <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="CashFlow.enrich_time_index">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.enrich_time_index">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">enrich_time_index</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add year and year-month time indices to the cash flow data.</span>
+
+<span class="sd">        This method extracts the calendar year and a ``YYYY-MM`` monthly</span>
+<span class="sd">        identifier from the ``Data`` column.</span>
+
+<span class="sd">        :param df:</span>
+<span class="sd">            Input cash flow data.</span>
+<span class="sd">        :type df: pandas.DataFrame</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            Copy of the input data with additional ``Ano`` and ``Mes`` columns.</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Ano&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Mes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="CashFlow.classify_flows">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.classify_flows">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">classify_flows</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Classify cash flows as inputs or outputs.</span>
+
+<span class="sd">        Positive or zero values are classified as ``&quot;In&quot;`` and negative values</span>
+<span class="sd">        as ``&quot;Out&quot;``.</span>
+
+<span class="sd">        :param df:</span>
+<span class="sd">            Cash flow data containing a ``Valor`` column.</span>
+<span class="sd">        :type df: pandas.DataFrame</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            Copy of the input data with an additional ``Flow`` column.</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Flow&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Valor&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;In&quot;</span><span class="p">,</span> <span class="s2">&quot;Out&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="CashFlow.filter_category">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.filter_category">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter_category</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter cash flow data by category.</span>
+
+<span class="sd">        If no category is provided, all records are grouped under the</span>
+<span class="sd">        default category ``&quot;Geral&quot;``.</span>
+
+<span class="sd">        :param df:</span>
+<span class="sd">            Cash flow data.</span>
+<span class="sd">        :type df: pandas.DataFrame</span>
+
+<span class="sd">        :param category:</span>
+<span class="sd">            Category name used to filter the data.</span>
+<span class="sd">        :type category: str or None</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            Tuple containing the filtered data and the resolved category name.</span>
+<span class="sd">        :rtype: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="s2">&quot;Geral&quot;</span>
+
+        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;Categoria == @category&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">category</span></div>
+
+
+<div class="viewcode-block" id="CashFlow.monthly_summary">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.monthly_summary">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">monthly_summary</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute monthly cash flow summaries for each year.</span>
+
+<span class="sd">        This method aggregates cash flow inputs and outputs on a monthly basis,</span>
+<span class="sd">        ensures that all calendar months are present, and computes annual</span>
+<span class="sd">        cumulative balances.</span>
+
+<span class="sd">        :param df:</span>
+<span class="sd">            Cash flow data enriched with time indices and flow classification.</span>
+<span class="sd">        :type df: pandas.DataFrame</span>
+
+<span class="sd">        :param category:</span>
+<span class="sd">            Category name associated with the analysis.</span>
+<span class="sd">        :type category: str</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            Monthly cash flow summary table.</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">years</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Ano&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Ano&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">monthly_frames</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="n">years</span><span class="p">:</span>
+            <span class="n">calendar</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;Ano&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">),</span>
+                    <span class="s2">&quot;Mes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">)],</span>
+                    <span class="s2">&quot;Categoria&quot;</span><span class="p">:</span> <span class="n">category</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+
+            <span class="n">df_year</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;Ano == @year&quot;</span><span class="p">)</span>
+
+            <span class="n">inp</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">df_year</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;Flow == &#39;In&#39;&quot;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;Mes&quot;</span><span class="p">)[</span><span class="s2">&quot;Valor&quot;</span><span class="p">]</span>
+                <span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">Entradas</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="n">Entradas_N</span><span class="o">=</span><span class="s2">&quot;count&quot;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+            <span class="p">)</span>
+
+            <span class="n">out</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">df_year</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;Flow == &#39;Out&#39;&quot;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;Mes&quot;</span><span class="p">)[</span><span class="s2">&quot;Valor&quot;</span><span class="p">]</span>
+                <span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">Saidas</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="n">Saidas_N</span><span class="o">=</span><span class="s2">&quot;count&quot;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+            <span class="p">)</span>
+
+            <span class="n">df_year</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">calendar</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;Mes&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;Mes&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Entradas_N&quot;</span><span class="p">,</span> <span class="s2">&quot;Saidas_N&quot;</span><span class="p">]:</span>
+                <span class="n">df_year</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_year</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+            <span class="n">df_year</span><span class="p">[</span><span class="s2">&quot;Fluxo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_year</span><span class="p">[</span><span class="s2">&quot;Entradas&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">df_year</span><span class="p">[</span><span class="s2">&quot;Saidas&quot;</span><span class="p">]</span>
+
+            <span class="n">df_year</span><span class="p">[</span><span class="s2">&quot;Entradas_Acum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_year</span><span class="p">[</span><span class="s2">&quot;Entradas&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+            <span class="n">df_year</span><span class="p">[</span><span class="s2">&quot;Saidas_Acum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_year</span><span class="p">[</span><span class="s2">&quot;Saidas&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+            <span class="n">df_year</span><span class="p">[</span><span class="s2">&quot;Fluxo_Acum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_year</span><span class="p">[</span><span class="s2">&quot;Fluxo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+
+            <span class="n">monthly_frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_year</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">monthly_frames</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CashFlow.yearly_summary">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.yearly_summary">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">yearly_summary</span><span class="p">(</span><span class="n">df_monthly</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute yearly cash flow summaries.</span>
+
+<span class="sd">        This method aggregates monthly cash flow data into yearly totals and</span>
+<span class="sd">        computes cumulative balances across years.</span>
+
+<span class="sd">        :param df_monthly:</span>
+<span class="sd">            Monthly cash flow summary table.</span>
+<span class="sd">        :type df_monthly: pandas.DataFrame</span>
+
+<span class="sd">        :param category:</span>
+<span class="sd">            Category name associated with the analysis.</span>
+<span class="sd">        :type category: str</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            Yearly cash flow summary table.</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">df_monthly</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;Ano&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">agg</span><span class="p">(</span>
+                <span class="n">Entradas</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Entradas&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">),</span>
+                <span class="n">Entradas_N</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Entradas_N&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">),</span>
+                <span class="n">Saidas</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Saidas&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">),</span>
+                <span class="n">Saidas_N</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Saidas_N&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">),</span>
+                <span class="n">Fluxo</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Fluxo&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Categoria&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">category</span>
+
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Entradas_Acum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Entradas&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Saidas_Acum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Saidas&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Fluxo_Acum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Fluxo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;Ano&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Categoria&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Entradas&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Entradas_N&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Saidas&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Saidas_N&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Fluxo&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Entradas_Acum&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Saidas_Acum&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Fluxo_Acum&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="p">]</span></div>
+</div>
+
+
+
 <div class="viewcode-block" id="CashFlowBBCC">
 <a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlowBBCC">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">CashFlowBBCC</span><span class="p">(</span><span class="n">DataSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CashFlowBBCC</span><span class="p">(</span><span class="n">CashFlow</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class for handling CSV data from Banco do Brasil Conta Corrente.</span>
 
@@ -771,10 +1082,12 @@
 <span class="sd">        :return: None</span>
 <span class="sd">        :rtype: None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># -------------- overwrite relative path inputs -------------- #</span>
+        <span class="c1"># overwrite relative path inputs</span>
+        <span class="c1"># ----------------------------------------------</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_data</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">file_data</span><span class="p">)</span>
 
-        <span class="c1"># -------------- implement loading logic -------------- #</span>
+        <span class="c1"># implement loading logic</span>
+        <span class="c1"># ----------------------------------------------</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">file_data</span><span class="p">,</span>
@@ -795,13 +1108,15 @@
                 <span class="n">keep_default_na</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="c1"># -------------- post-loading logic -------------- #</span>
+        <span class="c1"># post-loading logic</span>
+        <span class="c1"># ----------------------------------------------</span>
         <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_raw</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_parsed</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="c1"># -------------- update other mutables -------------- #</span>
+        <span class="c1"># update other mutables</span>
+        <span class="c1"># ----------------------------------------------</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 
         <span class="c1"># ... continues in downstream objects ... #</span>

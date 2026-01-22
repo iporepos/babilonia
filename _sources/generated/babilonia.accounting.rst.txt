@@ -9,6 +9,7 @@
    .. autosummary::
    
       Budget
+      CashFlow
       CashFlowBBCC
       CashFlowBBCCPJ
       CashFlowBBPP
