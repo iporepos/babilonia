@@ -49,7 +49,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'  # <-- [CHECK THIS] Specs the version you use locally
+          python-version: '3.13'  # <-- [CHECK THIS] Specs the version you use locally
 
       # Step 3: Install dev dependencies
       # -----------------------------------------------------------------
