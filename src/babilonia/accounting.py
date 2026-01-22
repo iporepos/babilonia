@@ -405,12 +405,21 @@ class CashFlow(DataSet):
         df, category = CashFlow.filter_category(df, category)
 
         df_monthly = CashFlow.monthly_summary(df, category)
+        df_monthly = CashFlow.compute_oir(df_monthly)
+
         df_yearly = CashFlow.yearly_summary(df_monthly, category)
+        df_yearly = CashFlow.compute_oir(df_yearly)
 
         return {
             "monthly": df_monthly.round(decimals=2),
             "yearly": df_yearly.round(decimals=2),
         }
+
+    @staticmethod
+    def compute_oir(df, input_field="Entradas", output_field="Saidas"):
+        df["OIR"] = df[output_field].abs() / df[input_field].abs()
+        df["OIR"] = df["OIR"].fillna(100)
+        return df
 
     @staticmethod
     def enrich_time_index(df):
@@ -536,6 +545,7 @@ class CashFlow(DataSet):
             for col in ["Entradas_N", "Saidas_N"]:
                 df_year[col] = df_year[col].astype(int)
 
+            # Net flow
             df_year["Fluxo"] = df_year["Entradas"] + df_year["Saidas"]
 
             df_year["Entradas_Acum"] = df_year["Entradas"].cumsum()
@@ -598,6 +608,164 @@ class CashFlow(DataSet):
                 "Fluxo_Acum",
             ]
         ]
+
+    @staticmethod
+    def get_cashflow_report(df, year=None, initial_cash=None):
+        """
+        Build a yearly cash flow panel and summary by category.
+
+        :param df:
+            Cash flow DataFrame containing transactional data with date,
+            category, and value information compatible with the
+            ``enrich_time_index``, ``classify_flows``, and
+            ``cashflow_analysis`` methods.
+        :type df: pandas.DataFrame
+
+        :param year:
+            Year to be analyzed. If ``None``, the current calendar year
+            (local time) is used.
+        :type year: int, optional
+
+        :param initial_cash:
+            Initial account balance at the beginning of the selected year.
+            If ``None``, defaults to ``0.0``.
+        :type initial_cash: float, optional
+
+        :return:
+            Dictionary containing: ``"Pannel"``: monthly cash flow panel with totals, per-category
+            flows, and running balance. ``"Summary"``: yearly summary by category with total, mean, and
+            percentage contribution to total inflows.
+        :rtype: dict
+        """
+
+        # ------------------------------------------------------------------
+        # Handle defaults
+        # ------------------------------------------------------------------
+        if year is None:
+            from datetime import datetime
+
+            year = datetime.now().year
+
+        if initial_cash is None:
+            initial_cash = 0.0
+
+        # ------------------------------------------------------------------
+        # Prepare and filter data
+        # ------------------------------------------------------------------
+        df = CashFlow.enrich_time_index(df)
+        df = df.query(f"Ano == {year}").copy()
+
+        # Classify flows as inflow / outflow
+        df = CashFlow.classify_flows(df)
+
+        # Separate inflow and outflow categories
+
+        has_category = "Categoria" in df.columns and df["Categoria"].notna().any()
+
+        if has_category:
+            df_inp = df.query("Flow == 'In'")
+            df_out = df.query("Flow == 'Out'")
+
+            ls_categories_inp = df_inp["Categoria"].dropna().unique()
+            ls_categories_out = df_out["Categoria"].dropna().unique()
+        else:
+            ls_categories_inp = []
+            ls_categories_out = []
+
+        # ------------------------------------------------------------------
+        # Base monthly panel (all categories aggregated)
+        # ------------------------------------------------------------------
+        dc_cfa = CashFlow.cashflow_analysis(df, category=None)
+        df_cfa = dc_cfa["monthly"][["Ano", "Mes", "Fluxo", "Entradas", "Saidas"]].copy()
+
+        # ------------------------------------------------------------------
+        # Add inflow categories (monthly)
+        # ------------------------------------------------------------------
+        for cat in ls_categories_inp:
+            dc_cat = CashFlow.cashflow_analysis(df, category=cat)
+            df_cat = dc_cat["monthly"][["Mes", "Entradas"]].copy()
+            df_cat.rename(columns={"Entradas": cat}, inplace=True)
+
+            df_cfa = pd.merge(df_cfa, df_cat, how="left", on="Mes")
+
+        # ------------------------------------------------------------------
+        # Add outflow categories (monthly)
+        # ------------------------------------------------------------------
+        for cat in ls_categories_out:
+            dc_cat = CashFlow.cashflow_analysis(df, category=cat)
+            df_cat = dc_cat["monthly"][["Mes", "Saidas"]].copy()
+            df_cat.rename(columns={"Saidas": cat}, inplace=True)
+
+            df_cfa = pd.merge(df_cfa, df_cat, how="left", on="Mes")
+
+        # ------------------------------------------------------------------
+        # Compute running balance
+        # ------------------------------------------------------------------
+        df_cfa["Saldo"] = initial_cash + df_cfa["Fluxo"].cumsum()
+
+        # ------------------------------------------------------------------
+        # Build yearly summary by category
+        # ------------------------------------------------------------------
+
+        total_entradas = df_cfa["Entradas"].sum()
+        total_saidas = df_cfa["Saidas"].sum()
+
+        media_entradas = df_cfa["Entradas"].mean()
+        media_saidas = df_cfa["Saidas"].mean()
+
+        rows_summary = [
+            {
+                "Ano": year,
+                "Categoria": "ENTRADAS",
+                "Total": total_entradas,
+                "Media": media_entradas,
+                "% Entradas": 100.0,
+            },
+            {
+                "Ano": year,
+                "Categoria": "SAIDAS",
+                "Total": total_saidas,
+                "Media": media_saidas,
+                "% Entradas": (
+                    abs(total_saidas) / total_entradas * 100
+                    if total_entradas != 0
+                    else 0.0
+                ),
+            },
+        ]
+
+        ls_categories = list(ls_categories_inp) + list(ls_categories_out)
+
+        ls_categories = list(ls_categories_inp) + list(ls_categories_out)
+
+        if ls_categories:
+            totals = df_cfa[ls_categories].sum()
+            averages = df_cfa[ls_categories].mean()
+
+            pct_entradas = (
+                totals.abs() / total_entradas * 100 if total_entradas != 0 else 0.0
+            )
+
+            for cat in ls_categories:
+                rows_summary.append(
+                    {
+                        "Ano": year,
+                        "Categoria": cat,
+                        "Total": totals[cat],
+                        "Media": averages[cat],
+                        "% Entradas": pct_entradas[cat],
+                    }
+                )
+
+        df_summary = pd.DataFrame(rows_summary).round(2)
+
+        # ------------------------------------------------------------------
+        # Output
+        # ------------------------------------------------------------------
+        return {
+            "Pannel": df_cfa,
+            "Summary": df_summary,
+        }
 
 
 class CashFlowBBCC(CashFlow):
