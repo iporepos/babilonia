@@ -767,6 +767,29 @@ class CashFlow(DataSet):
             "Summary": df_summary,
         }
 
+    @staticmethod
+    def format_currency(x: float, ):
+        # todo docstring
+
+        value = float(x)
+        sign = "+"
+        if value < 0:
+            sign = "-"
+
+        return f"{abs(value):>11,.2f} {sign}"  # suffix + f" {value:+,.2f}"
+
+    @staticmethod
+    def format_currency_columns(df: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
+        """
+        Return a copy of df with selected numeric columns formatted as strings.
+        """
+        out = df.copy()
+
+        for col in columns:
+            out[col] = out[col].map(CashFlow.format_currency)
+
+        return out
+
 
 class CashFlowBBCC(CashFlow):
     """

@@ -5,54 +5,6 @@
 # See LICENSE for license details.
 """
 todo refactor docstring
-Parse and standardize Banco do Brasil checking account statements.
-
-This script scans a target directory for Banco do Brasil Conta Corrente
-CSV statement files (T0), standardizes their structure using the
-``CashFlow`` class, and writes the processed outputs as new CSV files (T1)
-in the same subdirectories. It is intended for batch processing and
-command-line execution.
-
-.. dropdown:: Script example for Windows
-    :icon: code-square
-    :open:
-
-    Save a ``bat`` file and run using PowerShell
-
-    .. code-block:: bat
-
-        @echo off
-
-        REM Activate virtual environment
-        call C:\\path\\to\\repo\\.venv\\Scripts\\activate.bat
-
-        REM set script arguments
-        set FOLDER=C:/path/to/folder
-        set TYPE=cc
-
-        REM run as module
-        python -m babilonia.utils.parse_bb "%FOLDER%" "%TYPE%"
-
-
-.. dropdown:: Script example for Linux
-    :icon: code-square
-    :open:
-
-    Save a ``sh`` file and run using Terminal
-
-    .. code-block:: bash
-
-        #!/usr/bin/env bash
-
-        # Activate virtual environment
-        source /path/to/repo/.venv/bin/activate
-
-        # Set script arguments
-        FOLDER="/path/to/folder"
-        TYPE="cc"
-
-        # Run as module
-        python -m babilonia.utils.parse_bb "$FOLDER" "$TYPE"
 
 """
 # IMPORTS

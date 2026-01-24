@@ -35,10 +35,19 @@ Welcome to the API documentation for this project.
 
    babilonia.accounting
 
+.. autosummary::
+   :toctree: generated
+
+   babilonia.utils.core
 
 .. autosummary::
    :toctree: generated
 
-   babilonia.utils.parse_bb
+   babilonia.utils.parse
+
+.. autosummary::
+   :toctree: generated
+
+   babilonia.utils.cashflow
 
 
