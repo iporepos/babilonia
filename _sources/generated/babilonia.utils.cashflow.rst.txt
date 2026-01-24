@@ -1,0 +1,12 @@
+﻿babilonia.utils.cashflow
+========================
+
+.. automodule:: babilonia.utils.cashflow
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      main
+   

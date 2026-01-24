@@ -1,0 +1,18 @@
+﻿babilonia.utils.core
+====================
+
+.. automodule:: babilonia.utils.core
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      concat_dfs
+      get_account
+      get_arguments
+      get_bank
+      get_file_pattern_cashflow_daily
+      get_file_pattern_statement_t0
+      preview_df
+   

@@ -50,7 +50,7 @@
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="babilonia.utils.parse_bb" href="babilonia.utils.parse_bb.html" />
+    <link rel="next" title="babilonia.utils.core" href="babilonia.utils.core.html" />
     <link rel="prev" title="babilonia.root" href="babilonia.root.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -344,7 +344,13 @@
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">babilonia.accounting</a></li>
 </ul>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="babilonia.utils.parse_bb.html">babilonia.utils.parse_bb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="babilonia.utils.core.html">babilonia.utils.core</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="babilonia.utils.parse.html">babilonia.utils.parse</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="babilonia.utils.cashflow.html">babilonia.utils.cashflow</a></li>
 </ul>
 </div>
 </nav></div>
@@ -718,6 +724,17 @@ percentage contribution to total inflows.</p>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="babilonia.accounting.CashFlow.format_currency">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">format_currency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.format_currency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.format_currency" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="babilonia.accounting.CashFlow.format_currency_columns">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">format_currency_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.format_currency_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.format_currency_columns" title="Link to this definition">#</a></dt>
+<dd><p>Return a copy of df with selected numeric columns formatted as strings.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1128,11 +1145,11 @@ percentage contribution to total inflows.</p>
       </div>
     </a>
     <a class="right-next"
-       href="babilonia.utils.parse_bb.html"
+       href="babilonia.utils.core.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">babilonia.utils.parse_bb</p>
+        <p class="prev-next-title">babilonia.utils.core</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1178,6 +1195,8 @@ percentage contribution to total inflows.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.monthly_summary"><code class="docutils literal notranslate"><span class="pre">CashFlow.monthly_summary()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.yearly_summary"><code class="docutils literal notranslate"><span class="pre">CashFlow.yearly_summary()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.get_cashflow_report"><code class="docutils literal notranslate"><span class="pre">CashFlow.get_cashflow_report()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.format_currency"><code class="docutils literal notranslate"><span class="pre">CashFlow.format_currency()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.format_currency_columns"><code class="docutils literal notranslate"><span class="pre">CashFlow.format_currency_columns()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlowBBCC"><code class="docutils literal notranslate"><span class="pre">CashFlowBBCC</span></code></a><ul class="nav section-nav flex-column">
