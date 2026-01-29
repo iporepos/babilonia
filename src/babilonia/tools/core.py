@@ -4,7 +4,8 @@
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
 """
-Core constants and functions for the utils package.
+Core constants and functions for the ``babilonia.tools`` package.
+
 """
 
 # IMPORTS
@@ -23,34 +24,43 @@ from pathlib import Path
 # External imports
 # =======================================================================
 import pandas as pd
+
 # ... {develop}
 
 # Project-level imports
 # =======================================================================
 # import {module}
-from babilonia.accounting import CashFlowBBCC, CashFlowBBCCPJ, CashFlowBBPP
+from babilonia.accounting import CashFlowBBCC, CashFlowBBCCPJ, CashFlowBBPP, BBCDB
 
 # ... {develop}
 
 # CONSTANTS
 # ***********************************************************************
 
-PARSERS = {"bb-cc": CashFlowBBCC, "bb-pp": CashFlowBBPP, "bb-ccpj": CashFlowBBCCPJ}
+PARSERS = {
+    "bb-cc": CashFlowBBCC,
+    "bb-pp": CashFlowBBPP,
+    "bb-ccpj": CashFlowBBCCPJ,
+    "bb-cdb": BBCDB,
+}
 
 BANK_NAMES = {
     "bb-cc": "Banco do Brasil",
     "bb-pp": "Banco do Brasil",
     "bb-ccpj": "Banco do Brasil",
+    "bb-cdb": "Banco do Brasil",
 }
 
 ACCOUNT_NAMES = {
     "bb-cc": "Conta Corrente PF",
     "bb-pp": "Conta Poupança PF",
     "bb-ccpj": "Conta Corrente PJ",
+    "bb-cdb": "Aplicação CDB",
 }
 
 # FUNCTIONS
 # ***********************************************************************
+
 
 def preview_df(df, row_max=20):
     """
@@ -66,6 +76,7 @@ def preview_df(df, row_max=20):
     with pd.option_context("display.max_rows", row_max):
         print(df)
     return None
+
 
 def concat_dfs(ls_files):
     """
@@ -90,6 +101,7 @@ def concat_dfs(ls_files):
         ls_dfs.append(df)
     df_full = pd.concat(ls_dfs).reset_index(drop=True)
     return df_full
+
 
 def get_bank(data_type):
     """
@@ -136,6 +148,7 @@ def get_file_pattern_statement_t0(data_type, folder, year=None):
     if year is None:
         year = "*"
     return rf"{folder}\{year}\EXTRATO_{get_bank(data_type).upper()}_{get_account(data_type).upper()}_*_T0.csv"
+
 
 def get_file_pattern_cashflow_daily(data_type, folder, year=None):
     if year is None:

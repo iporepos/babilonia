@@ -377,7 +377,7 @@ class CashFlow(DataSet):
         # ... continues in downstream objects ... #
 
     @staticmethod
-    def cashflow_analysis(df, category=None):
+    def get_cashflow_analysis(df, category=None):
         """
         Perform cash flow analysis with monthly and yearly aggregation.
 
@@ -404,10 +404,10 @@ class CashFlow(DataSet):
         df = CashFlow.classify_flows(df)
         df, category = CashFlow.filter_category(df, category)
 
-        df_monthly = CashFlow.monthly_summary(df, category)
+        df_monthly = CashFlow.get_monthly_summary(df, category)
         df_monthly = CashFlow.compute_oir(df_monthly)
 
-        df_yearly = CashFlow.yearly_summary(df_monthly, category)
+        df_yearly = CashFlow.get_yearly_summary(df_monthly, category)
         df_yearly = CashFlow.compute_oir(df_yearly)
 
         return {
@@ -488,7 +488,7 @@ class CashFlow(DataSet):
         return df.query("Categoria == @category").copy(), category
 
     @staticmethod
-    def monthly_summary(df, category):
+    def get_monthly_summary(df, category):
         """
         Compute monthly cash flow summaries for each year.
 
@@ -557,7 +557,7 @@ class CashFlow(DataSet):
         return pd.concat(monthly_frames, ignore_index=True)
 
     @staticmethod
-    def yearly_summary(df_monthly, category):
+    def get_yearly_summary(df_monthly, category):
         """
         Compute yearly cash flow summaries.
 
@@ -675,14 +675,14 @@ class CashFlow(DataSet):
         # ------------------------------------------------------------------
         # Base monthly panel (all categories aggregated)
         # ------------------------------------------------------------------
-        dc_cfa = CashFlow.cashflow_analysis(df, category=None)
+        dc_cfa = CashFlow.get_cashflow_analysis(df, category=None)
         df_cfa = dc_cfa["monthly"][["Ano", "Mes", "Fluxo", "Entradas", "Saidas"]].copy()
 
         # ------------------------------------------------------------------
         # Add inflow categories (monthly)
         # ------------------------------------------------------------------
         for cat in ls_categories_inp:
-            dc_cat = CashFlow.cashflow_analysis(df, category=cat)
+            dc_cat = CashFlow.get_cashflow_analysis(df, category=cat)
             df_cat = dc_cat["monthly"][["Mes", "Entradas"]].copy()
             df_cat.rename(columns={"Entradas": cat}, inplace=True)
 
@@ -692,7 +692,7 @@ class CashFlow(DataSet):
         # Add outflow categories (monthly)
         # ------------------------------------------------------------------
         for cat in ls_categories_out:
-            dc_cat = CashFlow.cashflow_analysis(df, category=cat)
+            dc_cat = CashFlow.get_cashflow_analysis(df, category=cat)
             df_cat = dc_cat["monthly"][["Mes", "Saidas"]].copy()
             df_cat.rename(columns={"Saidas": cat}, inplace=True)
 
@@ -768,7 +768,9 @@ class CashFlow(DataSet):
         }
 
     @staticmethod
-    def format_currency(x: float, ):
+    def format_currency(
+        x: float,
+    ):
         # todo docstring
 
         value = float(x)
@@ -1187,6 +1189,310 @@ class CashFlowBBPP(CashFlowBBCC):
     def apply_drops(self, df):
 
         return df
+
+
+class BBCDB(DataSet):
+
+    def __init__(self, name="BBCDB", alias="BBCDB"):
+        super().__init__(name=name, alias=alias)
+
+    def load_data(self, file_data):
+        # todo docstring
+        from io import StringIO
+
+        # ------------------------------------------------------------------
+        # Internal helpers (local on purpose: used only in this workflow)
+        # ------------------------------------------------------------------
+
+        def _to_float_br(series: pd.Series) -> pd.Series:
+            """Convert Brazilian-formatted numeric strings to float."""
+            return (
+                series.str.replace(".", "", regex=False)  # thousands separator
+                .str.replace(",", ".", regex=False)  # decimal separator
+                .astype(float)
+            )
+
+        def _parse_date(series: pd.Series, fmt: str) -> pd.Series:
+            """Parse date strings using a fixed datetime format."""
+            return pd.to_datetime(series, format=fmt)
+
+        def _parse_day_month_with_year(series: pd.Series, year: int) -> pd.Series:
+            """Append year to DD/MM dates and parse."""
+            return pd.to_datetime(series + f"/{year}", format="%d/%m/%Y")
+
+        # ------------------------------------------------------------------
+        # 1. Raw text ingestion and cleaning
+        # ------------------------------------------------------------------
+
+        ls_data = BBCDB.read_txt(file_data)
+        year_data = BBCDB.get_year(ls_data)
+
+        # Drop structural noise and normalize line content
+        ls_data = BBCDB.drop_lines(ls_data, contains="--")
+        ls_data = BBCDB.drop_lines(ls_data, contains="==")
+        ls_data = BBCDB.drop_blank_lines(ls_data)
+
+        # Canonical line replacements
+        ls_data = BBCDB.replace_lines(ls_data)
+        ls_data = BBCDB.replace_lines(ls_data, "\n", "")
+
+        # ------------------------------------------------------------------
+        # 2. Structural splitting (accounts → sections)
+        # ------------------------------------------------------------------
+
+        dc_accounts = BBCDB.split_accounts(ls_data)
+        dc_sections = BBCDB.split_sections(dc_data=dc_accounts)
+
+        # ------------------------------------------------------------------
+        # 3. Section-specific parsing and normalization
+        # ------------------------------------------------------------------
+
+        dc_data = {}
+
+        for account, sections in dc_sections.items():
+            dc_account_data = {}
+
+            for section, lines in sections.items():
+                text = "\n".join(lines)
+                df = pd.read_csv(StringIO(text), sep=self.file_csv_sep, dtype=str)
+
+                # -----------------------------
+                # Section-specific normalization
+                # -----------------------------
+
+                if section == "EXTRATO":
+                    df["Data"] = _parse_day_month_with_year(df["Data"], year_data)
+                    df["Valor"] = _to_float_br(df["Valor"])
+                    df = df.rename(columns={"Historico": "Categoria"})
+                    df["Descricao"] = ""
+                    df = df[["Data", "Valor", "Categoria", "Descricao"]]
+
+                elif section == "RENDIMENTOS":
+                    df["Data"] = _parse_day_month_with_year(df["Data"], year_data)
+                    df["Rendimento_Bruto"] = _to_float_br(df["Rendimento_Bruto"])
+
+                elif section == "SALDOS":
+                    df["Data"] = _parse_date(df["Data"], "%d/%m/%Y")
+                    for col in [
+                        "Capital_Inicial",
+                        "Juros",
+                        "IR_Projetado",
+                        "Capital_Projetado",
+                    ]:
+                        df[col] = _to_float_br(df[col])
+
+                elif section == "DEPOSITOS":
+                    df["Data_Aplicacao"] = _parse_date(df["Data_Aplicacao"], "%d/%m/%Y")
+                    df["Data_Vencimento"] = _parse_date(
+                        df["Data_Vencimento"], "%d/%m/%Y"
+                    )
+                    for col in ["Capital", "Saldo", "Taxa"]:
+                        df[col] = _to_float_br(df[col])
+
+                dc_account_data[section] = df
+
+            dc_data[account] = dc_account_data
+
+        self.data = dc_data.copy()
+        return None
+
+    @staticmethod
+    def read_txt(file_txt, encoding="cp1252"):
+        with open(file_txt, encoding=encoding) as f:
+            lines = f.readlines()
+
+        ls = []
+        for line in lines:
+            ls.append(line[:])
+
+        return ls
+
+    @staticmethod
+    def drop_blank_lines(lines):
+        return [line for line in lines if line.strip()]
+
+    @staticmethod
+    def drop_lines(lines, contains="-"):
+        return [line for line in lines if contains not in line]
+
+    @staticmethod
+    def replace_lines(lines, contains="\xa0", relacer=" "):
+        return [line.replace(contains, relacer) for line in lines]
+
+    @staticmethod
+    def split_accounts(lines):
+        # Mapping of account headers to their terminating marker.
+        # If the value is None, collection continues until end of file.
+        dc_accounts = {
+            "BB CDB DI": "BB CDB PROGRESSIVO",
+            "BB CDB PROGRESSIVO": None,
+        }
+
+        dc_accounts_names = {
+            "BB CDB DI": "CDBDI",
+            "BB CDB PROGRESSIVO": "CDBPG",
+        }
+
+        ls_accounts = list(dc_accounts.keys())
+
+        b_collect = False  # Indicates whether lines are currently being collected
+        dc_data = {}
+
+        for account in ls_accounts:
+            ls_data = []
+
+            # Scan the full file line-by-line, collecting the block for this account
+            for line in lines[:]:
+
+                # Start collecting when the account header is found
+                if account in line:
+                    b_collect = True
+
+                # Stop collecting when the next account header is found (if defined)
+                if dc_accounts[account] is not None and dc_accounts[account] in line:
+                    b_collect = False
+
+                # Collect only lines within the active account block
+                if b_collect:
+                    ls_data.append(line)
+
+            # Store a copy of the collected block for this account
+            dc_data[dc_accounts_names[account]] = ls_data[:]
+
+        return dc_data
+
+    @staticmethod
+    def split_sections(dc_data):
+        sections = {}
+
+        section_titles = {
+            "EXTRATO": {"START": None, "END": "SALDO NOS ULTIMOS 6 MESES"},
+            "SALDOS": {
+                "START": "SALDO NOS ULTIMOS 6 MESES",
+                "END": "RESUMO DOS DEPOSITOS EM SER",
+            },
+            "DEPOSITOS": {
+                "START": "RESUMO DOS DEPOSITOS EM SER",
+                "END": "RENDIMENTO BRUTO NO PERIODO POR DEPOSITO",
+            },
+            "RENDIMENTOS": {
+                "START": "RENDIMENTO BRUTO NO PERIODO POR DEPOSITO",
+                "END": None,
+            },
+        }
+
+        # ------------------------------------------------------------------
+        # Internal helpers
+        # ------------------------------------------------------------------
+
+        def _collect_block(lines, start=None, end=None):
+            """Collect lines between start and end markers (inclusive start)."""
+            collected = []
+            b_collect = start is None
+
+            for line in lines:
+                if start and start in line:
+                    b_collect = True
+
+                if end and end in line:
+                    break
+
+                if b_collect:
+                    collected.append(line[:])
+
+            return collected
+
+        def _normalize_lines(lines):
+            """Collapse whitespace and convert to semicolon-separated format."""
+            return [re.sub(r"\s+", ";", line.strip()) for line in lines]
+
+        def _rewrite_header_and_trim(lines, header):
+            """Replace header row and drop section title line."""
+            lines[1] = header
+            return lines[1:]
+
+        # ------------------------------------------------------------------
+        # Main logic
+        # ------------------------------------------------------------------
+
+        dc_data_out = {}
+
+        for account, lines in dc_data.items():
+            dc_account_data = {}
+
+            for title, markers in section_titles.items():
+                ls_data = _collect_block(
+                    lines,
+                    start=markers["START"],
+                    end=markers["END"],
+                )
+
+                # -----------------------------
+                # Section-specific reshaping
+                # -----------------------------
+
+                if title == "EXTRATO":
+                    # Remove non-tabular summary lines
+                    ls_data = [
+                        line
+                        for line in ls_data
+                        if not any(
+                            s in line
+                            for s in ("Saldo anterior", "capital", "Saldo final")
+                        )
+                    ]
+
+                    ls_data[1] = "Data;Historico;Deposito;Valor"
+
+                    # Merge paired rows into single logical records
+                    if len(ls_data) > 3:
+                        merged = ls_data[:2]
+                        body = ls_data[2:]
+
+                        for i in range(0, len(body), 2):
+                            line = body[i] + body[i + 1]
+                            line = (
+                                line.replace("-", "")
+                                .replace("valor juros", "")
+                                .replace("Rendimento  mensal", "Juros")
+                            )
+                            merged.append(line)
+
+                        ls_data = merged[1:]
+
+                elif title == "SALDOS":
+                    ls_data = _rewrite_header_and_trim(
+                        ls_data,
+                        "Data;Capital_Inicial;Juros;IR_Projetado;Capital_Projetado",
+                    )
+
+                elif title == "DEPOSITOS":
+                    ls_data = _rewrite_header_and_trim(
+                        ls_data,
+                        "Deposito;Data_Aplicacao;Capital;Saldo;Taxa;Data_Vencimento",
+                    )
+
+                elif title == "RENDIMENTOS":
+                    ls_data = _rewrite_header_and_trim(
+                        ls_data,
+                        "Data;Deposito;Rendimento_Bruto",
+                    )
+
+                # Final canonical formatting
+                dc_account_data[title] = _normalize_lines(ls_data)
+
+            dc_data_out[account] = dc_account_data.copy()
+
+        return dc_data_out
+
+    @staticmethod
+    def get_year(lines):
+
+        for line in lines:
+            if "Período: " in line:
+                ls1 = line.split(":")
+                ls2 = ls1[1].split("/")
+                return int(ls2[2][:4])
 
 
 class NFSe(DataSet):

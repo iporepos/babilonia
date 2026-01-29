@@ -4,9 +4,141 @@
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
 """
-todo docstring
+Aggregate and analyze cash flow from standardized bank statements.
 
+This script scans a target directory for standardized bank statement files
+(T1 canonical format), groups them by year, concatenates daily records,
+and produces daily, monthly, and annual cash flow reports using the
+``CashFlow`` analysis engine.
+
+For each year found, the script:
+
+- Loads all matching T1 statement files.
+- Concatenates and reorders columns into a canonical layout.
+- Writes a consolidated daily cash flow CSV.
+- Computes monthly and annual cash flow summaries.
+- Writes monthly and annual CSV reports.
+- Displays formatted previews in the terminal.
+
+After yearly processing, the script merges all yearly outputs into
+global daily, monthly, and annual datasets for the full system.
+
+Processing can be restricted to a single year or applied to all available
+years. Terminal output is structured to facilitate inspection and logging.
+
+Script Examples
+---------------
+
+The script is intended for command-line execution.
+
+.. dropdown:: Minimal PowerShell example (Windows)
+    :icon: code-square
+    :open:
+
+    Save as ``run_cashflow.ps1`` and execute from PowerShell.
+
+    .. code-block:: powershell
+
+        # ! Warning -- change paths and parameters
+
+        # Paths
+        $REPO   = "C:\\path\\to\\repo"
+        $SCRIPT = "$REPO\\babilonia\\tools\\cashflow.py"
+        $DATA   = "C:\\data\\bank_statements"
+
+        # Parameters
+        $TYPE = "bb-cc"
+        $YEAR = 2024
+
+        # Run script
+        python $SCRIPT `
+            --folder $DATA `
+            --type $TYPE `
+            --year $YEAR
+
+
+.. dropdown:: Minimal shell example (Linux)
+    :icon: code-square
+    :open:
+
+    Save as ``run_cashflow.sh`` and execute from a terminal.
+
+    .. code-block:: bash
+
+        #!/usr/bin/env bash
+
+        # ! Warning -- change paths and parameters
+
+        # Paths
+        REPO="/path/to/repo"
+        SCRIPT="$REPO/babilonia/tools/cashflow.py"
+        DATA="/data/bank_statements"
+
+        # Parameters
+        TYPE="bb-cc"
+        YEAR=2024
+
+        # Run script
+        python "$SCRIPT" --folder "$DATA" --type "$TYPE" --year "$YEAR"
+
+
+Expected Folder Structure
+-------------------------
+
+The input data is expected to follow a simple hierarchical layout:
+
+::
+
+    bb/                                 # Bank
+    └── cc/                             # Bank account
+        ├── 2022/
+        │   ├── EXTRATO_BB_CC_2022-01_T1.csv
+        │   └── EXTRATO_BB_CC_2022-02_T1.csv
+        ├── 2023/
+        │   └── EXTRATO_BB_CC_2023-01_T1.csv
+        └── 2024/
+            ├── EXTRATO_BB_CC_2024-01_T1.csv
+            └── EXTRATO_BB_CC_2024-02_T1.csv
+
+Each ``*_T1.csv`` file represents a canonical (Tier 1) standardized
+bank statement.
+
+During execution, the script generates consolidated and aggregated
+outputs:
+
+::
+
+    bb/                                 # Bank
+    └── cc/                             # Bank account
+        └── 2024/
+            ├── CAIXA_BB_CC_2024_DIARIO.csv
+            ├── CAIXA_BB_CC_2024_MENSAL.csv
+            └── CAIXA_BB_CC_2024_ANUAL.csv
+
+Global merged outputs (all years):
+
+::
+
+    bb/                                 # Bank
+    └── cc/                             # Bank account
+        ├── CAIXA_BB_CC_O_DIARIO.csv
+        ├── CAIXA_BB_CC_O_MENSAL.csv
+        └── CAIXA_BB_CC_O_ANUAL.csv
+
+
+Data Levels
+-----------
+
+- **Tier 1 (T1)**: Canonical, standardized statement files produced by
+  the parsing stage.
+- **Daily**: Concatenated transaction-level data.
+- **Monthly**: Aggregated per month with cumulative fields.
+- **Annual**: Aggregated per year with cumulative fields.
+
+The script does not modify input files; all outputs are written as new
+CSV files.
 """
+
 
 # IMPORTS
 # ***********************************************************************
@@ -17,21 +149,25 @@ todo docstring
 import glob
 import argparse
 from pathlib import Path
+
 # ... {develop}
 
 # External imports
 # =======================================================================
 import pandas as pd
+
 # ... {develop}
 
 # Project-level imports
 # =======================================================================
-from babilonia.utils.core import *
+from babilonia.tools.core import *
 from babilonia.accounting import CashFlow
+
 # ... {develop}
 
 # FUNCTIONS
 # ***********************************************************************
+
 
 def main():
 
@@ -146,7 +282,7 @@ def main():
         # --------------------------------------------------------------------
         cf = CashFlow()
         cf.load_data(file_out)
-        dc_cfa = cf.cashflow_analysis(df=cf.data, category=None)
+        dc_cfa = cf.get_cashflow_analysis(df=cf.data, category=None)
 
         # Monthly
         # --------------------------------------------------------------------
@@ -220,7 +356,6 @@ def main():
     print("=" * char_w)
     print("\n\n")
     return None
-
 
 
 # SCRIPT

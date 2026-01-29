@@ -4,9 +4,114 @@
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
 """
-todo docstring
+Generate cash flow reports from daily canonical cashflow files.
 
+This script scans a target directory for daily cash flow CSV files
+(previously generated from standardized bank statements), groups them
+by year, and produces yearly cash flow reports using the ``CashFlow``
+analysis engine.
+
+For each year found, the script:
+
+- Loads the daily cash flow file.
+- Retrieves the initial balance for the year from a balances table.
+- Computes a yearly cash flow report (summary and panel views).
+- Displays formatted tables in the terminal.
+
+Processing can be restricted to a single year or applied to all available
+years. Terminal output is structured for quick inspection and logging.
+
+Script Examples
+---------------
+
+The script is intended for command-line execution.
+
+.. dropdown:: Minimal PowerShell example (Windows)
+    :icon: code-square
+    :open:
+
+    Save as ``run_report.ps1`` and execute from PowerShell.
+
+    .. code-block:: powershell
+
+        # ! Warning -- change paths and parameters
+
+        # Paths
+        $REPO   = "C:\\path\\to\\repo"
+        $SCRIPT = "$REPO\\babilonia\\tools\\report.py"
+        $DATA   = "C:\\data\\bank_statements"
+
+        # Parameters
+        $TYPE = "bb-cc"
+        $YEAR = 2024
+
+        # Run script
+        python $SCRIPT `
+            --folder $DATA `
+            --type $TYPE `
+            --year $YEAR
+
+
+.. dropdown:: Minimal shell example (Linux)
+    :icon: code-square
+    :open:
+
+    Save as ``run_report.sh`` and execute from a terminal.
+
+    .. code-block:: bash
+
+        #!/usr/bin/env bash
+
+        # ! Warning -- change paths and parameters
+
+        # Paths
+        REPO="/path/to/repo"
+        SCRIPT="$REPO/babilonia/tools/report.py"
+        DATA="/data/bank"
+
+        # Parameters
+        TYPE="bb-cc"
+        YEAR=2024
+
+        # Run script
+        python "$SCRIPT" --folder "$DATA" --type "$TYPE" --year "$YEAR"
+
+
+Expected Folder Structure
+-------------------------
+
+The input data is expected to follow a simple hierarchical layout:
+
+::
+
+    bb/                                 # Bank
+    └── cc/                             # Bank account
+        ├── SALDOS_BB_CC.csv            # Initial balances per year
+        ├── 2023/
+        │   └── CAIXA_BB_CC_2023_DIARIO.csv
+        └── 2024/
+            └── CAIXA_BB_CC_2024_DIARIO.csv
+
+Each ``CAIXA_*_DIARIO.csv`` file represents a daily canonical cashflow
+dataset for a given year.
+
+The balances file (``SALDOS_*.csv``) must contain, at minimum, the
+columns:
+
+- ``Year``  : reference year
+- ``Value`` : initial balance at the start of the year
+
+
+Data Levels
+-----------
+
+- **Daily**: Transaction-level canonical cashflow.
+- **Report**: Derived yearly report with summary and panel tables.
+
+The script does not modify input files and does not write new CSV files;
+it only produces terminal reports.
 """
+
 
 # IMPORTS
 # ***********************************************************************
@@ -17,24 +122,27 @@ todo docstring
 import glob
 import argparse
 from pathlib import Path
+
 # ... {develop}
 
 # External imports
 # =======================================================================
 import pandas as pd
+
 # ... {develop}
 
 # Project-level imports
 # =======================================================================
-from babilonia.utils.core import *
+from babilonia.tools.core import *
 from babilonia.accounting import CashFlow
+
 # ... {develop}
 
 # FUNCTIONS
 # ***********************************************************************
 
-def main():
 
+def main():
 
     char_w = 120
 
@@ -47,7 +155,7 @@ def main():
     bank = get_bank(data_type)
     account = get_account(data_type)
 
-    file_initial = data_folder / "saldos.csv"
+    file_initial = data_folder / f"SALDOS_{bank.upper()}_{account.upper()}.csv"
     df_initial = pd.read_csv(file_initial, sep=";")
 
     print("\n\n")
@@ -97,7 +205,7 @@ def main():
         print(f"[INFO] Processing year {year}")
 
         # Retrieve initial balance for the year
-        initial_cash = df_initial.query(f"Year == {year}")["Amount"].values[0]
+        initial_cash = df_initial.query(f"Year == {year}")["Value"].values[0]
 
         # Generate cash flow report
         dc_cfa = cf.get_cashflow_report(
@@ -119,16 +227,12 @@ def main():
         cols_to_format = df.columns[2:]
         print(CashFlow.format_currency_columns(df, cols_to_format))
 
-
-
-
     print()
     print("=" * char_w)
     print(f" Completed. Output files written: {total_processed}")
     print("=" * char_w)
     print("\n\n")
     return None
-
 
 
 # SCRIPT

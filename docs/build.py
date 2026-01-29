@@ -103,8 +103,6 @@ def build_docs(open_site=False):
         webbrowser.open(INDEX_FILE.resolve().as_uri())
 
 
-
-
 # FUNCTIONS -- Module-level
 # =======================================================================
 def delete_generated():

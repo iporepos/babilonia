@@ -32,24 +32,18 @@ The script is intended for command-line execution.
 
         # Paths
         $REPO   = "C:\\path\\to\\repo"
-        $SCRIPT = "$REPO\\babilonia\\utils\\parse_bb.py"
+        $SCRIPT = "$REPO\\babilonia\\tools\\parse.py"
         $DATA   = "C:\\data\\bank_statements"
 
         # Parameters
         $TYPE = "bb-cc"
         $YEAR = 2024
 
-        # Activate virtual environment
-        & "$REPO\\.venv\\Scripts\\Activate.ps1"
-
         # Run script
         python $SCRIPT `
             --folder $DATA `
             --type $TYPE `
             --year $YEAR
-
-        # Deactivate virtual environment
-        deactivate
 
 
 .. dropdown:: Minimal shell example (Linux)
@@ -66,25 +60,15 @@ The script is intended for command-line execution.
 
         # Paths
         REPO="/path/to/repo"
-        SCRIPT="$REPO/babilonia/utils/parse_bb.py"
+        SCRIPT="$REPO/babilonia/tools/parse.py"
         DATA="/data/bank_statements"
 
         # Parameters
         TYPE="bb-cc"
         YEAR=2024
 
-        # Activate virtual environment
-        source "$REPO/.venv/bin/activate"
-
         # Run script
-        python "$SCRIPT" \
-            --folder "$DATA" \
-            --type "$TYPE" \
-            --year "$YEAR"
-
-        # Deactivate virtual environment
-        deactivate
-
+        python "$SCRIPT" --folder "$DATA" --type "$TYPE" --year "$YEAR"
 
 
 Expected Folder Structure
@@ -94,16 +78,16 @@ The input data is expected to follow a simple hierarchical layout:
 
 ::
 
-    bank_statements/
-    └── bb-cc/                     # Bank account (type)
+    bb/                                 # Bank
+    └── cc/                             # Bank account
         ├── 2022/
-        │   ├── EXTRATO_BB_CC_001_T0.csv
-        │   └── EXTRATO_BB_CC_002_T0.csv
+        │   ├── EXTRATO_BB_CC_2022-01_T0.csv
+        │   └── EXTRATO_BB_CC_2022-02_T0.csv
         ├── 2023/
-        │   └── EXTRATO_BB_CC_001_T0.csv
+        │   └── EXTRATO_BB_CC_2023-01_T0.csv
         └── 2024/
-            ├── EXTRATO_BB_CC_001_T0.csv
-            └── EXTRATO_BB_CC_002_T0.csv
+            ├── EXTRATO_BB_CC_2024-01_T0.csv
+            └── EXTRATO_BB_CC_2024-02_T0.csv
 
 Each ``*_T0.csv`` file represents a raw (Tier 0) bank statement.
 
@@ -112,10 +96,11 @@ alongside the original files:
 
 ::
 
-    bb-cc/
-    └── 2024/
-        ├── EXTRATO_BB_CC_001_T0.csv   # original
-        └── EXTRATO_BB_CC_001_T1.csv   # standardized (canonical)
+    bb/                                 # Bank
+    └── cc/                             # Bank account
+        └── 2024/
+            ├── EXTRATO_BB_CC_2024-01_T0.csv   # original
+            └── EXTRATO_BB_CC_2024-01_T1.csv   # standardized (canonical)
 
 Data Levels
 ----------------
@@ -151,7 +136,7 @@ from pathlib import Path
 # Project-level imports
 # =======================================================================
 # import {module}
-from babilonia.utils.core import *
+from babilonia.tools.core import *
 
 
 # ... {develop}
@@ -163,6 +148,7 @@ from babilonia.utils.core import *
 # FUNCTIONS
 # ***********************************************************************
 # ... {develop}
+
 
 def main():
     args = get_arguments()
