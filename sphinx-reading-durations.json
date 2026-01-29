@@ -1,14 +1,14 @@
 {
-    "about": 0.014,
-    "api": 0.015,
-    "development": 0.025,
+    "about": 0.012,
+    "api": 0.014,
+    "development": 0.024,
     "generated/babilonia": 0.006,
-    "generated/babilonia.accounting": 0.353,
-    "generated/babilonia.root": 0.27,
-    "generated/babilonia.tools.cashflow": 0.03,
-    "generated/babilonia.tools.core": 0.042,
-    "generated/babilonia.tools.parse": 0.023,
-    "generated/babilonia.tools.report": 0.077,
+    "generated/babilonia.accounting": 0.348,
+    "generated/babilonia.root": 0.261,
+    "generated/babilonia.tools.cashflow": 0.029,
+    "generated/babilonia.tools.core": 0.039,
+    "generated/babilonia.tools.parse": 0.021,
+    "generated/babilonia.tools.report": 0.057,
     "index": 0.003,
     "usage": 0.005
 }
