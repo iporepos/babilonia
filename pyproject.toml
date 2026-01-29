@@ -46,7 +46,7 @@ build-backend = "setuptools.build_meta"
 # The name of your package/project
 name = "babilonia"         
 # Version number
-version = "0.0.1"       
+version = "1.0.0"
 # Short description
 description = "Handle accounting and finances in Brazil using Python"  
 # Keywords (optional) for search on PyPI
