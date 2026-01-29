@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>babilonia.utils.core &#8212; babilonia 0.0.1 documentation</title>
+    <title>babilonia.tools.core &#8212; babilonia 0.0.1 documentation</title>
   
   
   
@@ -46,11 +46,11 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/babilonia.utils.core';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/babilonia.tools.core';</script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="babilonia.utils.parse" href="babilonia.utils.parse.html" />
+    <link rel="next" title="babilonia.tools.parse" href="babilonia.tools.parse.html" />
     <link rel="prev" title="babilonia.accounting" href="babilonia.accounting.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -344,13 +344,16 @@
 <li class="toctree-l1"><a class="reference internal" href="babilonia.accounting.html">babilonia.accounting</a></li>
 </ul>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">babilonia.utils.core</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">babilonia.tools.core</a></li>
 </ul>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="babilonia.utils.parse.html">babilonia.utils.parse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="babilonia.tools.parse.html">babilonia.tools.parse</a></li>
 </ul>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="babilonia.utils.cashflow.html">babilonia.utils.cashflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="babilonia.tools.cashflow.html">babilonia.tools.cashflow</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="babilonia.tools.report.html">babilonia.tools.report</a></li>
 </ul>
 </div>
 </nav></div>
@@ -394,7 +397,7 @@
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">babilonia.utils.core</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">babilonia.tools.core</span></li>
   </ul>
 </nav>
 </div>
@@ -411,39 +414,39 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-babilonia.utils.core">
-<span id="babilonia-utils-core"></span><h1>babilonia.utils.core<a class="headerlink" href="#module-babilonia.utils.core" title="Link to this heading">#</a></h1>
-<p>Core constants and functions for the utils package.</p>
+  <section id="module-babilonia.tools.core">
+<span id="babilonia-tools-core"></span><h1>babilonia.tools.core<a class="headerlink" href="#module-babilonia.tools.core" title="Link to this heading">#</a></h1>
+<p>Core constants and functions for the <code class="docutils literal notranslate"><span class="pre">babilonia.tools</span></code> package.</p>
 <p class="rubric">Functions</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.utils.core.concat_dfs" title="babilonia.utils.core.concat_dfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">concat_dfs</span></code></a>(ls_files)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.core.concat_dfs" title="babilonia.tools.core.concat_dfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">concat_dfs</span></code></a>(ls_files)</p></td>
 <td><p>Reads multiple CSV files and concatenates them into a single DataFrame.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.utils.core.get_account" title="babilonia.utils.core.get_account"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_account</span></code></a>(data_type)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.tools.core.get_account" title="babilonia.tools.core.get_account"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_account</span></code></a>(data_type)</p></td>
 <td><p>Extracts the account identifier from a formatted data type string.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.utils.core.get_arguments" title="babilonia.utils.core.get_arguments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_arguments</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.core.get_arguments" title="babilonia.tools.core.get_arguments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_arguments</span></code></a>()</p></td>
 <td><p>Parses command-line arguments for the Babilonia utilities.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.utils.core.get_bank" title="babilonia.utils.core.get_bank"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_bank</span></code></a>(data_type)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.tools.core.get_bank" title="babilonia.tools.core.get_bank"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_bank</span></code></a>(data_type)</p></td>
 <td><p>Extracts the bank name from a formatted data type string.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.utils.core.get_file_pattern_cashflow_daily" title="babilonia.utils.core.get_file_pattern_cashflow_daily"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_file_pattern_cashflow_daily</span></code></a>(data_type, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.core.get_file_pattern_cashflow_daily" title="babilonia.tools.core.get_file_pattern_cashflow_daily"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_file_pattern_cashflow_daily</span></code></a>(data_type, ...)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.utils.core.get_file_pattern_statement_t0" title="babilonia.utils.core.get_file_pattern_statement_t0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_file_pattern_statement_t0</span></code></a>(data_type, folder)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.tools.core.get_file_pattern_statement_t0" title="babilonia.tools.core.get_file_pattern_statement_t0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_file_pattern_statement_t0</span></code></a>(data_type, folder)</p></td>
 <td><p>Constructs a glob-style file path pattern for bank statement CSV files.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.utils.core.preview_df" title="babilonia.utils.core.preview_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preview_df</span></code></a>(df[, row_max])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.core.preview_df" title="babilonia.tools.core.preview_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preview_df</span></code></a>(df[, row_max])</p></td>
 <td><p>Displays a preview of a DataFrame with a specified maximum number of rows.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <dl class="py function">
-<dt class="sig sig-object py" id="babilonia.utils.core.preview_df">
-<span class="sig-prename descclassname"><span class="pre">babilonia.utils.core.</span></span><span class="sig-name descname"><span class="pre">preview_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/utils/core.html#preview_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.utils.core.preview_df" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="babilonia.tools.core.preview_df">
+<span class="sig-prename descclassname"><span class="pre">babilonia.tools.core.</span></span><span class="sig-name descname"><span class="pre">preview_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/tools/core.html#preview_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.tools.core.preview_df" title="Link to this definition">#</a></dt>
 <dd><p>Displays a preview of a DataFrame with a specified maximum number of rows.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -462,8 +465,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="babilonia.utils.core.concat_dfs">
-<span class="sig-prename descclassname"><span class="pre">babilonia.utils.core.</span></span><span class="sig-name descname"><span class="pre">concat_dfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ls_files</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/utils/core.html#concat_dfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.utils.core.concat_dfs" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="babilonia.tools.core.concat_dfs">
+<span class="sig-prename descclassname"><span class="pre">babilonia.tools.core.</span></span><span class="sig-name descname"><span class="pre">concat_dfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ls_files</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/tools/core.html#concat_dfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.tools.core.concat_dfs" title="Link to this definition">#</a></dt>
 <dd><p>Reads multiple CSV files and concatenates them into a single DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -485,8 +488,8 @@ The resulting index is reset and the old index is dropped.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="babilonia.utils.core.get_bank">
-<span class="sig-prename descclassname"><span class="pre">babilonia.utils.core.</span></span><span class="sig-name descname"><span class="pre">get_bank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/utils/core.html#get_bank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.utils.core.get_bank" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="babilonia.tools.core.get_bank">
+<span class="sig-prename descclassname"><span class="pre">babilonia.tools.core.</span></span><span class="sig-name descname"><span class="pre">get_bank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/tools/core.html#get_bank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.tools.core.get_bank" title="Link to this definition">#</a></dt>
 <dd><p>Extracts the bank name from a formatted data type string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -502,8 +505,8 @@ The resulting index is reset and the old index is dropped.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="babilonia.utils.core.get_account">
-<span class="sig-prename descclassname"><span class="pre">babilonia.utils.core.</span></span><span class="sig-name descname"><span class="pre">get_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/utils/core.html#get_account"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.utils.core.get_account" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="babilonia.tools.core.get_account">
+<span class="sig-prename descclassname"><span class="pre">babilonia.tools.core.</span></span><span class="sig-name descname"><span class="pre">get_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/tools/core.html#get_account"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.tools.core.get_account" title="Link to this definition">#</a></dt>
 <dd><p>Extracts the account identifier from a formatted data type string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -519,8 +522,8 @@ The resulting index is reset and the old index is dropped.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="babilonia.utils.core.get_file_pattern_statement_t0">
-<span class="sig-prename descclassname"><span class="pre">babilonia.utils.core.</span></span><span class="sig-name descname"><span class="pre">get_file_pattern_statement_t0</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/utils/core.html#get_file_pattern_statement_t0"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.utils.core.get_file_pattern_statement_t0" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="babilonia.tools.core.get_file_pattern_statement_t0">
+<span class="sig-prename descclassname"><span class="pre">babilonia.tools.core.</span></span><span class="sig-name descname"><span class="pre">get_file_pattern_statement_t0</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/tools/core.html#get_file_pattern_statement_t0"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.tools.core.get_file_pattern_statement_t0" title="Link to this definition">#</a></dt>
 <dd><p>Constructs a glob-style file path pattern for bank statement CSV files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -544,13 +547,13 @@ The resulting index is reset and the old index is dropped.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="babilonia.utils.core.get_file_pattern_cashflow_daily">
-<span class="sig-prename descclassname"><span class="pre">babilonia.utils.core.</span></span><span class="sig-name descname"><span class="pre">get_file_pattern_cashflow_daily</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/utils/core.html#get_file_pattern_cashflow_daily"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.utils.core.get_file_pattern_cashflow_daily" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="babilonia.tools.core.get_file_pattern_cashflow_daily">
+<span class="sig-prename descclassname"><span class="pre">babilonia.tools.core.</span></span><span class="sig-name descname"><span class="pre">get_file_pattern_cashflow_daily</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/tools/core.html#get_file_pattern_cashflow_daily"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.tools.core.get_file_pattern_cashflow_daily" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="babilonia.utils.core.get_arguments">
-<span class="sig-prename descclassname"><span class="pre">babilonia.utils.core.</span></span><span class="sig-name descname"><span class="pre">get_arguments</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/utils/core.html#get_arguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.utils.core.get_arguments" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="babilonia.tools.core.get_arguments">
+<span class="sig-prename descclassname"><span class="pre">babilonia.tools.core.</span></span><span class="sig-name descname"><span class="pre">get_arguments</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/tools/core.html#get_arguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.tools.core.get_arguments" title="Link to this definition">#</a></dt>
 <dd><p>Parses command-line arguments for the Babilonia utilities.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -588,11 +591,11 @@ The resulting index is reset and the old index is dropped.</p>
       </div>
     </a>
     <a class="right-next"
-       href="babilonia.utils.parse.html"
+       href="babilonia.tools.parse.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">babilonia.utils.parse</p>
+        <p class="prev-next-title">babilonia.tools.parse</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -615,13 +618,13 @@ The resulting index is reset and the old index is dropped.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.utils.core.preview_df"><code class="docutils literal notranslate"><span class="pre">preview_df()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.utils.core.concat_dfs"><code class="docutils literal notranslate"><span class="pre">concat_dfs()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.utils.core.get_bank"><code class="docutils literal notranslate"><span class="pre">get_bank()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.utils.core.get_account"><code class="docutils literal notranslate"><span class="pre">get_account()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.utils.core.get_file_pattern_statement_t0"><code class="docutils literal notranslate"><span class="pre">get_file_pattern_statement_t0()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.utils.core.get_file_pattern_cashflow_daily"><code class="docutils literal notranslate"><span class="pre">get_file_pattern_cashflow_daily()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.utils.core.get_arguments"><code class="docutils literal notranslate"><span class="pre">get_arguments()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.core.preview_df"><code class="docutils literal notranslate"><span class="pre">preview_df()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.core.concat_dfs"><code class="docutils literal notranslate"><span class="pre">concat_dfs()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.core.get_bank"><code class="docutils literal notranslate"><span class="pre">get_bank()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.core.get_account"><code class="docutils literal notranslate"><span class="pre">get_account()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.core.get_file_pattern_statement_t0"><code class="docutils literal notranslate"><span class="pre">get_file_pattern_statement_t0()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.core.get_file_pattern_cashflow_daily"><code class="docutils literal notranslate"><span class="pre">get_file_pattern_cashflow_daily()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.core.get_arguments"><code class="docutils literal notranslate"><span class="pre">get_arguments()</span></code></a></li>
 </ul>
   </nav></div>
 
@@ -629,7 +632,7 @@ The resulting index is reset and the old index is dropped.</p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/generated/babilonia.utils.core.rst.txt"
+      <li><a href="../_sources/generated/babilonia.tools.core.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div></div>

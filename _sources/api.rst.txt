@@ -38,16 +38,19 @@ Welcome to the API documentation for this project.
 .. autosummary::
    :toctree: generated
 
-   babilonia.utils.core
+   babilonia.tools.core
 
 .. autosummary::
    :toctree: generated
 
-   babilonia.utils.parse
+   babilonia.tools.parse
 
 .. autosummary::
    :toctree: generated
 
-   babilonia.utils.cashflow
+   babilonia.tools.cashflow
 
+.. autosummary::
+   :toctree: generated
 
+   babilonia.tools.report

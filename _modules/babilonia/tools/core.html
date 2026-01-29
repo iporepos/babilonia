@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>babilonia.utils.core &#8212; babilonia 0.0.1 documentation</title>
+    <title>babilonia.tools.core &#8212; babilonia 0.0.1 documentation</title>
   
   
   
@@ -45,7 +45,7 @@
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/babilonia/utils/core';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/babilonia/tools/core';</script>
     <link rel="author" title="About these documents" href="../../../about.html" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -362,7 +362,7 @@
     
     <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">babilonia.utils.core</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">babilonia.tools.core</span></li>
   </ul>
 </nav>
 </div>
@@ -379,14 +379,15 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for babilonia.utils.core</h1><div class="highlight"><pre>
+  <h1>Source code for babilonia.tools.core</h1><div class="highlight"><pre>
 <span></span><span class="c1"># SPDX-License-Identifier: GPL-3.0-or-later</span>
 <span class="c1">#</span>
 <span class="c1"># Copyright (C) 2025 The Project Authors</span>
 <span class="c1"># See pyproject.toml for authors/maintainers.</span>
 <span class="c1"># See LICENSE for license details.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Core constants and functions for the utils package.</span>
+<span class="sd">Core constants and functions for the ``babilonia.tools`` package.</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># IMPORTS</span>
@@ -405,37 +406,46 @@
 <span class="c1"># External imports</span>
 <span class="c1"># =======================================================================</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
 <span class="c1"># ... {develop}</span>
 
 <span class="c1"># Project-level imports</span>
 <span class="c1"># =======================================================================</span>
 <span class="c1"># import {module}</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">babilonia.accounting</span><span class="w"> </span><span class="kn">import</span> <span class="n">CashFlowBBCC</span><span class="p">,</span> <span class="n">CashFlowBBCCPJ</span><span class="p">,</span> <span class="n">CashFlowBBPP</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">babilonia.accounting</span><span class="w"> </span><span class="kn">import</span> <span class="n">CashFlowBBCC</span><span class="p">,</span> <span class="n">CashFlowBBCCPJ</span><span class="p">,</span> <span class="n">CashFlowBBPP</span><span class="p">,</span> <span class="n">BBCDB</span>
 
 <span class="c1"># ... {develop}</span>
 
 <span class="c1"># CONSTANTS</span>
 <span class="c1"># ***********************************************************************</span>
 
-<span class="n">PARSERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;bb-cc&quot;</span><span class="p">:</span> <span class="n">CashFlowBBCC</span><span class="p">,</span> <span class="s2">&quot;bb-pp&quot;</span><span class="p">:</span> <span class="n">CashFlowBBPP</span><span class="p">,</span> <span class="s2">&quot;bb-ccpj&quot;</span><span class="p">:</span> <span class="n">CashFlowBBCCPJ</span><span class="p">}</span>
+<span class="n">PARSERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;bb-cc&quot;</span><span class="p">:</span> <span class="n">CashFlowBBCC</span><span class="p">,</span>
+    <span class="s2">&quot;bb-pp&quot;</span><span class="p">:</span> <span class="n">CashFlowBBPP</span><span class="p">,</span>
+    <span class="s2">&quot;bb-ccpj&quot;</span><span class="p">:</span> <span class="n">CashFlowBBCCPJ</span><span class="p">,</span>
+    <span class="s2">&quot;bb-cdb&quot;</span><span class="p">:</span> <span class="n">BBCDB</span><span class="p">,</span>
+<span class="p">}</span>
 
 <span class="n">BANK_NAMES</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;bb-cc&quot;</span><span class="p">:</span> <span class="s2">&quot;Banco do Brasil&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bb-pp&quot;</span><span class="p">:</span> <span class="s2">&quot;Banco do Brasil&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bb-ccpj&quot;</span><span class="p">:</span> <span class="s2">&quot;Banco do Brasil&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bb-cdb&quot;</span><span class="p">:</span> <span class="s2">&quot;Banco do Brasil&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">ACCOUNT_NAMES</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;bb-cc&quot;</span><span class="p">:</span> <span class="s2">&quot;Conta Corrente PF&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bb-pp&quot;</span><span class="p">:</span> <span class="s2">&quot;Conta Poupança PF&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bb-ccpj&quot;</span><span class="p">:</span> <span class="s2">&quot;Conta Corrente PJ&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bb-cdb&quot;</span><span class="p">:</span> <span class="s2">&quot;Aplicação CDB&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="c1"># FUNCTIONS</span>
 <span class="c1"># ***********************************************************************</span>
 
+
 <div class="viewcode-block" id="preview_df">
-<a class="viewcode-back" href="../../../generated/babilonia.utils.core.html#babilonia.utils.core.preview_df">[docs]</a>
+<a class="viewcode-back" href="../../../generated/babilonia.tools.core.html#babilonia.tools.core.preview_df">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">preview_df</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">row_max</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Displays a preview of a DataFrame with a specified maximum number of rows.</span>
@@ -452,8 +462,9 @@
     <span class="k">return</span> <span class="kc">None</span></div>
 
 
+
 <div class="viewcode-block" id="concat_dfs">
-<a class="viewcode-back" href="../../../generated/babilonia.utils.core.html#babilonia.utils.core.concat_dfs">[docs]</a>
+<a class="viewcode-back" href="../../../generated/babilonia.tools.core.html#babilonia.tools.core.concat_dfs">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">concat_dfs</span><span class="p">(</span><span class="n">ls_files</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reads multiple CSV files and concatenates them into a single DataFrame.</span>
@@ -479,8 +490,9 @@
     <span class="k">return</span> <span class="n">df_full</span></div>
 
 
+
 <div class="viewcode-block" id="get_bank">
-<a class="viewcode-back" href="../../../generated/babilonia.utils.core.html#babilonia.utils.core.get_bank">[docs]</a>
+<a class="viewcode-back" href="../../../generated/babilonia.tools.core.html#babilonia.tools.core.get_bank">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_bank</span><span class="p">(</span><span class="n">data_type</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extracts the bank name from a formatted data type string.</span>
@@ -495,7 +507,7 @@
 
 
 <div class="viewcode-block" id="get_account">
-<a class="viewcode-back" href="../../../generated/babilonia.utils.core.html#babilonia.utils.core.get_account">[docs]</a>
+<a class="viewcode-back" href="../../../generated/babilonia.tools.core.html#babilonia.tools.core.get_account">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_account</span><span class="p">(</span><span class="n">data_type</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extracts the account identifier from a formatted data type string.</span>
@@ -510,7 +522,7 @@
 
 
 <div class="viewcode-block" id="get_file_pattern_statement_t0">
-<a class="viewcode-back" href="../../../generated/babilonia.utils.core.html#babilonia.utils.core.get_file_pattern_statement_t0">[docs]</a>
+<a class="viewcode-back" href="../../../generated/babilonia.tools.core.html#babilonia.tools.core.get_file_pattern_statement_t0">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_file_pattern_statement_t0</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Constructs a glob-style file path pattern for bank statement CSV files.</span>
@@ -534,8 +546,9 @@
     <span class="k">return</span> <span class="sa">rf</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder</span><span class="si">}</span><span class="s2">\</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">\EXTRATO_</span><span class="si">{</span><span class="n">get_bank</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">get_account</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">_*_T0.csv&quot;</span></div>
 
 
+
 <div class="viewcode-block" id="get_file_pattern_cashflow_daily">
-<a class="viewcode-back" href="../../../generated/babilonia.utils.core.html#babilonia.utils.core.get_file_pattern_cashflow_daily">[docs]</a>
+<a class="viewcode-back" href="../../../generated/babilonia.tools.core.html#babilonia.tools.core.get_file_pattern_cashflow_daily">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_file_pattern_cashflow_daily</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">year</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">year</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
@@ -544,7 +557,7 @@
 
 
 <div class="viewcode-block" id="get_arguments">
-<a class="viewcode-back" href="../../../generated/babilonia.utils.core.html#babilonia.utils.core.get_arguments">[docs]</a>
+<a class="viewcode-back" href="../../../generated/babilonia.tools.core.html#babilonia.tools.core.get_arguments">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_arguments</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parses command-line arguments for the Babilonia utilities.</span>

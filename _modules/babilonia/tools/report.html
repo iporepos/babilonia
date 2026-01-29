@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>babilonia.utils.parse &#8212; babilonia 0.0.1 documentation</title>
+    <title>babilonia.tools.report &#8212; babilonia 0.0.1 documentation</title>
   
   
   
@@ -45,7 +45,7 @@
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/babilonia/utils/parse';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/babilonia/tools/report';</script>
     <link rel="author" title="About these documents" href="../../../about.html" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -362,7 +362,7 @@
     
     <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">babilonia.utils.parse</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">babilonia.tools.report</span></li>
   </ul>
 </nav>
 </div>
@@ -379,26 +379,32 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for babilonia.utils.parse</h1><div class="highlight"><pre>
+  <h1>Source code for babilonia.tools.report</h1><div class="highlight"><pre>
 <span></span><span class="c1"># SPDX-License-Identifier: GPL-3.0-or-later</span>
 <span class="c1">#</span>
 <span class="c1"># Copyright (C) 2025 The Project Authors</span>
 <span class="c1"># See pyproject.toml for authors/maintainers.</span>
 <span class="c1"># See LICENSE for license details.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Parse and standardize bank statement CSV files.</span>
+<span class="sd">Generate cash flow reports from daily canonical cashflow files.</span>
 
-<span class="sd">This script scans a target directory for bank statement files</span>
-<span class="sd">(T0 source format), standardizes their structure using the appropriate</span>
-<span class="sd">``CashFlow`` parser, and writes the processed outputs as new CSV files</span>
-<span class="sd">(T1 canonical format) in the same yearly subdirectories.</span>
+<span class="sd">This script scans a target directory for daily cash flow CSV files</span>
+<span class="sd">(previously generated from standardized bank statements), groups them</span>
+<span class="sd">by year, and produces yearly cash flow reports using the ``CashFlow``</span>
+<span class="sd">analysis engine.</span>
+
+<span class="sd">For each year found, the script:</span>
+
+<span class="sd">- Loads the daily cash flow file.</span>
+<span class="sd">- Retrieves the initial balance for the year from a balances table.</span>
+<span class="sd">- Computes a yearly cash flow report (summary and panel views).</span>
+<span class="sd">- Displays formatted tables in the terminal.</span>
 
 <span class="sd">Processing can be restricted to a single year or applied to all available</span>
-<span class="sd">years. When multiple years are present, files are processed year by year</span>
-<span class="sd">with structured terminal output to facilitate log inspection.</span>
+<span class="sd">years. Terminal output is structured for quick inspection and logging.</span>
 
-<span class="sd">Scripts Examples</span>
-<span class="sd">----------------</span>
+<span class="sd">Script Examples</span>
+<span class="sd">---------------</span>
 
 <span class="sd">The script is intended for command-line execution.</span>
 
@@ -406,7 +412,7 @@
 <span class="sd">    :icon: code-square</span>
 <span class="sd">    :open:</span>
 
-<span class="sd">    Save as ``run_parse.ps1`` and execute from PowerShell.</span>
+<span class="sd">    Save as ``run_report.ps1`` and execute from PowerShell.</span>
 
 <span class="sd">    .. code-block:: powershell</span>
 
@@ -414,15 +420,12 @@
 
 <span class="sd">        # Paths</span>
 <span class="sd">        $REPO   = &quot;C:\\path\\to\\repo&quot;</span>
-<span class="sd">        $SCRIPT = &quot;$REPO\\babilonia\\utils\\parse_bb.py&quot;</span>
+<span class="sd">        $SCRIPT = &quot;$REPO\\babilonia\\tools\\report.py&quot;</span>
 <span class="sd">        $DATA   = &quot;C:\\data\\bank_statements&quot;</span>
 
 <span class="sd">        # Parameters</span>
 <span class="sd">        $TYPE = &quot;bb-cc&quot;</span>
 <span class="sd">        $YEAR = 2024</span>
-
-<span class="sd">        # Activate virtual environment</span>
-<span class="sd">        &amp; &quot;$REPO\\.venv\\Scripts\\Activate.ps1&quot;</span>
 
 <span class="sd">        # Run script</span>
 <span class="sd">        python $SCRIPT `</span>
@@ -430,15 +433,12 @@
 <span class="sd">            --type $TYPE `</span>
 <span class="sd">            --year $YEAR</span>
 
-<span class="sd">        # Deactivate virtual environment</span>
-<span class="sd">        deactivate</span>
-
 
 <span class="sd">.. dropdown:: Minimal shell example (Linux)</span>
 <span class="sd">    :icon: code-square</span>
 <span class="sd">    :open:</span>
 
-<span class="sd">    Save as ``run_parse.sh`` and execute from a terminal.</span>
+<span class="sd">    Save as ``run_report.sh`` and execute from a terminal.</span>
 
 <span class="sd">    .. code-block:: bash</span>
 
@@ -448,25 +448,15 @@
 
 <span class="sd">        # Paths</span>
 <span class="sd">        REPO=&quot;/path/to/repo&quot;</span>
-<span class="sd">        SCRIPT=&quot;$REPO/babilonia/utils/parse_bb.py&quot;</span>
-<span class="sd">        DATA=&quot;/data/bank_statements&quot;</span>
+<span class="sd">        SCRIPT=&quot;$REPO/babilonia/tools/report.py&quot;</span>
+<span class="sd">        DATA=&quot;/data/bank&quot;</span>
 
 <span class="sd">        # Parameters</span>
 <span class="sd">        TYPE=&quot;bb-cc&quot;</span>
 <span class="sd">        YEAR=2024</span>
 
-<span class="sd">        # Activate virtual environment</span>
-<span class="sd">        source &quot;$REPO/.venv/bin/activate&quot;</span>
-
 <span class="sd">        # Run script</span>
-<span class="sd">        python &quot;$SCRIPT&quot; \</span>
-<span class="sd">            --folder &quot;$DATA&quot; \</span>
-<span class="sd">            --type &quot;$TYPE&quot; \</span>
-<span class="sd">            --year &quot;$YEAR&quot;</span>
-
-<span class="sd">        # Deactivate virtual environment</span>
-<span class="sd">        deactivate</span>
-
+<span class="sd">        python &quot;$SCRIPT&quot; --folder &quot;$DATA&quot; --type &quot;$TYPE&quot; --year &quot;$YEAR&quot;</span>
 
 
 <span class="sd">Expected Folder Structure</span>
@@ -476,41 +466,34 @@
 
 <span class="sd">::</span>
 
-<span class="sd">    bank_statements/</span>
-<span class="sd">    └── bb-cc/                     # Bank account (type)</span>
-<span class="sd">        ├── 2022/</span>
-<span class="sd">        │   ├── EXTRATO_BB_CC_001_T0.csv</span>
-<span class="sd">        │   └── EXTRATO_BB_CC_002_T0.csv</span>
+<span class="sd">    bb/                                 # Bank</span>
+<span class="sd">    └── cc/                             # Bank account</span>
+<span class="sd">        ├── SALDOS_BB_CC.csv            # Initial balances per year</span>
 <span class="sd">        ├── 2023/</span>
-<span class="sd">        │   └── EXTRATO_BB_CC_001_T0.csv</span>
+<span class="sd">        │   └── CAIXA_BB_CC_2023_DIARIO.csv</span>
 <span class="sd">        └── 2024/</span>
-<span class="sd">            ├── EXTRATO_BB_CC_001_T0.csv</span>
-<span class="sd">            └── EXTRATO_BB_CC_002_T0.csv</span>
+<span class="sd">            └── CAIXA_BB_CC_2024_DIARIO.csv</span>
 
-<span class="sd">Each ``*_T0.csv`` file represents a raw (Tier 0) bank statement.</span>
+<span class="sd">Each ``CAIXA_*_DIARIO.csv`` file represents a daily canonical cashflow</span>
+<span class="sd">dataset for a given year.</span>
 
-<span class="sd">During execution, the script generates standardized Tier 1 outputs</span>
-<span class="sd">alongside the original files:</span>
+<span class="sd">The balances file (``SALDOS_*.csv``) must contain, at minimum, the</span>
+<span class="sd">columns:</span>
 
-<span class="sd">::</span>
+<span class="sd">- ``Year``  : reference year</span>
+<span class="sd">- ``Value`` : initial balance at the start of the year</span>
 
-<span class="sd">    bb-cc/</span>
-<span class="sd">    └── 2024/</span>
-<span class="sd">        ├── EXTRATO_BB_CC_001_T0.csv   # original</span>
-<span class="sd">        └── EXTRATO_BB_CC_001_T1.csv   # standardized (canonical)</span>
 
 <span class="sd">Data Levels</span>
-<span class="sd">----------------</span>
+<span class="sd">-----------</span>
 
-<span class="sd">- **Tier 0 (T0)**: Raw statement files as exported by the bank.</span>
-<span class="sd">  Column names, formats, and ordering may vary.</span>
-<span class="sd">- **Tier 1 (T1)**: Canonical, standardized CSV files produced by this</span>
-<span class="sd">  script, suitable for downstream analysis and aggregation.</span>
+<span class="sd">- **Daily**: Transaction-level canonical cashflow.</span>
+<span class="sd">- **Report**: Derived yearly report with summary and panel tables.</span>
 
-<span class="sd">The original Tier 0 files are never modified; Tier 1 files are written</span>
-<span class="sd">only when they do not already exist.</span>
-
+<span class="sd">The script does not modify input files and does not write new CSV files;</span>
+<span class="sd">it only produces terminal reports.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 
 <span class="c1"># IMPORTS</span>
 <span class="c1"># ***********************************************************************</span>
@@ -520,60 +503,63 @@
 <span class="c1"># =======================================================================</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pprint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="c1"># ... {develop}</span>
 
 <span class="c1"># External imports</span>
 <span class="c1"># =======================================================================</span>
-<span class="c1"># import {module}</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
 <span class="c1"># ... {develop}</span>
 
 <span class="c1"># Project-level imports</span>
 <span class="c1"># =======================================================================</span>
-<span class="c1"># import {module}</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">babilonia.utils.core</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">babilonia.tools.core</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">babilonia.accounting</span><span class="w"> </span><span class="kn">import</span> <span class="n">CashFlow</span>
 
-
-<span class="c1"># ... {develop}</span>
-
-<span class="c1"># CONSTANTS</span>
-<span class="c1"># ***********************************************************************</span>
 <span class="c1"># ... {develop}</span>
 
 <span class="c1"># FUNCTIONS</span>
 <span class="c1"># ***********************************************************************</span>
-<span class="c1"># ... {develop}</span>
+
 
 <div class="viewcode-block" id="main">
-<a class="viewcode-back" href="../../../generated/babilonia.utils.parse.html#babilonia.utils.parse.main">[docs]</a>
+<a class="viewcode-back" href="../../../generated/babilonia.tools.report.html#babilonia.tools.report.main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+
+    <span class="n">char_w</span> <span class="o">=</span> <span class="mi">120</span>
+
     <span class="n">args</span> <span class="o">=</span> <span class="n">get_arguments</span><span class="p">()</span>
 
     <span class="n">data_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">folder</span><span class="p">)</span>
     <span class="n">data_type</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
     <span class="n">year_arg</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">year</span>
 
+    <span class="n">bank</span> <span class="o">=</span> <span class="n">get_bank</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span>
+    <span class="n">account</span> <span class="o">=</span> <span class="n">get_account</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span>
+
+    <span class="n">file_initial</span> <span class="o">=</span> <span class="n">data_folder</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;SALDOS_</span><span class="si">{</span><span class="n">bank</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">account</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">.csv&quot;</span>
+    <span class="n">df_initial</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_initial</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Parsing Bank Statements</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="n">char_w</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Cashflow Report</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Folder  : </span><span class="si">{</span><span class="n">data_folder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Bank    : </span><span class="si">{</span><span class="n">BANK_NAMES</span><span class="p">[</span><span class="n">data_type</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Account : </span><span class="si">{</span><span class="n">ACCOUNT_NAMES</span><span class="p">[</span><span class="n">data_type</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Year    : </span><span class="si">{</span><span class="n">year_arg</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">year_arg</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;ALL&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="n">char_w</span><span class="p">)</span>
 
     <span class="c1"># Resolve file pattern (year wildcard handled inside helper)</span>
-    <span class="n">pattern_files</span> <span class="o">=</span> <span class="n">get_file_pattern_statement_t0</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_folder</span><span class="p">,</span> <span class="n">year_arg</span><span class="p">)</span>
+    <span class="n">pattern_files</span> <span class="o">=</span> <span class="n">get_file_pattern_cashflow_daily</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_folder</span><span class="p">,</span> <span class="n">year_arg</span><span class="p">)</span>
     <span class="n">ls_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">pattern_files</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">ls_files</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; No input files found. Nothing to process.&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="n">char_w</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1"># Group files by year (assumes year is the parent directory name)</span>
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="n">files_by_year</span> <span class="o">=</span> <span class="p">{}</span>
@@ -591,34 +577,44 @@
 
     <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">files_by_year</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">()</span>
-        <span class="c1"># print(&quot;-&quot; * 80)</span>
+        <span class="c1"># print(&quot;-&quot; * char_w)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Year </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="n">char_w</span><span class="p">)</span>
 
-        <span class="n">yearly_processed</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">fpath</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">files_by_year</span><span class="p">[</span><span class="n">year</span><span class="p">],</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">fpath</span><span class="o">.</span><span class="n">stem</span>
-            <span class="n">new_name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;T0&quot;</span><span class="p">,</span> <span class="s2">&quot;T1&quot;</span><span class="p">)</span>
-            <span class="n">file_out</span> <span class="o">=</span> <span class="n">fpath</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_name</span><span class="si">}</span><span class="s2">.csv&quot;</span>
+        <span class="n">file_csv</span> <span class="o">=</span> <span class="n">files_by_year</span><span class="p">[</span><span class="n">year</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot; -&gt; &quot;</span><span class="p">)</span>
+        <span class="n">cf</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="p">()</span>
+        <span class="n">cf</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_csv</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">file_out</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_out</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> SKIPPED&quot;</span><span class="p">)</span>
-                <span class="k">continue</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[INFO] Processing year </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="n">cf</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_data</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">fpath</span><span class="p">))</span>
-            <span class="n">cf</span><span class="o">.</span><span class="n">standardize</span><span class="p">()</span>
-            <span class="n">cf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_out</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_out</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> PARSED&quot;</span><span class="p">)</span>
-            <span class="n">total_processed</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">yearly_processed</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Year completed. Output files written: </span><span class="si">{</span><span class="n">yearly_processed</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># Retrieve initial balance for the year</span>
+        <span class="n">initial_cash</span> <span class="o">=</span> <span class="n">df_initial</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Year == </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)[</span><span class="s2">&quot;Value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Generate cash flow report</span>
+        <span class="n">dc_cfa</span> <span class="o">=</span> <span class="n">cf</span><span class="o">.</span><span class="n">get_cashflow_report</span><span class="p">(</span>
+            <span class="n">df</span><span class="o">=</span><span class="n">cf</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">year</span><span class="o">=</span><span class="n">year</span><span class="p">,</span>
+            <span class="n">initial_cash</span><span class="o">=</span><span class="n">initial_cash</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># ------------------------------------------------------------------</span>
+        <span class="c1"># Terminal output</span>
+        <span class="c1"># ------------------------------------------------------------------</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">[Summary]&quot;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">dc_cfa</span><span class="p">[</span><span class="s2">&quot;Summary&quot;</span><span class="p">]</span>
+        <span class="n">cols_to_format</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">CashFlow</span><span class="o">.</span><span class="n">format_currency_columns</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">cols_to_format</span><span class="p">))</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">[Panel]&quot;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">dc_cfa</span><span class="p">[</span><span class="s2">&quot;Pannel&quot;</span><span class="p">]</span>
+        <span class="n">cols_to_format</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">CashFlow</span><span class="o">.</span><span class="n">format_currency_columns</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">cols_to_format</span><span class="p">))</span>
 
     <span class="nb">print</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="n">char_w</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Completed. Output files written: </span><span class="si">{</span><span class="n">total_processed</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="n">char_w</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">None</span></div>
 

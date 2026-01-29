@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>babilonia.utils.parse &#8212; babilonia 0.0.1 documentation</title>
+    <title>babilonia.tools.cashflow &#8212; babilonia 0.0.1 documentation</title>
   
   
   
@@ -46,12 +46,12 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/babilonia.utils.parse';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/babilonia.tools.cashflow';</script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="babilonia.utils.cashflow" href="babilonia.utils.cashflow.html" />
-    <link rel="prev" title="babilonia.utils.core" href="babilonia.utils.core.html" />
+    <link rel="next" title="babilonia.tools.report" href="babilonia.tools.report.html" />
+    <link rel="prev" title="babilonia.tools.parse" href="babilonia.tools.parse.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -344,13 +344,16 @@
 <li class="toctree-l1"><a class="reference internal" href="babilonia.accounting.html">babilonia.accounting</a></li>
 </ul>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="babilonia.utils.core.html">babilonia.utils.core</a></li>
-</ul>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">babilonia.utils.parse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="babilonia.tools.core.html">babilonia.tools.core</a></li>
 </ul>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="babilonia.utils.cashflow.html">babilonia.utils.cashflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="babilonia.tools.parse.html">babilonia.tools.parse</a></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">babilonia.tools.cashflow</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="babilonia.tools.report.html">babilonia.tools.report</a></li>
 </ul>
 </div>
 </nav></div>
@@ -394,7 +397,7 @@
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">babilonia.utils.parse</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">babilonia.tools.cashflow</span></li>
   </ul>
 </nav>
 </div>
@@ -411,73 +414,71 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-babilonia.utils.parse">
-<span id="babilonia-utils-parse"></span><h1>babilonia.utils.parse<a class="headerlink" href="#module-babilonia.utils.parse" title="Link to this heading">#</a></h1>
-<p>Parse and standardize bank statement CSV files.</p>
-<p>This script scans a target directory for bank statement files
-(T0 source format), standardizes their structure using the appropriate
-<code class="docutils literal notranslate"><span class="pre">CashFlow</span></code> parser, and writes the processed outputs as new CSV files
-(T1 canonical format) in the same yearly subdirectories.</p>
+  <section id="module-babilonia.tools.cashflow">
+<span id="babilonia-tools-cashflow"></span><h1>babilonia.tools.cashflow<a class="headerlink" href="#module-babilonia.tools.cashflow" title="Link to this heading">#</a></h1>
+<p>Aggregate and analyze cash flow from standardized bank statements.</p>
+<p>This script scans a target directory for standardized bank statement files
+(T1 canonical format), groups them by year, concatenates daily records,
+and produces daily, monthly, and annual cash flow reports using the
+<code class="docutils literal notranslate"><span class="pre">CashFlow</span></code> analysis engine.</p>
+<p>For each year found, the script:</p>
+<ul class="simple">
+<li><p>Loads all matching T1 statement files.</p></li>
+<li><p>Concatenates and reorders columns into a canonical layout.</p></li>
+<li><p>Writes a consolidated daily cash flow CSV.</p></li>
+<li><p>Computes monthly and annual cash flow summaries.</p></li>
+<li><p>Writes monthly and annual CSV reports.</p></li>
+<li><p>Displays formatted previews in the terminal.</p></li>
+</ul>
+<p>After yearly processing, the script merges all yearly outputs into
+global daily, monthly, and annual datasets for the full system.</p>
 <p>Processing can be restricted to a single year or applied to all available
-years. When multiple years are present, files are processed year by year
-with structured terminal output to facilitate log inspection.</p>
-<section id="scripts-examples">
-<h2>Scripts Examples<a class="headerlink" href="#scripts-examples" title="Link to this heading">#</a></h2>
+years. Terminal output is structured to facilitate inspection and logging.</p>
+<section id="script-examples">
+<h2>Script Examples<a class="headerlink" href="#script-examples" title="Link to this heading">#</a></h2>
 <p>The script is intended for command-line execution.</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3" open="open">
 <summary class="sd-summary-title sd-card-header">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-code-square" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25Zm7.47 3.97a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L10.69 8 9.22 6.53a.75.75 0 0 1 0-1.06ZM6.78 6.53 5.31 8l1.47 1.47a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215l-2-2a.75.75 0 0 1 0-1.06l2-2a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"></path></svg></span><span class="sd-summary-text">Minimal PowerShell example (Windows)</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
-<p class="sd-card-text">Save as <code class="docutils literal notranslate"><span class="pre">run_parse.ps1</span></code> and execute from PowerShell.</p>
+<p class="sd-card-text">Save as <code class="docutils literal notranslate"><span class="pre">run_cashflow.ps1</span></code> and execute from PowerShell.</p>
 <div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="c"># ! Warning -- change paths and parameters</span>
 
 <span class="c"># Paths</span>
 <span class="nv">$REPO</span>   <span class="p">=</span> <span class="s2">&quot;C:\path\to\repo&quot;</span>
-<span class="nv">$SCRIPT</span> <span class="p">=</span> <span class="s2">&quot;$REPO\babilonia\utils\parse_bb.py&quot;</span>
+<span class="nv">$SCRIPT</span> <span class="p">=</span> <span class="s2">&quot;$REPO\babilonia\tools\cashflow.py&quot;</span>
 <span class="nv">$DATA</span>   <span class="p">=</span> <span class="s2">&quot;C:\data\bank_statements&quot;</span>
 
 <span class="c"># Parameters</span>
 <span class="nv">$TYPE</span> <span class="p">=</span> <span class="s2">&quot;bb-cc&quot;</span>
 <span class="nv">$YEAR</span> <span class="p">=</span> <span class="n">2024</span>
 
-<span class="c"># Activate virtual environment</span>
-<span class="p">&amp;</span> <span class="s2">&quot;$REPO\.venv\Scripts\Activate.ps1&quot;</span>
-
 <span class="c"># Run script</span>
 <span class="n">python</span> <span class="nv">$SCRIPT</span> <span class="p">`</span>
     <span class="p">-</span><span class="n">-folder</span> <span class="nv">$DATA</span> <span class="p">`</span>
     <span class="p">-</span><span class="n">-type</span> <span class="nv">$TYPE</span> <span class="p">`</span>
     <span class="p">-</span><span class="n">-year</span> <span class="nv">$YEAR</span>
-
-<span class="c"># Deactivate virtual environment</span>
-<span class="n">deactivate</span>
 </pre></div>
 </div>
 </div>
 </details><details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3" open="open">
 <summary class="sd-summary-title sd-card-header">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-code-square" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25Zm7.47 3.97a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L10.69 8 9.22 6.53a.75.75 0 0 1 0-1.06ZM6.78 6.53 5.31 8l1.47 1.47a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215l-2-2a.75.75 0 0 1 0-1.06l2-2a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"></path></svg></span><span class="sd-summary-text">Minimal shell example (Linux)</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
-<p class="sd-card-text">Save as <code class="docutils literal notranslate"><span class="pre">run_parse.sh</span></code> and execute from a terminal.</p>
+<p class="sd-card-text">Save as <code class="docutils literal notranslate"><span class="pre">run_cashflow.sh</span></code> and execute from a terminal.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
 
 <span class="c1"># ! Warning -- change paths and parameters</span>
 
 <span class="c1"># Paths</span>
 <span class="nv">REPO</span><span class="o">=</span><span class="s2">&quot;/path/to/repo&quot;</span>
-<span class="nv">SCRIPT</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$REPO</span><span class="s2">/babilonia/utils/parse_bb.py&quot;</span>
+<span class="nv">SCRIPT</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$REPO</span><span class="s2">/babilonia/tools/cashflow.py&quot;</span>
 <span class="nv">DATA</span><span class="o">=</span><span class="s2">&quot;/data/bank_statements&quot;</span>
 
 <span class="c1"># Parameters</span>
 <span class="nv">TYPE</span><span class="o">=</span><span class="s2">&quot;bb-cc&quot;</span>
 <span class="nv">YEAR</span><span class="o">=</span><span class="m">2024</span>
 
-<span class="c1"># Activate virtual environment</span>
-<span class="nb">source</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REPO</span><span class="s2">/.venv/bin/activate&quot;</span>
-
 <span class="c1"># Run script</span>
-python<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SCRIPT</span><span class="s2">&quot;</span><span class="w">             </span>--folder<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DATA</span><span class="s2">&quot;</span><span class="w">             </span>--type<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TYPE</span><span class="s2">&quot;</span><span class="w">             </span>--year<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$YEAR</span><span class="s2">&quot;</span>
-
-<span class="c1"># Deactivate virtual environment</span>
-deactivate
+python<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SCRIPT</span><span class="s2">&quot;</span><span class="w"> </span>--folder<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DATA</span><span class="s2">&quot;</span><span class="w"> </span>--type<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TYPE</span><span class="s2">&quot;</span><span class="w"> </span>--year<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$YEAR</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -485,42 +486,54 @@ deactivate
 <section id="expected-folder-structure">
 <h2>Expected Folder Structure<a class="headerlink" href="#expected-folder-structure" title="Link to this heading">#</a></h2>
 <p>The input data is expected to follow a simple hierarchical layout:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>bank_statements/
-└── bb-cc/                     # Bank account (type)
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>bb/                                 # Bank
+└── cc/                             # Bank account
     ├── 2022/
-    │   ├── EXTRATO_BB_CC_001_T0.csv
-    │   └── EXTRATO_BB_CC_002_T0.csv
+    │   ├── EXTRATO_BB_CC_2022-01_T1.csv
+    │   └── EXTRATO_BB_CC_2022-02_T1.csv
     ├── 2023/
-    │   └── EXTRATO_BB_CC_001_T0.csv
+    │   └── EXTRATO_BB_CC_2023-01_T1.csv
     └── 2024/
-        ├── EXTRATO_BB_CC_001_T0.csv
-        └── EXTRATO_BB_CC_002_T0.csv
+        ├── EXTRATO_BB_CC_2024-01_T1.csv
+        └── EXTRATO_BB_CC_2024-02_T1.csv
 </pre></div>
 </div>
-<p>Each <code class="docutils literal notranslate"><span class="pre">*_T0.csv</span></code> file represents a raw (Tier 0) bank statement.</p>
-<p>During execution, the script generates standardized Tier 1 outputs
-alongside the original files:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>bb-cc/
-└── 2024/
-    ├── EXTRATO_BB_CC_001_T0.csv   # original
-    └── EXTRATO_BB_CC_001_T1.csv   # standardized (canonical)
+<p>Each <code class="docutils literal notranslate"><span class="pre">*_T1.csv</span></code> file represents a canonical (Tier 1) standardized
+bank statement.</p>
+<p>During execution, the script generates consolidated and aggregated
+outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>bb/                                 # Bank
+└── cc/                             # Bank account
+    └── 2024/
+        ├── CAIXA_BB_CC_2024_DIARIO.csv
+        ├── CAIXA_BB_CC_2024_MENSAL.csv
+        └── CAIXA_BB_CC_2024_ANUAL.csv
+</pre></div>
+</div>
+<p>Global merged outputs (all years):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>bb/                                 # Bank
+└── cc/                             # Bank account
+    ├── CAIXA_BB_CC_O_DIARIO.csv
+    ├── CAIXA_BB_CC_O_MENSAL.csv
+    └── CAIXA_BB_CC_O_ANUAL.csv
 </pre></div>
 </div>
 </section>
 <section id="data-levels">
 <h2>Data Levels<a class="headerlink" href="#data-levels" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><strong>Tier 0 (T0)</strong>: Raw statement files as exported by the bank.
-Column names, formats, and ordering may vary.</p></li>
-<li><p><strong>Tier 1 (T1)</strong>: Canonical, standardized CSV files produced by this
-script, suitable for downstream analysis and aggregation.</p></li>
+<li><p><strong>Tier 1 (T1)</strong>: Canonical, standardized statement files produced by
+the parsing stage.</p></li>
+<li><p><strong>Daily</strong>: Concatenated transaction-level data.</p></li>
+<li><p><strong>Monthly</strong>: Aggregated per month with cumulative fields.</p></li>
+<li><p><strong>Annual</strong>: Aggregated per year with cumulative fields.</p></li>
 </ul>
-<p>The original Tier 0 files are never modified; Tier 1 files are written
-only when they do not already exist.</p>
+<p>The script does not modify input files; all outputs are written as new
+CSV files.</p>
 <p class="rubric">Functions</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.utils.parse.main" title="babilonia.utils.parse.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.cashflow.main" title="babilonia.tools.cashflow.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -528,8 +541,8 @@ only when they do not already exist.</p>
 </div>
 </section>
 <dl class="py function">
-<dt class="sig sig-object py" id="babilonia.utils.parse.main">
-<span class="sig-prename descclassname"><span class="pre">babilonia.utils.parse.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/utils/parse.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.utils.parse.main" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="babilonia.tools.cashflow.main">
+<span class="sig-prename descclassname"><span class="pre">babilonia.tools.cashflow.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/tools/cashflow.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.tools.cashflow.main" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </section>
@@ -545,20 +558,20 @@ only when they do not already exist.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="babilonia.utils.core.html"
+       href="babilonia.tools.parse.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">babilonia.utils.core</p>
+        <p class="prev-next-title">babilonia.tools.parse</p>
       </div>
     </a>
     <a class="right-next"
-       href="babilonia.utils.cashflow.html"
+       href="babilonia.tools.report.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">babilonia.utils.cashflow</p>
+        <p class="prev-next-title">babilonia.tools.report</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -581,10 +594,10 @@ only when they do not already exist.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scripts-examples">Scripts Examples</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#script-examples">Script Examples</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#expected-folder-structure">Expected Folder Structure</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-levels">Data Levels</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.utils.parse.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.cashflow.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
 </ul>
   </nav></div>
 
@@ -592,7 +605,7 @@ only when they do not already exist.</p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/generated/babilonia.utils.parse.rst.txt"
+      <li><a href="../_sources/generated/babilonia.tools.cashflow.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div></div>

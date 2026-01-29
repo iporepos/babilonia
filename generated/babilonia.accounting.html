@@ -50,7 +50,7 @@
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="babilonia.utils.core" href="babilonia.utils.core.html" />
+    <link rel="next" title="babilonia.tools.core" href="babilonia.tools.core.html" />
     <link rel="prev" title="babilonia.root" href="babilonia.root.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -344,13 +344,16 @@
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">babilonia.accounting</a></li>
 </ul>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="babilonia.utils.core.html">babilonia.utils.core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="babilonia.tools.core.html">babilonia.tools.core</a></li>
 </ul>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="babilonia.utils.parse.html">babilonia.utils.parse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="babilonia.tools.parse.html">babilonia.tools.parse</a></li>
 </ul>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="babilonia.utils.cashflow.html">babilonia.utils.cashflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="babilonia.tools.cashflow.html">babilonia.tools.cashflow</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="babilonia.tools.report.html">babilonia.tools.report</a></li>
 </ul>
 </div>
 </nav></div>
@@ -443,25 +446,28 @@ todo docstring</p>
 <p class="rubric">Classes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.accounting.Budget" title="babilonia.accounting.Budget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Budget</span></code></a>([name, alias])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.accounting.BBCDB" title="babilonia.accounting.BBCDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BBCDB</span></code></a>([name, alias])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.accounting.CashFlow" title="babilonia.accounting.CashFlow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CashFlow</span></code></a>([name, alias])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.accounting.Budget" title="babilonia.accounting.Budget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Budget</span></code></a>([name, alias])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.accounting.CashFlow" title="babilonia.accounting.CashFlow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CashFlow</span></code></a>([name, alias])</p></td>
 <td><p>A primitive class for handling Cash flow analysis</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.accounting.CashFlowBBCC" title="babilonia.accounting.CashFlowBBCC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CashFlowBBCC</span></code></a>([name, alias])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.accounting.CashFlowBBCC" title="babilonia.accounting.CashFlowBBCC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CashFlowBBCC</span></code></a>([name, alias])</p></td>
 <td><p>A class for handling CSV data from Banco do Brasil Conta Corrente.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.accounting.CashFlowBBCCPJ" title="babilonia.accounting.CashFlowBBCCPJ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CashFlowBBCCPJ</span></code></a>([name, alias])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.accounting.CashFlowBBCCPJ" title="babilonia.accounting.CashFlowBBCCPJ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CashFlowBBCCPJ</span></code></a>([name, alias])</p></td>
 <td><p>Class for handling BB-CC for PJ accoung CSV data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.accounting.CashFlowBBPP" title="babilonia.accounting.CashFlowBBPP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CashFlowBBPP</span></code></a>([name, alias])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.accounting.CashFlowBBPP" title="babilonia.accounting.CashFlowBBPP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CashFlowBBPP</span></code></a>([name, alias])</p></td>
 <td><p>Class for handling BB-PP CSV data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.accounting.NFSe" title="babilonia.accounting.NFSe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NFSe</span></code></a>([name, alias])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.accounting.NFSe" title="babilonia.accounting.NFSe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NFSe</span></code></a>([name, alias])</p></td>
 <td><p>Class for handling NFSe XML data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.accounting.NFSeColl" title="babilonia.accounting.NFSeColl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NFSeColl</span></code></a>([base_object, name, alias])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.accounting.NFSeColl" title="babilonia.accounting.NFSeColl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NFSeColl</span></code></a>([base_object, name, alias])</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -563,8 +569,8 @@ Expected to be incremented downstream.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="babilonia.accounting.CashFlow.cashflow_analysis">
-<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cashflow_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.cashflow_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.cashflow_analysis" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="babilonia.accounting.CashFlow.get_cashflow_analysis">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get_cashflow_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.get_cashflow_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.get_cashflow_analysis" title="Link to this definition">#</a></dt>
 <dd><p>Perform cash flow analysis with monthly and yearly aggregation.</p>
 <p>This method classifies cash flows into inputs and outputs, aggregates
 values on a monthly and yearly basis, and computes cumulative balances.
@@ -654,8 +660,8 @@ default category <code class="docutils literal notranslate"><span class="pre">&q
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="babilonia.accounting.CashFlow.monthly_summary">
-<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">monthly_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.monthly_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.monthly_summary" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="babilonia.accounting.CashFlow.get_monthly_summary">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get_monthly_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.get_monthly_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.get_monthly_summary" title="Link to this definition">#</a></dt>
 <dd><p>Compute monthly cash flow summaries for each year.</p>
 <p>This method aggregates cash flow inputs and outputs on a monthly basis,
 ensures that all calendar months are present, and computes annual
@@ -677,8 +683,8 @@ cumulative balances.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="babilonia.accounting.CashFlow.yearly_summary">
-<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">yearly_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_monthly</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.yearly_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.yearly_summary" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="babilonia.accounting.CashFlow.get_yearly_summary">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get_yearly_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_monthly</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.get_yearly_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.get_yearly_summary" title="Link to this definition">#</a></dt>
 <dd><p>Compute yearly cash flow summaries.</p>
 <p>This method aggregates monthly cash flow data into yearly totals and
 computes cumulative balances across years.</p>
@@ -1045,6 +1051,58 @@ percentage contribution to total inflows.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="babilonia.accounting.BBCDB">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">babilonia.accounting.</span></span><span class="sig-name descname"><span class="pre">BBCDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BBCDB'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BBCDB'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#BBCDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.BBCDB" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="babilonia.root.html#babilonia.root.DataSet" title="babilonia.root.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="babilonia.accounting.BBCDB.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#BBCDB.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.BBCDB.load_data" title="Link to this definition">#</a></dt>
+<dd><p>Load data from file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_data</strong> (<em>str</em>) – file path to data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="babilonia.accounting.BBCDB.read_txt">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">read_txt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_txt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cp1252'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#BBCDB.read_txt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.BBCDB.read_txt" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="babilonia.accounting.BBCDB.drop_blank_lines">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">drop_blank_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#BBCDB.drop_blank_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.BBCDB.drop_blank_lines" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="babilonia.accounting.BBCDB.drop_lines">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">drop_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contains</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#BBCDB.drop_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.BBCDB.drop_lines" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="babilonia.accounting.BBCDB.replace_lines">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">replace_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contains</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\xa0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relacer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span> <span class="pre">'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#BBCDB.replace_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.BBCDB.replace_lines" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="babilonia.accounting.BBCDB.split_accounts">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">split_accounts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#BBCDB.split_accounts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.BBCDB.split_accounts" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="babilonia.accounting.BBCDB.split_sections">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">split_sections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dc_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#BBCDB.split_sections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.BBCDB.split_sections" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="babilonia.accounting.BBCDB.get_year">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get_year</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#BBCDB.get_year"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.BBCDB.get_year" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="babilonia.accounting.NFSe">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">babilonia.accounting.</span></span><span class="sig-name descname"><span class="pre">NFSe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NFSeDataSet'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NFSe'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#NFSe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.NFSe" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="babilonia.root.html#babilonia.root.DataSet" title="babilonia.root.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a></p>
@@ -1145,11 +1203,11 @@ percentage contribution to total inflows.</p>
       </div>
     </a>
     <a class="right-next"
-       href="babilonia.utils.core.html"
+       href="babilonia.tools.core.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">babilonia.utils.core</p>
+        <p class="prev-next-title">babilonia.tools.core</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1187,13 +1245,13 @@ percentage contribution to total inflows.</p>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow"><code class="docutils literal notranslate"><span class="pre">CashFlow</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.load_data"><code class="docutils literal notranslate"><span class="pre">CashFlow.load_data()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.cashflow_analysis"><code class="docutils literal notranslate"><span class="pre">CashFlow.cashflow_analysis()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.get_cashflow_analysis"><code class="docutils literal notranslate"><span class="pre">CashFlow.get_cashflow_analysis()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.compute_oir"><code class="docutils literal notranslate"><span class="pre">CashFlow.compute_oir()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.enrich_time_index"><code class="docutils literal notranslate"><span class="pre">CashFlow.enrich_time_index()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.classify_flows"><code class="docutils literal notranslate"><span class="pre">CashFlow.classify_flows()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.filter_category"><code class="docutils literal notranslate"><span class="pre">CashFlow.filter_category()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.monthly_summary"><code class="docutils literal notranslate"><span class="pre">CashFlow.monthly_summary()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.yearly_summary"><code class="docutils literal notranslate"><span class="pre">CashFlow.yearly_summary()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.get_monthly_summary"><code class="docutils literal notranslate"><span class="pre">CashFlow.get_monthly_summary()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.get_yearly_summary"><code class="docutils literal notranslate"><span class="pre">CashFlow.get_yearly_summary()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.get_cashflow_report"><code class="docutils literal notranslate"><span class="pre">CashFlow.get_cashflow_report()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.format_currency"><code class="docutils literal notranslate"><span class="pre">CashFlow.format_currency()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.format_currency_columns"><code class="docutils literal notranslate"><span class="pre">CashFlow.format_currency_columns()</span></code></a></li>
@@ -1218,6 +1276,17 @@ percentage contribution to total inflows.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlowBBPP.parse_data"><code class="docutils literal notranslate"><span class="pre">CashFlowBBPP.parse_data()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlowBBPP.parse_valor"><code class="docutils literal notranslate"><span class="pre">CashFlowBBPP.parse_valor()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlowBBPP.apply_drops"><code class="docutils literal notranslate"><span class="pre">CashFlowBBPP.apply_drops()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.BBCDB"><code class="docutils literal notranslate"><span class="pre">BBCDB</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.BBCDB.load_data"><code class="docutils literal notranslate"><span class="pre">BBCDB.load_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.BBCDB.read_txt"><code class="docutils literal notranslate"><span class="pre">BBCDB.read_txt()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.BBCDB.drop_blank_lines"><code class="docutils literal notranslate"><span class="pre">BBCDB.drop_blank_lines()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.BBCDB.drop_lines"><code class="docutils literal notranslate"><span class="pre">BBCDB.drop_lines()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.BBCDB.replace_lines"><code class="docutils literal notranslate"><span class="pre">BBCDB.replace_lines()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.BBCDB.split_accounts"><code class="docutils literal notranslate"><span class="pre">BBCDB.split_accounts()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.BBCDB.split_sections"><code class="docutils literal notranslate"><span class="pre">BBCDB.split_sections()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.BBCDB.get_year"><code class="docutils literal notranslate"><span class="pre">BBCDB.get_year()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.NFSe"><code class="docutils literal notranslate"><span class="pre">NFSe</span></code></a><ul class="nav section-nav flex-column">

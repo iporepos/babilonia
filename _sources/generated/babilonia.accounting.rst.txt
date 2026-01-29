@@ -8,6 +8,7 @@
 
    .. autosummary::
    
+      BBCDB
       Budget
       CashFlow
       CashFlowBBCC

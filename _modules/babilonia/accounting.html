@@ -787,10 +787,10 @@
 
         <span class="c1"># ... continues in downstream objects ... #</span>
 
-<div class="viewcode-block" id="CashFlow.cashflow_analysis">
-<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.cashflow_analysis">[docs]</a>
+<div class="viewcode-block" id="CashFlow.get_cashflow_analysis">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.get_cashflow_analysis">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">cashflow_analysis</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_cashflow_analysis</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform cash flow analysis with monthly and yearly aggregation.</span>
 
@@ -817,10 +817,10 @@
         <span class="n">df</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">classify_flows</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
         <span class="n">df</span><span class="p">,</span> <span class="n">category</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">filter_category</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
 
-        <span class="n">df_monthly</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">monthly_summary</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+        <span class="n">df_monthly</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">get_monthly_summary</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
         <span class="n">df_monthly</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">compute_oir</span><span class="p">(</span><span class="n">df_monthly</span><span class="p">)</span>
 
-        <span class="n">df_yearly</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">yearly_summary</span><span class="p">(</span><span class="n">df_monthly</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+        <span class="n">df_yearly</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">get_yearly_summary</span><span class="p">(</span><span class="n">df_monthly</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
         <span class="n">df_yearly</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">compute_oir</span><span class="p">(</span><span class="n">df_yearly</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">{</span>
@@ -913,10 +913,10 @@
         <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;Categoria == @category&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">category</span></div>
 
 
-<div class="viewcode-block" id="CashFlow.monthly_summary">
-<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.monthly_summary">[docs]</a>
+<div class="viewcode-block" id="CashFlow.get_monthly_summary">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.get_monthly_summary">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">monthly_summary</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_monthly_summary</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute monthly cash flow summaries for each year.</span>
 
@@ -985,10 +985,10 @@
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">monthly_frames</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="CashFlow.yearly_summary">
-<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.yearly_summary">[docs]</a>
+<div class="viewcode-block" id="CashFlow.get_yearly_summary">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.get_yearly_summary">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">yearly_summary</span><span class="p">(</span><span class="n">df_monthly</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_yearly_summary</span><span class="p">(</span><span class="n">df_monthly</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute yearly cash flow summaries.</span>
 
@@ -1109,14 +1109,14 @@
         <span class="c1"># ------------------------------------------------------------------</span>
         <span class="c1"># Base monthly panel (all categories aggregated)</span>
         <span class="c1"># ------------------------------------------------------------------</span>
-        <span class="n">dc_cfa</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">cashflow_analysis</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">dc_cfa</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">get_cashflow_analysis</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">df_cfa</span> <span class="o">=</span> <span class="n">dc_cfa</span><span class="p">[</span><span class="s2">&quot;monthly&quot;</span><span class="p">][[</span><span class="s2">&quot;Ano&quot;</span><span class="p">,</span> <span class="s2">&quot;Mes&quot;</span><span class="p">,</span> <span class="s2">&quot;Fluxo&quot;</span><span class="p">,</span> <span class="s2">&quot;Entradas&quot;</span><span class="p">,</span> <span class="s2">&quot;Saidas&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="c1"># ------------------------------------------------------------------</span>
         <span class="c1"># Add inflow categories (monthly)</span>
         <span class="c1"># ------------------------------------------------------------------</span>
         <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">ls_categories_inp</span><span class="p">:</span>
-            <span class="n">dc_cat</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">cashflow_analysis</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">cat</span><span class="p">)</span>
+            <span class="n">dc_cat</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">get_cashflow_analysis</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">cat</span><span class="p">)</span>
             <span class="n">df_cat</span> <span class="o">=</span> <span class="n">dc_cat</span><span class="p">[</span><span class="s2">&quot;monthly&quot;</span><span class="p">][[</span><span class="s2">&quot;Mes&quot;</span><span class="p">,</span> <span class="s2">&quot;Entradas&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">df_cat</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Entradas&quot;</span><span class="p">:</span> <span class="n">cat</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -1126,7 +1126,7 @@
         <span class="c1"># Add outflow categories (monthly)</span>
         <span class="c1"># ------------------------------------------------------------------</span>
         <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">ls_categories_out</span><span class="p">:</span>
-            <span class="n">dc_cat</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">cashflow_analysis</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">cat</span><span class="p">)</span>
+            <span class="n">dc_cat</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">get_cashflow_analysis</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">cat</span><span class="p">)</span>
             <span class="n">df_cat</span> <span class="o">=</span> <span class="n">dc_cat</span><span class="p">[</span><span class="s2">&quot;monthly&quot;</span><span class="p">][[</span><span class="s2">&quot;Mes&quot;</span><span class="p">,</span> <span class="s2">&quot;Saidas&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">df_cat</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Saidas&quot;</span><span class="p">:</span> <span class="n">cat</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -1205,7 +1205,9 @@
 <div class="viewcode-block" id="CashFlow.format_currency">
 <a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.format_currency">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">format_currency</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_currency</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="c1"># todo docstring</span>
 
         <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -1672,6 +1674,337 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_drops</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="n">df</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="BBCDB">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.BBCDB">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BBCDB</span><span class="p">(</span><span class="n">DataSet</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;BBCDB&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;BBCDB&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BBCDB.load_data">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.BBCDB.load_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_data</span><span class="p">):</span>
+        <span class="c1"># todo docstring</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
+
+        <span class="c1"># ------------------------------------------------------------------</span>
+        <span class="c1"># Internal helpers (local on purpose: used only in this workflow)</span>
+        <span class="c1"># ------------------------------------------------------------------</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_to_float_br</span><span class="p">(</span><span class="n">series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Convert Brazilian-formatted numeric strings to float.&quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="n">series</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># thousands separator</span>
+                <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># decimal separator</span>
+                <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_parse_date</span><span class="p">(</span><span class="n">series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Parse date strings using a fixed datetime format.&quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_parse_day_month_with_year</span><span class="p">(</span><span class="n">series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">year</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Append year to DD/MM dates and parse.&quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">series</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">)</span>
+
+        <span class="c1"># ------------------------------------------------------------------</span>
+        <span class="c1"># 1. Raw text ingestion and cleaning</span>
+        <span class="c1"># ------------------------------------------------------------------</span>
+
+        <span class="n">ls_data</span> <span class="o">=</span> <span class="n">BBCDB</span><span class="o">.</span><span class="n">read_txt</span><span class="p">(</span><span class="n">file_data</span><span class="p">)</span>
+        <span class="n">year_data</span> <span class="o">=</span> <span class="n">BBCDB</span><span class="o">.</span><span class="n">get_year</span><span class="p">(</span><span class="n">ls_data</span><span class="p">)</span>
+
+        <span class="c1"># Drop structural noise and normalize line content</span>
+        <span class="n">ls_data</span> <span class="o">=</span> <span class="n">BBCDB</span><span class="o">.</span><span class="n">drop_lines</span><span class="p">(</span><span class="n">ls_data</span><span class="p">,</span> <span class="n">contains</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+        <span class="n">ls_data</span> <span class="o">=</span> <span class="n">BBCDB</span><span class="o">.</span><span class="n">drop_lines</span><span class="p">(</span><span class="n">ls_data</span><span class="p">,</span> <span class="n">contains</span><span class="o">=</span><span class="s2">&quot;==&quot;</span><span class="p">)</span>
+        <span class="n">ls_data</span> <span class="o">=</span> <span class="n">BBCDB</span><span class="o">.</span><span class="n">drop_blank_lines</span><span class="p">(</span><span class="n">ls_data</span><span class="p">)</span>
+
+        <span class="c1"># Canonical line replacements</span>
+        <span class="n">ls_data</span> <span class="o">=</span> <span class="n">BBCDB</span><span class="o">.</span><span class="n">replace_lines</span><span class="p">(</span><span class="n">ls_data</span><span class="p">)</span>
+        <span class="n">ls_data</span> <span class="o">=</span> <span class="n">BBCDB</span><span class="o">.</span><span class="n">replace_lines</span><span class="p">(</span><span class="n">ls_data</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># ------------------------------------------------------------------</span>
+        <span class="c1"># 2. Structural splitting (accounts → sections)</span>
+        <span class="c1"># ------------------------------------------------------------------</span>
+
+        <span class="n">dc_accounts</span> <span class="o">=</span> <span class="n">BBCDB</span><span class="o">.</span><span class="n">split_accounts</span><span class="p">(</span><span class="n">ls_data</span><span class="p">)</span>
+        <span class="n">dc_sections</span> <span class="o">=</span> <span class="n">BBCDB</span><span class="o">.</span><span class="n">split_sections</span><span class="p">(</span><span class="n">dc_data</span><span class="o">=</span><span class="n">dc_accounts</span><span class="p">)</span>
+
+        <span class="c1"># ------------------------------------------------------------------</span>
+        <span class="c1"># 3. Section-specific parsing and normalization</span>
+        <span class="c1"># ------------------------------------------------------------------</span>
+
+        <span class="n">dc_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">account</span><span class="p">,</span> <span class="n">sections</span> <span class="ow">in</span> <span class="n">dc_sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">dc_account_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="k">for</span> <span class="n">section</span><span class="p">,</span> <span class="n">lines</span> <span class="ow">in</span> <span class="n">sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(</span><span class="n">text</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_csv_sep</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+
+                <span class="c1"># -----------------------------</span>
+                <span class="c1"># Section-specific normalization</span>
+                <span class="c1"># -----------------------------</span>
+
+                <span class="k">if</span> <span class="n">section</span> <span class="o">==</span> <span class="s2">&quot;EXTRATO&quot;</span><span class="p">:</span>
+                    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_parse_day_month_with_year</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">],</span> <span class="n">year_data</span><span class="p">)</span>
+                    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Valor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_to_float_br</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Valor&quot;</span><span class="p">])</span>
+                    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Historico&quot;</span><span class="p">:</span> <span class="s2">&quot;Categoria&quot;</span><span class="p">})</span>
+                    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Descricao&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;Data&quot;</span><span class="p">,</span> <span class="s2">&quot;Valor&quot;</span><span class="p">,</span> <span class="s2">&quot;Categoria&quot;</span><span class="p">,</span> <span class="s2">&quot;Descricao&quot;</span><span class="p">]]</span>
+
+                <span class="k">elif</span> <span class="n">section</span> <span class="o">==</span> <span class="s2">&quot;RENDIMENTOS&quot;</span><span class="p">:</span>
+                    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_parse_day_month_with_year</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">],</span> <span class="n">year_data</span><span class="p">)</span>
+                    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Rendimento_Bruto&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_to_float_br</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Rendimento_Bruto&quot;</span><span class="p">])</span>
+
+                <span class="k">elif</span> <span class="n">section</span> <span class="o">==</span> <span class="s2">&quot;SALDOS&quot;</span><span class="p">:</span>
+                    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_parse_date</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">],</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span>
+                        <span class="s2">&quot;Capital_Inicial&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;Juros&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;IR_Projetado&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;Capital_Projetado&quot;</span><span class="p">,</span>
+                    <span class="p">]:</span>
+                        <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">_to_float_br</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+
+                <span class="k">elif</span> <span class="n">section</span> <span class="o">==</span> <span class="s2">&quot;DEPOSITOS&quot;</span><span class="p">:</span>
+                    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Data_Aplicacao&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_parse_date</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Data_Aplicacao&quot;</span><span class="p">],</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">)</span>
+                    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Data_Vencimento&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_parse_date</span><span class="p">(</span>
+                        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Data_Vencimento&quot;</span><span class="p">],</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Capital&quot;</span><span class="p">,</span> <span class="s2">&quot;Saldo&quot;</span><span class="p">,</span> <span class="s2">&quot;Taxa&quot;</span><span class="p">]:</span>
+                        <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">_to_float_br</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+
+                <span class="n">dc_account_data</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span>
+
+            <span class="n">dc_data</span><span class="p">[</span><span class="n">account</span><span class="p">]</span> <span class="o">=</span> <span class="n">dc_account_data</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dc_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="BBCDB.read_txt">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.BBCDB.read_txt">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_txt</span><span class="p">(</span><span class="n">file_txt</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;cp1252&quot;</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_txt</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+        <span class="n">ls</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">ls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[:])</span>
+
+        <span class="k">return</span> <span class="n">ls</span></div>
+
+
+<div class="viewcode-block" id="BBCDB.drop_blank_lines">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.BBCDB.drop_blank_lines">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">drop_blank_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span></div>
+
+
+<div class="viewcode-block" id="BBCDB.drop_lines">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.BBCDB.drop_lines">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">drop_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">contains</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span> <span class="n">contains</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">line</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="BBCDB.replace_lines">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.BBCDB.replace_lines">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">replace_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">contains</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\xa0</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">relacer</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">contains</span><span class="p">,</span> <span class="n">relacer</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="BBCDB.split_accounts">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.BBCDB.split_accounts">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">split_accounts</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+        <span class="c1"># Mapping of account headers to their terminating marker.</span>
+        <span class="c1"># If the value is None, collection continues until end of file.</span>
+        <span class="n">dc_accounts</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;BB CDB DI&quot;</span><span class="p">:</span> <span class="s2">&quot;BB CDB PROGRESSIVO&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;BB CDB PROGRESSIVO&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">dc_accounts_names</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;BB CDB DI&quot;</span><span class="p">:</span> <span class="s2">&quot;CDBDI&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;BB CDB PROGRESSIVO&quot;</span><span class="p">:</span> <span class="s2">&quot;CDBPG&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">ls_accounts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dc_accounts</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+        <span class="n">b_collect</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Indicates whether lines are currently being collected</span>
+        <span class="n">dc_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">ls_accounts</span><span class="p">:</span>
+            <span class="n">ls_data</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="c1"># Scan the full file line-by-line, collecting the block for this account</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[:]:</span>
+
+                <span class="c1"># Start collecting when the account header is found</span>
+                <span class="k">if</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="n">b_collect</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="c1"># Stop collecting when the next account header is found (if defined)</span>
+                <span class="k">if</span> <span class="n">dc_accounts</span><span class="p">[</span><span class="n">account</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dc_accounts</span><span class="p">[</span><span class="n">account</span><span class="p">]</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="n">b_collect</span> <span class="o">=</span> <span class="kc">False</span>
+
+                <span class="c1"># Collect only lines within the active account block</span>
+                <span class="k">if</span> <span class="n">b_collect</span><span class="p">:</span>
+                    <span class="n">ls_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+            <span class="c1"># Store a copy of the collected block for this account</span>
+            <span class="n">dc_data</span><span class="p">[</span><span class="n">dc_accounts_names</span><span class="p">[</span><span class="n">account</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ls_data</span><span class="p">[:]</span>
+
+        <span class="k">return</span> <span class="n">dc_data</span></div>
+
+
+<div class="viewcode-block" id="BBCDB.split_sections">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.BBCDB.split_sections">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">split_sections</span><span class="p">(</span><span class="n">dc_data</span><span class="p">):</span>
+        <span class="n">sections</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">section_titles</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;EXTRATO&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;START&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;END&quot;</span><span class="p">:</span> <span class="s2">&quot;SALDO NOS ULTIMOS 6 MESES&quot;</span><span class="p">},</span>
+            <span class="s2">&quot;SALDOS&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;START&quot;</span><span class="p">:</span> <span class="s2">&quot;SALDO NOS ULTIMOS 6 MESES&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;END&quot;</span><span class="p">:</span> <span class="s2">&quot;RESUMO DOS DEPOSITOS EM SER&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;DEPOSITOS&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;START&quot;</span><span class="p">:</span> <span class="s2">&quot;RESUMO DOS DEPOSITOS EM SER&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;END&quot;</span><span class="p">:</span> <span class="s2">&quot;RENDIMENTO BRUTO NO PERIODO POR DEPOSITO&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;RENDIMENTOS&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;START&quot;</span><span class="p">:</span> <span class="s2">&quot;RENDIMENTO BRUTO NO PERIODO POR DEPOSITO&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;END&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+
+        <span class="c1"># ------------------------------------------------------------------</span>
+        <span class="c1"># Internal helpers</span>
+        <span class="c1"># ------------------------------------------------------------------</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_collect_block</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Collect lines between start and end markers (inclusive start).&quot;&quot;&quot;</span>
+            <span class="n">collected</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">b_collect</span> <span class="o">=</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span>
+
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">start</span> <span class="ow">and</span> <span class="n">start</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="n">b_collect</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">if</span> <span class="n">end</span> <span class="ow">and</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+                <span class="k">if</span> <span class="n">b_collect</span><span class="p">:</span>
+                    <span class="n">collected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[:])</span>
+
+            <span class="k">return</span> <span class="n">collected</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Collapse whitespace and convert to semicolon-separated format.&quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span> <span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_rewrite_header_and_trim</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">header</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Replace header row and drop section title line.&quot;&quot;&quot;</span>
+            <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">header</span>
+            <span class="k">return</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="c1"># ------------------------------------------------------------------</span>
+        <span class="c1"># Main logic</span>
+        <span class="c1"># ------------------------------------------------------------------</span>
+
+        <span class="n">dc_data_out</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">account</span><span class="p">,</span> <span class="n">lines</span> <span class="ow">in</span> <span class="n">dc_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">dc_account_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="k">for</span> <span class="n">title</span><span class="p">,</span> <span class="n">markers</span> <span class="ow">in</span> <span class="n">section_titles</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">ls_data</span> <span class="o">=</span> <span class="n">_collect_block</span><span class="p">(</span>
+                    <span class="n">lines</span><span class="p">,</span>
+                    <span class="n">start</span><span class="o">=</span><span class="n">markers</span><span class="p">[</span><span class="s2">&quot;START&quot;</span><span class="p">],</span>
+                    <span class="n">end</span><span class="o">=</span><span class="n">markers</span><span class="p">[</span><span class="s2">&quot;END&quot;</span><span class="p">],</span>
+                <span class="p">)</span>
+
+                <span class="c1"># -----------------------------</span>
+                <span class="c1"># Section-specific reshaping</span>
+                <span class="c1"># -----------------------------</span>
+
+                <span class="k">if</span> <span class="n">title</span> <span class="o">==</span> <span class="s2">&quot;EXTRATO&quot;</span><span class="p">:</span>
+                    <span class="c1"># Remove non-tabular summary lines</span>
+                    <span class="n">ls_data</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">line</span>
+                        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">ls_data</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
+                            <span class="n">s</span> <span class="ow">in</span> <span class="n">line</span>
+                            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;Saldo anterior&quot;</span><span class="p">,</span> <span class="s2">&quot;capital&quot;</span><span class="p">,</span> <span class="s2">&quot;Saldo final&quot;</span><span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="p">]</span>
+
+                    <span class="n">ls_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Data;Historico;Deposito;Valor&quot;</span>
+
+                    <span class="c1"># Merge paired rows into single logical records</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ls_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+                        <span class="n">merged</span> <span class="o">=</span> <span class="n">ls_data</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+                        <span class="n">body</span> <span class="o">=</span> <span class="n">ls_data</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+
+                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">body</span><span class="p">),</span> <span class="mi">2</span><span class="p">):</span>
+                            <span class="n">line</span> <span class="o">=</span> <span class="n">body</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">body</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                            <span class="n">line</span> <span class="o">=</span> <span class="p">(</span>
+                                <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                                <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;valor juros&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                                <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Rendimento  mensal&quot;</span><span class="p">,</span> <span class="s2">&quot;Juros&quot;</span><span class="p">)</span>
+                            <span class="p">)</span>
+                            <span class="n">merged</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+                        <span class="n">ls_data</span> <span class="o">=</span> <span class="n">merged</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+                <span class="k">elif</span> <span class="n">title</span> <span class="o">==</span> <span class="s2">&quot;SALDOS&quot;</span><span class="p">:</span>
+                    <span class="n">ls_data</span> <span class="o">=</span> <span class="n">_rewrite_header_and_trim</span><span class="p">(</span>
+                        <span class="n">ls_data</span><span class="p">,</span>
+                        <span class="s2">&quot;Data;Capital_Inicial;Juros;IR_Projetado;Capital_Projetado&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">title</span> <span class="o">==</span> <span class="s2">&quot;DEPOSITOS&quot;</span><span class="p">:</span>
+                    <span class="n">ls_data</span> <span class="o">=</span> <span class="n">_rewrite_header_and_trim</span><span class="p">(</span>
+                        <span class="n">ls_data</span><span class="p">,</span>
+                        <span class="s2">&quot;Deposito;Data_Aplicacao;Capital;Saldo;Taxa;Data_Vencimento&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">title</span> <span class="o">==</span> <span class="s2">&quot;RENDIMENTOS&quot;</span><span class="p">:</span>
+                    <span class="n">ls_data</span> <span class="o">=</span> <span class="n">_rewrite_header_and_trim</span><span class="p">(</span>
+                        <span class="n">ls_data</span><span class="p">,</span>
+                        <span class="s2">&quot;Data;Deposito;Rendimento_Bruto&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># Final canonical formatting</span>
+                <span class="n">dc_account_data</span><span class="p">[</span><span class="n">title</span><span class="p">]</span> <span class="o">=</span> <span class="n">_normalize_lines</span><span class="p">(</span><span class="n">ls_data</span><span class="p">)</span>
+
+            <span class="n">dc_data_out</span><span class="p">[</span><span class="n">account</span><span class="p">]</span> <span class="o">=</span> <span class="n">dc_account_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">dc_data_out</span></div>
+
+
+<div class="viewcode-block" id="BBCDB.get_year">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.BBCDB.get_year">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_year</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;Período: &quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">ls1</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+                <span class="n">ls2</span> <span class="o">=</span> <span class="n">ls1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">ls2</span><span class="p">[</span><span class="mi">2</span><span class="p">][:</span><span class="mi">4</span><span class="p">])</span></div>
 </div>
 
 

@@ -1,7 +1,7 @@
-﻿babilonia.utils.parse
+﻿babilonia.tools.parse
 =====================
 
-.. automodule:: babilonia.utils.parse
+.. automodule:: babilonia.tools.parse
 
    
    .. rubric:: Functions

@@ -1,7 +1,7 @@
-﻿babilonia.utils.cashflow
+﻿babilonia.tools.cashflow
 ========================
 
-.. automodule:: babilonia.utils.cashflow
+.. automodule:: babilonia.tools.cashflow
 
    
    .. rubric:: Functions

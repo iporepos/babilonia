@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>babilonia.utils.cashflow &#8212; babilonia 0.0.1 documentation</title>
+    <title>babilonia.tools.cashflow &#8212; babilonia 0.0.1 documentation</title>
   
   
   
@@ -45,7 +45,7 @@
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/babilonia/utils/cashflow';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/babilonia/tools/cashflow';</script>
     <link rel="author" title="About these documents" href="../../../about.html" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -362,7 +362,7 @@
     
     <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">babilonia.utils.cashflow</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">babilonia.tools.cashflow</span></li>
   </ul>
 </nav>
 </div>
@@ -379,16 +379,148 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for babilonia.utils.cashflow</h1><div class="highlight"><pre>
+  <h1>Source code for babilonia.tools.cashflow</h1><div class="highlight"><pre>
 <span></span><span class="c1"># SPDX-License-Identifier: GPL-3.0-or-later</span>
 <span class="c1">#</span>
 <span class="c1"># Copyright (C) 2025 The Project Authors</span>
 <span class="c1"># See pyproject.toml for authors/maintainers.</span>
 <span class="c1"># See LICENSE for license details.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">todo docstring</span>
+<span class="sd">Aggregate and analyze cash flow from standardized bank statements.</span>
 
+<span class="sd">This script scans a target directory for standardized bank statement files</span>
+<span class="sd">(T1 canonical format), groups them by year, concatenates daily records,</span>
+<span class="sd">and produces daily, monthly, and annual cash flow reports using the</span>
+<span class="sd">``CashFlow`` analysis engine.</span>
+
+<span class="sd">For each year found, the script:</span>
+
+<span class="sd">- Loads all matching T1 statement files.</span>
+<span class="sd">- Concatenates and reorders columns into a canonical layout.</span>
+<span class="sd">- Writes a consolidated daily cash flow CSV.</span>
+<span class="sd">- Computes monthly and annual cash flow summaries.</span>
+<span class="sd">- Writes monthly and annual CSV reports.</span>
+<span class="sd">- Displays formatted previews in the terminal.</span>
+
+<span class="sd">After yearly processing, the script merges all yearly outputs into</span>
+<span class="sd">global daily, monthly, and annual datasets for the full system.</span>
+
+<span class="sd">Processing can be restricted to a single year or applied to all available</span>
+<span class="sd">years. Terminal output is structured to facilitate inspection and logging.</span>
+
+<span class="sd">Script Examples</span>
+<span class="sd">---------------</span>
+
+<span class="sd">The script is intended for command-line execution.</span>
+
+<span class="sd">.. dropdown:: Minimal PowerShell example (Windows)</span>
+<span class="sd">    :icon: code-square</span>
+<span class="sd">    :open:</span>
+
+<span class="sd">    Save as ``run_cashflow.ps1`` and execute from PowerShell.</span>
+
+<span class="sd">    .. code-block:: powershell</span>
+
+<span class="sd">        # ! Warning -- change paths and parameters</span>
+
+<span class="sd">        # Paths</span>
+<span class="sd">        $REPO   = &quot;C:\\path\\to\\repo&quot;</span>
+<span class="sd">        $SCRIPT = &quot;$REPO\\babilonia\\tools\\cashflow.py&quot;</span>
+<span class="sd">        $DATA   = &quot;C:\\data\\bank_statements&quot;</span>
+
+<span class="sd">        # Parameters</span>
+<span class="sd">        $TYPE = &quot;bb-cc&quot;</span>
+<span class="sd">        $YEAR = 2024</span>
+
+<span class="sd">        # Run script</span>
+<span class="sd">        python $SCRIPT `</span>
+<span class="sd">            --folder $DATA `</span>
+<span class="sd">            --type $TYPE `</span>
+<span class="sd">            --year $YEAR</span>
+
+
+<span class="sd">.. dropdown:: Minimal shell example (Linux)</span>
+<span class="sd">    :icon: code-square</span>
+<span class="sd">    :open:</span>
+
+<span class="sd">    Save as ``run_cashflow.sh`` and execute from a terminal.</span>
+
+<span class="sd">    .. code-block:: bash</span>
+
+<span class="sd">        #!/usr/bin/env bash</span>
+
+<span class="sd">        # ! Warning -- change paths and parameters</span>
+
+<span class="sd">        # Paths</span>
+<span class="sd">        REPO=&quot;/path/to/repo&quot;</span>
+<span class="sd">        SCRIPT=&quot;$REPO/babilonia/tools/cashflow.py&quot;</span>
+<span class="sd">        DATA=&quot;/data/bank_statements&quot;</span>
+
+<span class="sd">        # Parameters</span>
+<span class="sd">        TYPE=&quot;bb-cc&quot;</span>
+<span class="sd">        YEAR=2024</span>
+
+<span class="sd">        # Run script</span>
+<span class="sd">        python &quot;$SCRIPT&quot; --folder &quot;$DATA&quot; --type &quot;$TYPE&quot; --year &quot;$YEAR&quot;</span>
+
+
+<span class="sd">Expected Folder Structure</span>
+<span class="sd">-------------------------</span>
+
+<span class="sd">The input data is expected to follow a simple hierarchical layout:</span>
+
+<span class="sd">::</span>
+
+<span class="sd">    bb/                                 # Bank</span>
+<span class="sd">    └── cc/                             # Bank account</span>
+<span class="sd">        ├── 2022/</span>
+<span class="sd">        │   ├── EXTRATO_BB_CC_2022-01_T1.csv</span>
+<span class="sd">        │   └── EXTRATO_BB_CC_2022-02_T1.csv</span>
+<span class="sd">        ├── 2023/</span>
+<span class="sd">        │   └── EXTRATO_BB_CC_2023-01_T1.csv</span>
+<span class="sd">        └── 2024/</span>
+<span class="sd">            ├── EXTRATO_BB_CC_2024-01_T1.csv</span>
+<span class="sd">            └── EXTRATO_BB_CC_2024-02_T1.csv</span>
+
+<span class="sd">Each ``*_T1.csv`` file represents a canonical (Tier 1) standardized</span>
+<span class="sd">bank statement.</span>
+
+<span class="sd">During execution, the script generates consolidated and aggregated</span>
+<span class="sd">outputs:</span>
+
+<span class="sd">::</span>
+
+<span class="sd">    bb/                                 # Bank</span>
+<span class="sd">    └── cc/                             # Bank account</span>
+<span class="sd">        └── 2024/</span>
+<span class="sd">            ├── CAIXA_BB_CC_2024_DIARIO.csv</span>
+<span class="sd">            ├── CAIXA_BB_CC_2024_MENSAL.csv</span>
+<span class="sd">            └── CAIXA_BB_CC_2024_ANUAL.csv</span>
+
+<span class="sd">Global merged outputs (all years):</span>
+
+<span class="sd">::</span>
+
+<span class="sd">    bb/                                 # Bank</span>
+<span class="sd">    └── cc/                             # Bank account</span>
+<span class="sd">        ├── CAIXA_BB_CC_O_DIARIO.csv</span>
+<span class="sd">        ├── CAIXA_BB_CC_O_MENSAL.csv</span>
+<span class="sd">        └── CAIXA_BB_CC_O_ANUAL.csv</span>
+
+
+<span class="sd">Data Levels</span>
+<span class="sd">-----------</span>
+
+<span class="sd">- **Tier 1 (T1)**: Canonical, standardized statement files produced by</span>
+<span class="sd">  the parsing stage.</span>
+<span class="sd">- **Daily**: Concatenated transaction-level data.</span>
+<span class="sd">- **Monthly**: Aggregated per month with cumulative fields.</span>
+<span class="sd">- **Annual**: Aggregated per year with cumulative fields.</span>
+
+<span class="sd">The script does not modify input files; all outputs are written as new</span>
+<span class="sd">CSV files.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 
 <span class="c1"># IMPORTS</span>
 <span class="c1"># ***********************************************************************</span>
@@ -399,24 +531,28 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
 <span class="c1"># ... {develop}</span>
 
 <span class="c1"># External imports</span>
 <span class="c1"># =======================================================================</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
 <span class="c1"># ... {develop}</span>
 
 <span class="c1"># Project-level imports</span>
 <span class="c1"># =======================================================================</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">babilonia.utils.core</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">babilonia.tools.core</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">babilonia.accounting</span><span class="w"> </span><span class="kn">import</span> <span class="n">CashFlow</span>
+
 <span class="c1"># ... {develop}</span>
 
 <span class="c1"># FUNCTIONS</span>
 <span class="c1"># ***********************************************************************</span>
 
+
 <div class="viewcode-block" id="main">
-<a class="viewcode-back" href="../../../generated/babilonia.utils.cashflow.html#babilonia.utils.cashflow.main">[docs]</a>
+<a class="viewcode-back" href="../../../generated/babilonia.tools.cashflow.html#babilonia.tools.cashflow.main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 
     <span class="n">char_w</span> <span class="o">=</span> <span class="mi">150</span>
@@ -530,7 +666,7 @@
         <span class="c1"># --------------------------------------------------------------------</span>
         <span class="n">cf</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="p">()</span>
         <span class="n">cf</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_out</span><span class="p">)</span>
-        <span class="n">dc_cfa</span> <span class="o">=</span> <span class="n">cf</span><span class="o">.</span><span class="n">cashflow_analysis</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">cf</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">dc_cfa</span> <span class="o">=</span> <span class="n">cf</span><span class="o">.</span><span class="n">get_cashflow_analysis</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">cf</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
         <span class="c1"># Monthly</span>
         <span class="c1"># --------------------------------------------------------------------</span>
@@ -604,7 +740,6 @@
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="n">char_w</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">None</span></div>
-
 
 
 

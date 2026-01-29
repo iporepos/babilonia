@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>babilonia &#8212; babilonia 0.0.1 documentation</title>
+    <title>babilonia.tools.report &#8212; babilonia 0.0.1 documentation</title>
   
   
   
@@ -46,12 +46,12 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/babilonia';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/babilonia.tools.report';</script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="babilonia.root" href="babilonia.root.html" />
-    <link rel="prev" title="API" href="../api.html" />
+    <link rel="next" title="Development" href="../development.html" />
+    <link rel="prev" title="babilonia.tools.cashflow" href="babilonia.tools.cashflow.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -334,8 +334,8 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">babilonia</a></li>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="babilonia.html">babilonia</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="babilonia.root.html">babilonia.root</a></li>
@@ -352,8 +352,8 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="babilonia.tools.cashflow.html">babilonia.tools.cashflow</a></li>
 </ul>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="babilonia.tools.report.html">babilonia.tools.report</a></li>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">babilonia.tools.report</a></li>
 </ul>
 </div>
 </nav></div>
@@ -397,7 +397,7 @@
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">babilonia</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">babilonia.tools.report</span></li>
   </ul>
 </nav>
 </div>
@@ -414,36 +414,115 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-babilonia">
-<span id="babilonia"></span><h1>babilonia<a class="headerlink" href="#module-babilonia" title="Link to this heading">#</a></h1>
-<p>{Short package description (1-3 sentences)}
-todo docstring</p>
-<section id="features">
-<h2>Features<a class="headerlink" href="#features" title="Link to this heading">#</a></h2>
-<p>todo docstring</p>
+  <section id="module-babilonia.tools.report">
+<span id="babilonia-tools-report"></span><h1>babilonia.tools.report<a class="headerlink" href="#module-babilonia.tools.report" title="Link to this heading">#</a></h1>
+<p>Generate cash flow reports from daily canonical cashflow files.</p>
+<p>This script scans a target directory for daily cash flow CSV files
+(previously generated from standardized bank statements), groups them
+by year, and produces yearly cash flow reports using the <code class="docutils literal notranslate"><span class="pre">CashFlow</span></code>
+analysis engine.</p>
+<p>For each year found, the script:</p>
 <ul class="simple">
-<li><p>{feature 1}</p></li>
-<li><p>{feature 2}</p></li>
-<li><p>{feature 3}</p></li>
-<li><p>{etc}</p></li>
+<li><p>Loads the daily cash flow file.</p></li>
+<li><p>Retrieves the initial balance for the year from a balances table.</p></li>
+<li><p>Computes a yearly cash flow report (summary and panel views).</p></li>
+<li><p>Displays formatted tables in the terminal.</p></li>
 </ul>
-</section>
-<section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p>todo docstring
-{Overview description}</p>
-</section>
-<section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h2>
-<p>todo docstring
-{Examples in rST}</p>
-<p>Print a message</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># print message</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
-<span class="c1"># [Output] &gt;&gt; &#39;Hello world!&#39;</span>
+<p>Processing can be restricted to a single year or applied to all available
+years. Terminal output is structured for quick inspection and logging.</p>
+<section id="script-examples">
+<h2>Script Examples<a class="headerlink" href="#script-examples" title="Link to this heading">#</a></h2>
+<p>The script is intended for command-line execution.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3" open="open">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-code-square" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25Zm7.47 3.97a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L10.69 8 9.22 6.53a.75.75 0 0 1 0-1.06ZM6.78 6.53 5.31 8l1.47 1.47a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215l-2-2a.75.75 0 0 1 0-1.06l2-2a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"></path></svg></span><span class="sd-summary-text">Minimal PowerShell example (Windows)</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">Save as <code class="docutils literal notranslate"><span class="pre">run_report.ps1</span></code> and execute from PowerShell.</p>
+<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="c"># ! Warning -- change paths and parameters</span>
+
+<span class="c"># Paths</span>
+<span class="nv">$REPO</span>   <span class="p">=</span> <span class="s2">&quot;C:\path\to\repo&quot;</span>
+<span class="nv">$SCRIPT</span> <span class="p">=</span> <span class="s2">&quot;$REPO\babilonia\tools\report.py&quot;</span>
+<span class="nv">$DATA</span>   <span class="p">=</span> <span class="s2">&quot;C:\data\bank_statements&quot;</span>
+
+<span class="c"># Parameters</span>
+<span class="nv">$TYPE</span> <span class="p">=</span> <span class="s2">&quot;bb-cc&quot;</span>
+<span class="nv">$YEAR</span> <span class="p">=</span> <span class="n">2024</span>
+
+<span class="c"># Run script</span>
+<span class="n">python</span> <span class="nv">$SCRIPT</span> <span class="p">`</span>
+    <span class="p">-</span><span class="n">-folder</span> <span class="nv">$DATA</span> <span class="p">`</span>
+    <span class="p">-</span><span class="n">-type</span> <span class="nv">$TYPE</span> <span class="p">`</span>
+    <span class="p">-</span><span class="n">-year</span> <span class="nv">$YEAR</span>
 </pre></div>
 </div>
+</div>
+</details><details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3" open="open">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-code-square" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25Zm7.47 3.97a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L10.69 8 9.22 6.53a.75.75 0 0 1 0-1.06ZM6.78 6.53 5.31 8l1.47 1.47a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215l-2-2a.75.75 0 0 1 0-1.06l2-2a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"></path></svg></span><span class="sd-summary-text">Minimal shell example (Linux)</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">Save as <code class="docutils literal notranslate"><span class="pre">run_report.sh</span></code> and execute from a terminal.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+
+<span class="c1"># ! Warning -- change paths and parameters</span>
+
+<span class="c1"># Paths</span>
+<span class="nv">REPO</span><span class="o">=</span><span class="s2">&quot;/path/to/repo&quot;</span>
+<span class="nv">SCRIPT</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$REPO</span><span class="s2">/babilonia/tools/report.py&quot;</span>
+<span class="nv">DATA</span><span class="o">=</span><span class="s2">&quot;/data/bank&quot;</span>
+
+<span class="c1"># Parameters</span>
+<span class="nv">TYPE</span><span class="o">=</span><span class="s2">&quot;bb-cc&quot;</span>
+<span class="nv">YEAR</span><span class="o">=</span><span class="m">2024</span>
+
+<span class="c1"># Run script</span>
+python<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SCRIPT</span><span class="s2">&quot;</span><span class="w"> </span>--folder<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DATA</span><span class="s2">&quot;</span><span class="w"> </span>--type<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TYPE</span><span class="s2">&quot;</span><span class="w"> </span>--year<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$YEAR</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+</details></section>
+<section id="expected-folder-structure">
+<h2>Expected Folder Structure<a class="headerlink" href="#expected-folder-structure" title="Link to this heading">#</a></h2>
+<p>The input data is expected to follow a simple hierarchical layout:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>bb/                                 # Bank
+└── cc/                             # Bank account
+    ├── SALDOS_BB_CC.csv            # Initial balances per year
+    ├── 2023/
+    │   └── CAIXA_BB_CC_2023_DIARIO.csv
+    └── 2024/
+        └── CAIXA_BB_CC_2024_DIARIO.csv
+</pre></div>
+</div>
+<p>Each <code class="docutils literal notranslate"><span class="pre">CAIXA_*_DIARIO.csv</span></code> file represents a daily canonical cashflow
+dataset for a given year.</p>
+<p>The balances file (<code class="docutils literal notranslate"><span class="pre">SALDOS_*.csv</span></code>) must contain, at minimum, the
+columns:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Year</span></code>  : reference year</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Value</span></code> : initial balance at the start of the year</p></li>
+</ul>
 </section>
+<section id="data-levels">
+<h2>Data Levels<a class="headerlink" href="#data-levels" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Daily</strong>: Transaction-level canonical cashflow.</p></li>
+<li><p><strong>Report</strong>: Derived yearly report with summary and panel tables.</p></li>
+</ul>
+<p>The script does not modify input files and does not write new CSV files;
+it only produces terminal reports.</p>
+<p class="rubric">Functions</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.report.main" title="babilonia.tools.report.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="babilonia.tools.report.main">
+<span class="sig-prename descclassname"><span class="pre">babilonia.tools.report.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/tools/report.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.tools.report.main" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 </section>
 
 
@@ -457,20 +536,20 @@ todo docstring</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../api.html"
+       href="babilonia.tools.cashflow.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">API</p>
+        <p class="prev-next-title">babilonia.tools.cashflow</p>
       </div>
     </a>
     <a class="right-next"
-       href="babilonia.root.html"
+       href="../development.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">babilonia.root</p>
+        <p class="prev-next-title">Development</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -493,9 +572,10 @@ todo docstring</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#script-examples">Script Examples</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#expected-folder-structure">Expected Folder Structure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-levels">Data Levels</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.report.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
 </ul>
   </nav></div>
 
@@ -503,7 +583,7 @@ todo docstring</p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/generated/babilonia.rst.txt"
+      <li><a href="../_sources/generated/babilonia.tools.report.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div></div>
