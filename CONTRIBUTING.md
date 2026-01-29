@@ -74,6 +74,58 @@ developing and documentation.
 
 ---
 
+## Versions
+
+## Semantic Versioning Policy
+
+This project follows Semantic Versioning (`MAJOR.MINOR.PATCH`) with the interpretations below.
+
+### Major `X.y.z` — Project Maturity Level
+
+- **0.x.x — Experimental**
+  - Playground for exploring architecture and project layout.
+  - Breaking changes are expected.
+
+- **1.x.x — Stable Foundation**
+  - Production-ready core architecture.
+  - Actively developed.
+  - Backward compatibility is expected.
+
+- **2.x.x — Next Generation**
+  - May introduce new syntax or paradigms.
+  - Can be incompatible with `1.x.x`.
+  - More mature, better documented, and more stable.
+
+### Minor `x.Y.z` — Milestones
+
+- Major feature additions.
+- Large refactors within the same architecture.
+- Treated as logical restore points.
+
+### Patch `x.y.Z` — Maintenance
+
+- Bug fixes.
+- Small improvements.
+- Documentation corrections.
+- No behavioral changes.
+
+## Version Names
+
+Suggested names:
+
+* Hammurabi
+* Sumuabum
+* SumulaEl
+* Samsuiluna
+* AbiEshuh
+* AmmiSaduqa
+* Sennacherib
+* Ashurbanipal
+* Nabopolassar
+* Nabonidus
+
+---
+
 ## Style
 
 In this project, we enforce using [Black](https://black.readthedocs.io) to ensure a consistent code style. 
