@@ -1,14 +1,14 @@
 {
-    "about": 0.013,
+    "about": 0.012,
     "api": 0.015,
     "development": 0.034,
     "generated/babilonia": 0.005,
-    "generated/babilonia.accounting": 0.332,
+    "generated/babilonia.accounting": 0.528,
     "generated/babilonia.root": 0.225,
     "generated/babilonia.tools.cashflow": 0.028,
-    "generated/babilonia.tools.core": 0.044,
+    "generated/babilonia.tools.core": 0.039,
     "generated/babilonia.tools.parse": 0.021,
-    "generated/babilonia.tools.report": 0.055,
+    "generated/babilonia.tools.report": 0.051,
     "index": 0.002,
     "usage": 0.007
 }
