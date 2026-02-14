@@ -24,9 +24,17 @@ Handle accounting and finances in Brazil using Python.
 
 ---
 
+# Install easily
+
+```bash
+python -m pip install babilonia
+```
+
+---
+
 # Quick Gallery
 
-## Parsing Bank Statements
+## Parse weird CSV bank statements
 
 Convert CSV files sourced from banks to ``pandas.DataFrame``. 
 
@@ -45,11 +53,11 @@ Code block:
 ```python
 from babilonia.accounting import CashFlowBBPP
 file_bb = "./extrato_poupanca.csv"
-cashflow = CashFlowBBPP()
-cashflow.load_data(file_bb)
-df = cashflow.parse_data()
-print(type(df))
-print(df)
+cf = CashFlowBBPP()
+cf.load_data(file_bb)
+cf.standardize()
+print(type(cf.data))
+print(cf)
 ```
 
 Output:
@@ -62,7 +70,9 @@ Data           Valor                   Categoria Descricao
 2025-08-11   1000.00    Transferência de Crédito
 ```
 
-## Parsing Fiscal Notes (NFSe)
+## Parse XML Fiscal Notes (NFSe)
+
+Convert XML files sourced from nfse.gov.br as a Python ``dict``. 
 
 Code block:
 ```python
