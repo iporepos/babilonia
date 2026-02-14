@@ -31,7 +31,7 @@ Examples
 
     .. code-block:: bash
 
-        python -m docs.build
+        python -m dev.docs
 
 .. dropdown:: Build and open website locally
     :icon: code-square
@@ -39,7 +39,8 @@ Examples
 
     .. code-block:: bash
 
-        python -m docs.build --open
+        python -m dev.docs --open
+
 
 """
 
@@ -54,7 +55,6 @@ import webbrowser
 import glob, os
 from pathlib import Path
 import argparse
-from time import sleep
 
 # External imports
 # =======================================================================
@@ -96,11 +96,10 @@ def build_docs(open_site=False):
         check=True,
     )
 
-    print(f"Documentation built successfully! Open {INDEX_FILE}")
-    sleep(2)
     # Open the generated index.html in the default web browser
     if open_site:
         webbrowser.open(INDEX_FILE.resolve().as_uri())
+    print(f"Documentation built successfully! Open {INDEX_FILE}")
 
 
 # FUNCTIONS -- Module-level

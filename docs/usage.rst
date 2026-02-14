@@ -33,6 +33,25 @@ For causal users, install ``babilonia`` to a Python 3 environment via terminal:
 
     python -m pip install git+https://github.com/iporepos/babilonia.git@main
 
+Installation
+***********************************************************************
+
+Install as a Python package
+============================================
+
+For Python regular users, install the latest package deploy
+to a Python 3 environment via pip:
+
+.. code-block:: console
+
+    python -m pip install babilonia
+
+Or any desired branch or version via github url:
+
+.. code-block:: console
+
+    python -m pip install git+https://github.com/iporepos/babilonia.git@main
+
 
 .. _guides:
 

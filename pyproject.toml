@@ -20,8 +20,9 @@
 # These are only needed at build time, not when running your package
 # Default values are fine for most projects
 requires = [
-    "setuptools>=65.0",  # Standard Python packaging tool
-    "wheel"              # Required to build wheel distributions (.whl)
+    "setuptools>=68.0",     # Standard Python packaging tool
+    "setuptools-scm>=8.0",  # Helper dependency for version management
+    "wheel"                 # Required to build wheel distributions (.whl)
     # ... [ADD MORE IF NEDDED]
 ]
 
@@ -44,15 +45,19 @@ build-backend = "setuptools.build_meta"
 # BASIC
 # =======================================================================
 # The name of your package/project
-name = "babilonia"         
-# Version number
-version = "1.0.0"
+name = "babilonia"
+dynamic = ["version"]    # used for automated versioning
 # Short description
 description = "Handle accounting and finances in Brazil using Python"  
 # Keywords (optional) for search on PyPI
 keywords = [
-  "python", 
-  # ... [ADD MORE IF NEDDED]
+    "python",
+    "finances",
+    "accounting",
+    "cashflow",
+    "brazil",
+    "money",
+    # ... [ADD MORE IF NEDDED]
 ]
 
 
@@ -104,10 +109,10 @@ requires-python = ">=3.10"  # <-- [CHECK THIS] Python 3.10 or higher
 # Installed automatically when someone installs your package
 
 dependencies = [
-    "requests",  # [EXAMPLE] [RECOMMENDED] network operations
-    "numpy",     # [EXAMPLE] [RECOMMENDED] numerical computations
-    "pandas",    # [EXAMPLE] [RECOMMENDED] data manipulation
-    "matplotlib",    # [EXAMPLE] [RECOMMENDED] data manipulation
+    "requests",
+    "numpy",
+    "pandas",
+    "matplotlib",
     # [EXAMPLE] custom dependency directly from GitHub:
     # "my-package @ git+https://github.com/username/my-package.git@main",
     # ... [ADD MORE IF NEDDED]
@@ -172,3 +177,8 @@ include-package-data = true
 
 [tool.setuptools.package-data]
 "*" = ["data/**/*"]
+
+[tool.setuptools_scm]
+version_scheme = "no-guess-dev"
+local_scheme = "no-local-version"
+fallback_version = "0.0.0"
