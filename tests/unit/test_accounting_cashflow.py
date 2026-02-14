@@ -144,6 +144,7 @@ class TestCashFlowBBCC(unittest.TestCase):
     def test_parse_data(self):
         self.cashflow.load_data(self.file_bbcc)
         df = self.cashflow.parse_data()
+        print(type(df))
         print(df)
         print(df.info())
         self.assertIsInstance(df, pd.DataFrame)

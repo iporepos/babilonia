@@ -22,25 +22,23 @@ Handle accounting and finances in Brazil using Python.
 > [!NOTE]
 > Check out the [documentation website](https://iporepos.github.io/babilonia/)
 
+---
+
 # Quick Gallery
 
-## Parse Bank Statements
+## Parsing Bank Statements
 
-Sourced statement from Banco do Brasil:
+Convert CSV files sourced from banks to ``pandas.DataFrame``. 
+
+Input (sourced statement from Banco do Brasil)
 
 ```text
 ./extrato_poupanca.csv
     "Data","Histórico","Valor",
-    "01/08/2025","Reajuste Monetário - BACEN","3,04 C",
-    "01/08/2025","Juros","8,83 C",
-    "01/08/2025","Reajuste Monetário - BACEN","1,34 C",
     "01/08/2025","Juros","3,83 C",
     "01/08/2025","Reajuste Monetário - BACEN","16,67 C",
     "01/08/2025","Juros","47,92 C",
     "11/08/2025","Transferência de Crédito","1.000,00 C",
-    "29/08/2025","Transferência de Crédito","4.000,00 C",
-    "29/08/2025","Reajuste Monetário - BACEN","0,35 C",
-    "29/08/2025","Juros","1,02 C",
 ```
 
 Code block:
@@ -50,20 +48,67 @@ file_bb = "./extrato_poupanca.csv"
 cashflow = CashFlowBBPP()
 cashflow.load_data(file_bb)
 df = cashflow.parse_data()
+print(type(df))
 print(df)
 ```
 
 Output:
 ```text
+<class 'pandas.core.frame.DataFrame'>
 Data           Valor                   Categoria Descricao
-2025-08-01      3.04  Reajuste Monetário - BACEN
-2025-08-01      8.83                       Juros
-2025-08-01      1.34  Reajuste Monetário - BACEN
 2025-08-01      3.83                       Juros
 2025-08-01     16.67  Reajuste Monetário - BACEN
 2025-08-01     47.92                       Juros
 2025-08-11   1000.00    Transferência de Crédito
-2025-08-29   4000.00    Transferência de Crédito
-2025-08-29      0.35  Reajuste Monetário - BACEN
-2025-08-29      1.02                       Juros
+```
+
+## Parsing Fiscal Notes (NFSe)
+
+Code block:
+```python
+import pprint
+from babilonia.accounting import NFSe
+file_nfse = "./nfse.xml"
+nf = NFSe()
+nf.load_data(file_nfse)
+print(type(nf.data))
+pprint.pp(nf.data)
+```
+
+Output:
+```text
+<class 'dict'>
+{'nfse_id': 'NFS43149022227643216000121000000000008025091789495666',
+ 'local_emissao': 'Fortaleza',
+ 'local_prestacao': 'Fortaleza',
+ 'numero_nfse': '80',
+ 'codigo_local_incidencia': '6314902',
+ 'descricao_servico': 'Serviços de pesquisas de qualquer natureza',
+ 'valor_liquido': 3100.0,
+ 'data_processo': '2025-09-01T15:36:35-03:00',
+ 'Date': '2025-09-01',
+ 'Prestador': {'cnpj': '27543216700666',
+               'nome': 'PRESTADOR LTDA',
+               'endereco': {'logradouro': 'R DAS ACACIAS',
+                            'numero': '1244',
+                            'bairro': 'CIDADE ALTA',
+                            'cidade': '4314902',
+                            'uf': 'CE',
+                            'cep': '90880480'},
+               'telefone': '5132692269',
+               'email': 'PRESTADOR@GMAIL.COM'},
+ 'Tomador': {'cnpj': '07704429000666',
+             'nif': None,
+             'nome': 'TOMADOR LTDA',
+             'endereco': {'logradouro': 'AV BRASIL',
+                          'numero': '666',
+                          'complemento': 'SALA  666 E 666',
+                          'bairro': 'CENTRO HISTORICO',
+                          'cidade': '6314902',
+                          'cep': '34020023'}},
+ 'servico': {'codigo_servico': '020101',
+             'descricao_servico': 'Serviço de suporte técnico.',
+             'valor_servico': 6666.0,
+             'p_tributo_SN': 6.0},
+ 'ValorServico': 6666.0}
 ```

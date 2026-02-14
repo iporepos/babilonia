@@ -44,6 +44,7 @@ From the terminal, run:
 # =======================================================================
 # import {module}
 import unittest
+import pprint
 
 # ... {develop}
 
@@ -135,8 +136,10 @@ class TestNFSe(unittest.TestCase):
 
         # Visual inspection
         print("\n--- NFSe OUTPUT ---")
+        print(type(self.nfse.data))
         print(self.nfse)
         print("-------------------")
+        pprint.pp(self.nfse.data)
 
     # Tear down methods
     # -------------------------------------------------------------------
