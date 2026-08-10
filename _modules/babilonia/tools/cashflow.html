@@ -26,18 +26,18 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -46,26 +46,33 @@
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/babilonia/tools/cashflow';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="author" title="About these documents" href="../../../about.html" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
-
+  <body data-default-mode="light">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -91,7 +98,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -186,11 +193,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -203,8 +217,7 @@
           
           
           
-          <a href="https://github.com/iporepos/babilonia" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/iporepos/babilonia" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -298,11 +311,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -315,8 +335,7 @@
           
           
           
-          <a href="https://github.com/iporepos/babilonia" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/iporepos/babilonia" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -397,6 +416,8 @@
 
 <span class="sd">- Loads all matching T1 statement files.</span>
 <span class="sd">- Concatenates and reorders columns into a canonical layout.</span>
+<span class="sd">- Buckets rows by their actual transaction year (``Data``), not by the</span>
+<span class="sd">  folder/file they were physically stored in.</span>
 <span class="sd">- Writes a consolidated daily cash flow CSV.</span>
 <span class="sd">- Computes monthly and annual cash flow summaries.</span>
 <span class="sd">- Writes monthly and annual CSV reports.</span>
@@ -407,6 +428,21 @@
 
 <span class="sd">Processing can be restricted to a single year or applied to all available</span>
 <span class="sd">years. Terminal output is structured to facilitate inspection and logging.</span>
+
+<span class="sd">.. note::</span>
+
+<span class="sd">    Some statement types do not align with calendar-month/year</span>
+<span class="sd">    boundaries. Nubank credit-card invoices, for example, are filed</span>
+<span class="sd">    under the year of the invoice, but a given invoice&#39;s transactions</span>
+<span class="sd">    can legitimately spill into December of the previous year (the</span>
+<span class="sd">    invoice closes a few days into the new month). Because of this,</span>
+<span class="sd">    *file discovery* is folder/invoice based, but *reporting buckets*</span>
+<span class="sd">    are always derived from the actual ``Data`` column, never from the</span>
+<span class="sd">    folder a file happened to live in. All T1 files are loaded up</span>
+<span class="sd">    front (regardless of ``--year``) and rows are bucketed by their</span>
+<span class="sd">    real transaction year afterward, so spillover transactions land in</span>
+<span class="sd">    the correct year&#39;s report instead of being split or duplicated</span>
+<span class="sd">    across two years.</span>
 
 <span class="sd">Script Examples</span>
 <span class="sd">---------------</span>
@@ -513,7 +549,8 @@
 
 <span class="sd">- **Tier 1 (T1)**: Canonical, standardized statement files produced by</span>
 <span class="sd">  the parsing stage.</span>
-<span class="sd">- **Daily**: Concatenated transaction-level data.</span>
+<span class="sd">- **Daily**: Concatenated transaction-level data, bucketed by the real</span>
+<span class="sd">  transaction year (from ``Data``), not by source file/folder.</span>
 <span class="sd">- **Monthly**: Aggregated per month with cumulative fields.</span>
 <span class="sd">- **Annual**: Aggregated per year with cumulative fields.</span>
 
@@ -591,58 +628,74 @@
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Year    : </span><span class="si">{</span><span class="n">year_arg</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">year_arg</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;ALL&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="n">char_w</span><span class="p">)</span>
 
-    <span class="c1"># Resolve file pattern (year wildcard handled inside helper)</span>
-    <span class="n">pattern_files</span> <span class="o">=</span> <span class="n">get_file_pattern_statement_t0</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_folder</span><span class="p">,</span> <span class="n">year_arg</span><span class="p">)</span>
+    <span class="c1"># Resolve file pattern.</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># NOTE: statement files are ALWAYS loaded for every year, regardless</span>
+    <span class="c1"># of `year_arg`. Some statement types (e.g. Nubank credit card</span>
+    <span class="c1"># invoices, &quot;nu-cc&quot;) don&#39;t align with calendar months: an invoice</span>
+    <span class="c1"># filed under year Y can legitimately contain transactions dated in</span>
+    <span class="c1"># December of year Y-1, since the invoice closes a few days into</span>
+    <span class="c1"># the new month. Restricting the file *glob* by year (as before)</span>
+    <span class="c1"># would silently drop or mis-bucket that spillover. Instead we load</span>
+    <span class="c1"># every T1 file up front, then bucket *rows* by their actual</span>
+    <span class="c1"># transaction year further down -- `--year` is applied there.</span>
+    <span class="n">pattern_files</span> <span class="o">=</span> <span class="n">get_file_pattern_statement_t0</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_folder</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="n">pattern_files</span> <span class="o">=</span> <span class="n">pattern_files</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;T0.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;T1.csv&quot;</span><span class="p">)</span>
-    <span class="n">ls_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">pattern_files</span><span class="p">)</span>
+    <span class="n">ls_files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">pattern_files</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">ls_files</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; No input files found. Nothing to process.&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="n">char_w</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="c1"># Group files by year (assumes year is the parent directory name)</span>
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="n">files_by_year</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">ls_files</span><span class="p">:</span>
-        <span class="n">fpath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">year</span> <span class="o">=</span> <span class="n">fpath</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="n">files_by_year</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span>
-
     <span class="n">cf</span> <span class="o">=</span> <span class="n">PARSERS</span><span class="p">[</span><span class="n">data_type</span><span class="p">]()</span>
 
     <span class="n">total_processed</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">files_by_year</span><span class="p">):</span>
+    <span class="c1"># Load &amp; concatenate every statement file up front</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="nb">print</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Loading input files&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="n">char_w</span><span class="p">)</span>
+    <span class="n">ls_dfs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ls_files</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">fpath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot; -&gt; &quot;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+        <span class="n">ls_dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;LOADED&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Loading completed. Files loaded: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ls_dfs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Concat data</span>
+    <span class="c1"># --------------------------------------------------------------------</span>
+    <span class="n">df_all</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">ls_dfs</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ls_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df_all</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+    <span class="n">ls_ordered</span> <span class="o">=</span> <span class="n">ls_priority</span> <span class="o">+</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">ls_cols</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ls_priority</span><span class="p">]</span>
+    <span class="n">df_all</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="n">ls_ordered</span><span class="p">]</span>
+
+    <span class="c1"># Bucket rows by their real transaction year, not by the file/folder</span>
+    <span class="c1"># they happened to be stored in.</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">df_all</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df_all</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">])</span>
+    <span class="n">df_all</span><span class="p">[</span><span class="s2">&quot;__Ano&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+    <span class="n">years_available</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">df_all</span><span class="p">[</span><span class="s2">&quot;__Ano&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+    <span class="n">years_to_process</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">year_arg</span><span class="p">)]</span> <span class="k">if</span> <span class="n">year_arg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">years_available</span>
+
+    <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="n">years_to_process</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">()</span>
         <span class="c1"># print(&quot;-&quot; * char_w)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Year </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="n">char_w</span><span class="p">)</span>
 
-        <span class="n">yearly_processed</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">ls_dfs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">fpath</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">files_by_year</span><span class="p">[</span><span class="n">year</span><span class="p">],</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">fpath</span><span class="o">.</span><span class="n">stem</span>
+        <span class="n">df_full</span> <span class="o">=</span> <span class="n">df_all</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;__Ano == @year&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">&quot;__Ano&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot; -&gt; &quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">df_full</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; No transactions found for </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">. Skipping.&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
 
-            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
-            <span class="n">ls_dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
-
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LOADED&quot;</span><span class="p">)</span>
-            <span class="n">yearly_processed</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Year completed. Output files loaded: </span><span class="si">{</span><span class="n">yearly_processed</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-        <span class="c1"># Concat data</span>
-        <span class="c1"># --------------------------------------------------------------------</span>
-        <span class="n">df_full</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">ls_dfs</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">ls_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df_full</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-
-        <span class="n">ls_ordered</span> <span class="o">=</span> <span class="n">ls_priority</span> <span class="o">+</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">ls_cols</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ls_priority</span><span class="p">]</span>
-        <span class="n">df_full</span> <span class="o">=</span> <span class="n">df_full</span><span class="p">[</span><span class="n">ls_ordered</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Year completed. Transactions found: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_full</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;CAIXA_</span><span class="si">{</span><span class="n">bank</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">account</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">&quot;</span>
 
@@ -658,6 +711,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="c1"># export</span>
         <span class="n">file_out</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">folder</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_DIARIO.csv&quot;</span>
+        <span class="n">file_out</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">df_full</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_out</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">total_processed</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Output : </span><span class="si">{</span><span class="n">file_out</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -681,6 +735,7 @@
 
         <span class="c1"># exports</span>
         <span class="n">file_out</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">folder</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_MENSAL.csv&quot;</span>
+        <span class="n">file_out</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">dc_cfa</span><span class="p">[</span><span class="s2">&quot;monthly&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_out</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">total_processed</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Output : </span><span class="si">{</span><span class="n">file_out</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -697,6 +752,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">file_out</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">folder</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_ANUAL.csv&quot;</span>
+        <span class="n">file_out</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">dc_cfa</span><span class="p">[</span><span class="s2">&quot;yearly&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_out</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">total_processed</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Output : </span><span class="si">{</span><span class="n">file_out</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -777,8 +833,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -812,7 +868,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

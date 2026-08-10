@@ -26,18 +26,18 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -46,26 +46,33 @@
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/babilonia/accounting';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="author" title="About these documents" href="../../about.html" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
-
+  <body data-default-mode="light">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -91,7 +98,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -186,11 +193,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -203,8 +217,7 @@
           
           
           
-          <a href="https://github.com/iporepos/babilonia" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/iporepos/babilonia" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -298,11 +311,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -315,8 +335,7 @@
           
           
           
-          <a href="https://github.com/iporepos/babilonia" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/iporepos/babilonia" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -1678,6 +1697,298 @@
 
 
 
+<div class="viewcode-block" id="CashFlowNUCredit">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlowNUCredit">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CashFlowNUCredit</span><span class="p">(</span><span class="n">CashFlow</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for handling CSV data exported from Nubank Cartão de Crédito</span>
+<span class="sd">    (Nubank credit card) invoices.</span>
+
+<span class="sd">    Nubank appears to export at least two CSV variants for the same</span>
+<span class="sd">    ``date,title,amount`` schema:</span>
+
+<span class="sd">    * Quoted, Brazilian-formatted values, e.g. ``&quot;1.234,56&quot;`` or</span>
+<span class="sd">      ``&quot;- 41,97&quot;`` (comma decimal separator, dot thousands separator,</span>
+<span class="sd">      sometimes a space between the minus sign and the digits).</span>
+<span class="sd">    * Unquoted, international-formatted values, e.g. ``1234.56`` or</span>
+<span class="sd">      ``-6722.00`` (dot decimal separator, no thousands separator).</span>
+
+<span class="sd">    ``parse_valor`` auto-detects and normalizes both variants.</span>
+
+<span class="sd">    Note on sign convention: Nubank reports purchases as positive</span>
+<span class="sd">    ``amount`` and payments/refunds (&quot;Pagamento recebido&quot;) as negative.</span>
+<span class="sd">    By default this class inverts that sign when building the canonical</span>
+<span class="sd">    ``Valor`` field, so purchases become outflows (negative ``Valor``,</span>
+<span class="sd">    classified as ``&quot;Out&quot;``) and payments/refunds become inflows</span>
+<span class="sd">    (positive ``Valor``, classified as ``&quot;In&quot;``) — consistent with how</span>
+<span class="sd">    :meth:`CashFlow.classify_flows` is used for the BB accounts. Pass</span>
+<span class="sd">    ``invert_sign=False`` at construction time to keep Nubank&#39;s raw</span>
+<span class="sd">    sign convention instead.</span>
+
+<span class="sd">    .. dropdown:: Script example</span>
+<span class="sd">        :icon: code-square</span>
+<span class="sd">        :open:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from babilonia.accounting import CashFlowNuCC</span>
+
+<span class="sd">            # create an empty class</span>
+<span class="sd">            cf = CashFlowNuCC()</span>
+
+<span class="sd">            # set the file for CSV</span>
+<span class="sd">            file_csv = &quot;path/to/file.csv&quot;  # [change this]</span>
+
+<span class="sd">            # load data</span>
+<span class="sd">            cf.load_data(file_csv)</span>
+
+<span class="sd">            # standardize data</span>
+<span class="sd">            cf.standardize()</span>
+
+<span class="sd">            # print data</span>
+<span class="sd">            print(cf.data.head(10))</span>
+
+<span class="sd">            # save data</span>
+<span class="sd">            file_out = &quot;path/to/output.csv&quot;  # [change this]</span>
+<span class="sd">            cf.data.to_csv(file_out, sep=&quot;;&quot;, index=False)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;CashFlowNuCC&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;CFNUCC&quot;</span><span class="p">,</span> <span class="n">invert_sign</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+        <span class="c1"># include the stages of data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_raw</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_parsed</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># see class docstring: purchases (+) -&gt; Out, payments/refunds (-) -&gt; In</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">invert_sign</span> <span class="o">=</span> <span class="n">invert_sign</span>
+
+<div class="viewcode-block" id="CashFlowNUCredit.load_data">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlowNUCredit.load_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load raw data from the Nubank credit-card CSV export.</span>
+
+<span class="sd">        :param file_data: Nubank credit-card CSV file path</span>
+<span class="sd">        :type file_data: str or Path</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># overwrite relative path inputs</span>
+        <span class="c1"># ----------------------------------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_data</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">file_data</span><span class="p">)</span>
+
+        <span class="c1"># implement loading logic</span>
+        <span class="c1"># ----------------------------------------------</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file_data</span><span class="p">,</span>
+                <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span>
+                <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span>
+                <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                <span class="n">keep_default_na</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">UnicodeDecodeError</span><span class="p">:</span>
+            <span class="c1"># Fallback for alternative exports</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file_data</span><span class="p">,</span>
+                <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span>
+                <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span>
+                <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;latin1&quot;</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                <span class="n">keep_default_na</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># post-loading logic</span>
+        <span class="c1"># ----------------------------------------------</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_raw</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_parsed</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># update other mutables</span>
+        <span class="c1"># ----------------------------------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+        <span class="c1"># ... continues in downstream objects ... #</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="CashFlowNUCredit.standardize">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlowNUCredit.standardize">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">standardize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Standardize data into canonical format.</span>
+
+<span class="sd">        :param force: Rebuild parsed data even if it exists</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_raw</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No data loaded&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_parsed</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">force</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_parsed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_raw</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_parsed</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="CashFlowNUCredit.parse_data">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlowNUCredit.parse_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse data to canonical format</span>
+
+<span class="sd">        :param df: Optional input data</span>
+<span class="sd">        :type df: ``pandas.DataFrame``</span>
+<span class="sd">        :return: Formated data</span>
+<span class="sd">        :rtype: ``pandas.DataFrame``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_raw</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># --- normalize legacy / alternative column names ---</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_columns</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_drops</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_date</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Valor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_valor</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;amount&quot;</span><span class="p">])</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Categoria&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Descricao&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;Data&quot;</span><span class="p">,</span> <span class="s2">&quot;Categoria&quot;</span><span class="p">,</span> <span class="s2">&quot;Valor&quot;</span><span class="p">,</span> <span class="s2">&quot;Descricao&quot;</span><span class="p">]]</span>
+
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="CashFlowNUCredit.parse_date">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlowNUCredit.parse_date">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse Nubank date field from ``YYYY-MM-DD`` to datetime.</span>
+
+<span class="sd">        :param series: String series</span>
+<span class="sd">        :type series: ``pandas.Series``</span>
+<span class="sd">        :return: Datetime series</span>
+<span class="sd">        :rtype: ``pandas.Series``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span>
+            <span class="n">series</span><span class="p">,</span>
+            <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">dates</span></div>
+
+
+<div class="viewcode-block" id="CashFlowNUCredit.parse_valor">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlowNUCredit.parse_valor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_valor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert ``amount`` field to float, auto-detecting the CSV variant.</span>
+
+<span class="sd">        .. dropdown:: Examples</span>
+<span class="sd">            :open:</span>
+
+<span class="sd">            .. list-table::</span>
+<span class="sd">               :widths: auto</span>
+<span class="sd">               :header-rows: 1</span>
+
+<span class="sd">               * - Input</span>
+<span class="sd">                 - Output (before sign inversion)</span>
+<span class="sd">               * - ``&quot;50,50&quot;``</span>
+<span class="sd">                 - ``50.50``</span>
+<span class="sd">               * - ``&quot;- 3.784,83&quot;``</span>
+<span class="sd">                 - ``-3784.83``</span>
+<span class="sd">               * - ``69.99``</span>
+<span class="sd">                 - ``69.99``</span>
+<span class="sd">               * - ``-6722.00``</span>
+<span class="sd">                 - ``-6722.00``</span>
+
+<span class="sd">        :param series: String series</span>
+<span class="sd">        :type series: ``pandas.Series``</span>
+<span class="sd">        :return: Value series</span>
+<span class="sd">        :rtype: ``pandas.Series``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="c1"># drop stray quote characters and collapse internal whitespace,</span>
+        <span class="c1"># e.g. the space Nubank sometimes inserts after the minus sign:</span>
+        <span class="c1"># &quot;- 41,97&quot; -&gt; &quot;-41,97&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Brazilian-formatted values use a comma as the decimal separator</span>
+        <span class="c1"># (and, sometimes, a dot as the thousands separator). The</span>
+        <span class="c1"># alternative export already uses a dot as the decimal separator</span>
+        <span class="c1"># and can be parsed as-is.</span>
+        <span class="n">is_br_format</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">is_br_format</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">is_br_format</span><span class="p">]</span>
+            <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># thousands separator</span>
+            <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># decimal separator</span>
+        <span class="p">)</span>
+
+        <span class="n">values</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">invert_sign</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="o">-</span><span class="n">values</span>
+
+        <span class="k">return</span> <span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="CashFlowNUCredit.apply_drops">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlowNUCredit.apply_drops">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_drops</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter dataframe for parsing. No rows are dropped by default;</span>
+<span class="sd">        override or extend this to filter specific transactions if needed.</span>
+
+<span class="sd">        :param df: Input data</span>
+<span class="sd">        :type df: ``pandas.DataFrame``</span>
+<span class="sd">        :return: Output data</span>
+<span class="sd">        :rtype: ``pandas.DataFrame``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="CashFlowNUCredit.normalize_columns">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlowNUCredit.normalize_columns">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Normalize alternative / legacy column names to the current schema.</span>
+
+<span class="sd">        :param df: Input data</span>
+<span class="sd">        :type df: ``pandas.DataFrame``</span>
+<span class="sd">        :return: Output data</span>
+<span class="sd">        :rtype: ``pandas.DataFrame``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">column_aliases</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Título&quot;</span><span class="p">:</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Titulo&quot;</span><span class="p">:</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Descrição&quot;</span><span class="p">:</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Valor&quot;</span><span class="p">:</span> <span class="s2">&quot;amount&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span> <span class="ow">in</span> <span class="n">column_aliases</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">old</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="n">new</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">old</span><span class="p">:</span> <span class="n">new</span><span class="p">})</span>
+
+        <span class="n">required</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;amount&quot;</span><span class="p">}</span>
+        <span class="n">missing</span> <span class="o">=</span> <span class="n">required</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">missing</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected column(s) </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">missing</span><span class="p">)</span><span class="si">}</span><span class="s2"> not found in CSV.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df</span></div>
+</div>
+
+
+
 <div class="viewcode-block" id="BBCDB">
 <a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.BBCDB">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BBCDB</span><span class="p">(</span><span class="n">DataSet</span><span class="p">):</span>
@@ -2423,8 +2734,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -2458,7 +2769,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>
