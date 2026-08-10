@@ -168,6 +168,7 @@ def main():
 
     # Resolve file pattern (year wildcard handled inside helper)
     pattern_files = get_file_pattern_statement_t0(data_type, data_folder, year_arg)
+    print(pattern_files)
     ls_files = glob.glob(pattern_files)
 
     if not ls_files:

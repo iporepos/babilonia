@@ -15,6 +15,8 @@ For each year found, the script:
 
 - Loads all matching T1 statement files.
 - Concatenates and reorders columns into a canonical layout.
+- Buckets rows by their actual transaction year (``Data``), not by the
+  folder/file they were physically stored in.
 - Writes a consolidated daily cash flow CSV.
 - Computes monthly and annual cash flow summaries.
 - Writes monthly and annual CSV reports.
@@ -25,6 +27,21 @@ global daily, monthly, and annual datasets for the full system.
 
 Processing can be restricted to a single year or applied to all available
 years. Terminal output is structured to facilitate inspection and logging.
+
+.. note::
+
+    Some statement types do not align with calendar-month/year
+    boundaries. Nubank credit-card invoices, for example, are filed
+    under the year of the invoice, but a given invoice's transactions
+    can legitimately spill into December of the previous year (the
+    invoice closes a few days into the new month). Because of this,
+    *file discovery* is folder/invoice based, but *reporting buckets*
+    are always derived from the actual ``Data`` column, never from the
+    folder a file happened to live in. All T1 files are loaded up
+    front (regardless of ``--year``) and rows are bucketed by their
+    real transaction year afterward, so spillover transactions land in
+    the correct year's report instead of being split or duplicated
+    across two years.
 
 Script Examples
 ---------------
@@ -131,7 +148,8 @@ Data Levels
 
 - **Tier 1 (T1)**: Canonical, standardized statement files produced by
   the parsing stage.
-- **Daily**: Concatenated transaction-level data.
+- **Daily**: Concatenated transaction-level data, bucketed by the real
+  transaction year (from ``Data``), not by source file/folder.
 - **Monthly**: Aggregated per month with cumulative fields.
 - **Annual**: Aggregated per year with cumulative fields.
 
@@ -207,58 +225,74 @@ def main():
     print(f" Year    : {year_arg if year_arg is not None else 'ALL'}")
     print("=" * char_w)
 
-    # Resolve file pattern (year wildcard handled inside helper)
-    pattern_files = get_file_pattern_statement_t0(data_type, data_folder, year_arg)
+    # Resolve file pattern.
+    # ------------------------------------------------------------------
+    # NOTE: statement files are ALWAYS loaded for every year, regardless
+    # of `year_arg`. Some statement types (e.g. Nubank credit card
+    # invoices, "nu-cc") don't align with calendar months: an invoice
+    # filed under year Y can legitimately contain transactions dated in
+    # December of year Y-1, since the invoice closes a few days into
+    # the new month. Restricting the file *glob* by year (as before)
+    # would silently drop or mis-bucket that spillover. Instead we load
+    # every T1 file up front, then bucket *rows* by their actual
+    # transaction year further down -- `--year` is applied there.
+    pattern_files = get_file_pattern_statement_t0(data_type, data_folder, None)
     pattern_files = pattern_files.replace("T0.csv", "T1.csv")
-    ls_files = glob.glob(pattern_files)
+    ls_files = sorted(glob.glob(pattern_files))
 
     if not ls_files:
         print(" No input files found. Nothing to process.")
         print("=" * char_w)
         return None
 
-    # Group files by year (assumes year is the parent directory name)
-    # ------------------------------------------------------------------
-    files_by_year = {}
-    for f in ls_files:
-        fpath = Path(f)
-        try:
-            year = fpath.parent.name
-        except IndexError:
-            continue
-        files_by_year.setdefault(year, []).append(fpath)
-
     cf = PARSERS[data_type]()
 
     total_processed = 0
 
-    for year in sorted(files_by_year):
+    # Load & concatenate every statement file up front
+    # ------------------------------------------------------------------
+    print()
+    print(" Loading input files")
+    print("-" * char_w)
+    ls_dfs = []
+    for i, f in enumerate(ls_files, start=1):
+        fpath = Path(f)
+        print(f"[{i:02d}] {fpath.name}", end=" -> ")
+        df = pd.read_csv(fpath, sep=";", dtype=str)
+        ls_dfs.append(df.copy())
+        print("LOADED")
+    print(f"\n Loading completed. Files loaded: {len(ls_dfs)}")
+
+    # Concat data
+    # --------------------------------------------------------------------
+    df_all = pd.concat(ls_dfs).reset_index(drop=True)
+    ls_cols = list(df_all.columns)
+
+    ls_ordered = ls_priority + [c for c in ls_cols if c not in ls_priority]
+    df_all = df_all[ls_ordered]
+
+    # Bucket rows by their real transaction year, not by the file/folder
+    # they happened to be stored in.
+    # ------------------------------------------------------------------
+    df_all["Data"] = pd.to_datetime(df_all["Data"])
+    df_all["__Ano"] = df_all["Data"].dt.year.astype(str)
+
+    years_available = sorted(df_all["__Ano"].unique())
+    years_to_process = [str(year_arg)] if year_arg is not None else years_available
+
+    for year in years_to_process:
         print()
         # print("-" * char_w)
         print(f" Year {year}")
         print("-" * char_w)
 
-        yearly_processed = 0
-        ls_dfs = []
-        for i, fpath in enumerate(files_by_year[year], start=1):
-            name = fpath.stem
+        df_full = df_all.query("__Ano == @year").drop(columns="__Ano").copy()
 
-            print(f"[{i:02d}] {fpath.name}", end=" -> ")
+        if df_full.empty:
+            print(f" No transactions found for {year}. Skipping.")
+            continue
 
-            df = pd.read_csv(fpath, sep=";", dtype=str)
-            ls_dfs.append(df.copy())
-
-            print(f"LOADED")
-            yearly_processed += 1
-        print(f"\n Year completed. Output files loaded: {yearly_processed}")
-
-        # Concat data
-        # --------------------------------------------------------------------
-        df_full = pd.concat(ls_dfs).reset_index(drop=True)
-        ls_cols = list(df_full.columns)
-
-        ls_ordered = ls_priority + [c for c in ls_cols if c not in ls_priority]
-        df_full = df_full[ls_ordered]
+        print(f"\n Year completed. Transactions found: {len(df_full)}")
 
         name = f"CAIXA_{bank.upper()}_{account.upper()}_{year}"
 
@@ -274,6 +308,7 @@ def main():
         print("\n")
         # export
         file_out = Path(args.folder) / f"{year}/{name}_DIARIO.csv"
+        file_out.parent.mkdir(parents=True, exist_ok=True)
         df_full.to_csv(file_out, sep=";", index=False)
         total_processed += 1
         print(f"  Output : {file_out}")
@@ -297,6 +332,7 @@ def main():
 
         # exports
         file_out = Path(args.folder) / f"{year}/{name}_MENSAL.csv"
+        file_out.parent.mkdir(parents=True, exist_ok=True)
         dc_cfa["monthly"].to_csv(file_out, sep=";", index=False)
         total_processed += 1
         print(f"  Output : {file_out}")
@@ -313,6 +349,7 @@ def main():
         print("\n")
 
         file_out = Path(args.folder) / f"{year}/{name}_ANUAL.csv"
+        file_out.parent.mkdir(parents=True, exist_ok=True)
         dc_cfa["yearly"].to_csv(file_out, sep=";", index=False)
         total_processed += 1
         print(f"  Output : {file_out}")

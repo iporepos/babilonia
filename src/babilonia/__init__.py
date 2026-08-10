@@ -38,6 +38,5 @@ Print a message
 """
 # EXPOSE MODULES FROM PACKAGE
 # ***********************************************************************
-from . import module
 from . import root
 from . import accounting

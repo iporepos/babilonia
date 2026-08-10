@@ -30,7 +30,13 @@ import pandas as pd
 # Project-level imports
 # =======================================================================
 # import {module}
-from babilonia.accounting import CashFlowBBCC, CashFlowBBCCPJ, CashFlowBBPP, BBCDB
+from babilonia.accounting import (
+    CashFlowBBCC,
+    CashFlowBBCCPJ,
+    CashFlowBBPP,
+    BBCDB,
+    CashFlowNUCredit,
+)
 
 # ... {develop}
 
@@ -42,6 +48,7 @@ PARSERS = {
     "bb-pp": CashFlowBBPP,
     "bb-ccpj": CashFlowBBCCPJ,
     "bb-cdb": BBCDB,
+    "nubank-credito": CashFlowNUCredit,
 }
 
 BANK_NAMES = {
@@ -49,6 +56,7 @@ BANK_NAMES = {
     "bb-pp": "Banco do Brasil",
     "bb-ccpj": "Banco do Brasil",
     "bb-cdb": "Banco do Brasil",
+    "nubank-credito": "NuBank Crédito",
 }
 
 ACCOUNT_NAMES = {
@@ -56,6 +64,7 @@ ACCOUNT_NAMES = {
     "bb-pp": "Conta Poupança PF",
     "bb-ccpj": "Conta Corrente PJ",
     "bb-cdb": "Aplicação CDB",
+    "nubank-credito": "Crédito",
 }
 
 # FUNCTIONS

@@ -1191,6 +1191,274 @@ class CashFlowBBPP(CashFlowBBCC):
         return df
 
 
+class CashFlowNUCredit(CashFlow):
+    """
+    A class for handling CSV data exported from Nubank Cartão de Crédito
+    (Nubank credit card) invoices.
+
+    Nubank appears to export at least two CSV variants for the same
+    ``date,title,amount`` schema:
+
+    * Quoted, Brazilian-formatted values, e.g. ``"1.234,56"`` or
+      ``"- 41,97"`` (comma decimal separator, dot thousands separator,
+      sometimes a space between the minus sign and the digits).
+    * Unquoted, international-formatted values, e.g. ``1234.56`` or
+      ``-6722.00`` (dot decimal separator, no thousands separator).
+
+    ``parse_valor`` auto-detects and normalizes both variants.
+
+    Note on sign convention: Nubank reports purchases as positive
+    ``amount`` and payments/refunds ("Pagamento recebido") as negative.
+    By default this class inverts that sign when building the canonical
+    ``Valor`` field, so purchases become outflows (negative ``Valor``,
+    classified as ``"Out"``) and payments/refunds become inflows
+    (positive ``Valor``, classified as ``"In"``) — consistent with how
+    :meth:`CashFlow.classify_flows` is used for the BB accounts. Pass
+    ``invert_sign=False`` at construction time to keep Nubank's raw
+    sign convention instead.
+
+    .. dropdown:: Script example
+        :icon: code-square
+        :open:
+
+        .. code-block:: python
+
+            from babilonia.accounting import CashFlowNuCC
+
+            # create an empty class
+            cf = CashFlowNuCC()
+
+            # set the file for CSV
+            file_csv = "path/to/file.csv"  # [change this]
+
+            # load data
+            cf.load_data(file_csv)
+
+            # standardize data
+            cf.standardize()
+
+            # print data
+            print(cf.data.head(10))
+
+            # save data
+            file_out = "path/to/output.csv"  # [change this]
+            cf.data.to_csv(file_out, sep=";", index=False)
+
+    """
+
+    def __init__(self, name="CashFlowNuCC", alias="CFNUCC", invert_sign=True):
+        super().__init__(name=name, alias=alias)
+        # include the stages of data
+        self.data_raw = None
+        self.data_parsed = None
+        # see class docstring: purchases (+) -> Out, payments/refunds (-) -> In
+        self.invert_sign = invert_sign
+
+    def load_data(self, file_data):
+        """
+        Load raw data from the Nubank credit-card CSV export.
+
+        :param file_data: Nubank credit-card CSV file path
+        :type file_data: str or Path
+        :return: None
+        :rtype: None
+        """
+        # overwrite relative path inputs
+        # ----------------------------------------------
+        self.file_data = os.path.abspath(file_data)
+
+        # implement loading logic
+        # ----------------------------------------------
+        try:
+            df = pd.read_csv(
+                self.file_data,
+                sep=",",
+                quotechar='"',
+                encoding="utf-8",
+                dtype=str,
+                keep_default_na=False,
+            )
+        except UnicodeDecodeError:
+            # Fallback for alternative exports
+            df = pd.read_csv(
+                self.file_data,
+                sep=",",
+                quotechar='"',
+                encoding="latin1",
+                dtype=str,
+                keep_default_na=False,
+            )
+
+        # post-loading logic
+        # ----------------------------------------------
+        df.dropna(inplace=True)
+        self.data_raw = df.copy()
+        self.data_parsed = None
+        self.data = None
+
+        # update other mutables
+        # ----------------------------------------------
+        self.update()
+
+        # ... continues in downstream objects ... #
+
+        return None
+
+    def standardize(self, force=False):
+        """
+        Standardize data into canonical format.
+
+        :param force: Rebuild parsed data even if it exists
+        """
+        if self.data_raw is None:
+            raise RuntimeError("No data loaded")
+
+        if self.data_parsed is None or force:
+            self.data_parsed = self.parse_data(self.data_raw)
+
+        self.data = self.data_parsed.copy()
+
+        return None
+
+    def parse_data(self, df=None):
+        """
+        Parse data to canonical format
+
+        :param df: Optional input data
+        :type df: ``pandas.DataFrame``
+        :return: Formated data
+        :rtype: ``pandas.DataFrame``
+        """
+        if df is None:
+            df = self.data_raw
+
+        df = df.copy()
+
+        # --- normalize legacy / alternative column names ---
+        df = self.normalize_columns(df)
+
+        df = self.apply_drops(df)
+
+        df["Data"] = self.parse_date(df["date"])
+        df["Valor"] = self.parse_valor(df["amount"])
+        df["Categoria"] = ""
+        df["Descricao"] = df["title"]
+
+        df = df[["Data", "Categoria", "Valor", "Descricao"]]
+
+        return df
+
+    def parse_date(self, series):
+        """
+        Parse Nubank date field from ``YYYY-MM-DD`` to datetime.
+
+        :param series: String series
+        :type series: ``pandas.Series``
+        :return: Datetime series
+        :rtype: ``pandas.Series``
+        """
+        dates = pd.to_datetime(
+            series,
+            format="%Y-%m-%d",
+            errors="raise",
+        )
+        return dates
+
+    def parse_valor(self, series):
+        """
+        Convert ``amount`` field to float, auto-detecting the CSV variant.
+
+        .. dropdown:: Examples
+            :open:
+
+            .. list-table::
+               :widths: auto
+               :header-rows: 1
+
+               * - Input
+                 - Output (before sign inversion)
+               * - ``"50,50"``
+                 - ``50.50``
+               * - ``"- 3.784,83"``
+                 - ``-3784.83``
+               * - ``69.99``
+                 - ``69.99``
+               * - ``-6722.00``
+                 - ``-6722.00``
+
+        :param series: String series
+        :type series: ``pandas.Series``
+        :return: Value series
+        :rtype: ``pandas.Series``
+        """
+        s = series.astype(str).str.strip()
+
+        # drop stray quote characters and collapse internal whitespace,
+        # e.g. the space Nubank sometimes inserts after the minus sign:
+        # "- 41,97" -> "-41,97"
+        s = s.str.replace('"', "", regex=False)
+        s = s.str.replace(r"\s+", "", regex=True)
+
+        # Brazilian-formatted values use a comma as the decimal separator
+        # (and, sometimes, a dot as the thousands separator). The
+        # alternative export already uses a dot as the decimal separator
+        # and can be parsed as-is.
+        is_br_format = s.str.contains(",")
+
+        s.loc[is_br_format] = (
+            s.loc[is_br_format]
+            .str.replace(".", "", regex=False)  # thousands separator
+            .str.replace(",", ".", regex=False)  # decimal separator
+        )
+
+        values = s.astype(float)
+
+        if self.invert_sign:
+            values = -values
+
+        return values
+
+    def apply_drops(self, df):
+        """
+        Filter dataframe for parsing. No rows are dropped by default;
+        override or extend this to filter specific transactions if needed.
+
+        :param df: Input data
+        :type df: ``pandas.DataFrame``
+        :return: Output data
+        :rtype: ``pandas.DataFrame``
+        """
+        return df
+
+    def normalize_columns(self, df):
+        """
+        Normalize alternative / legacy column names to the current schema.
+
+        :param df: Input data
+        :type df: ``pandas.DataFrame``
+        :return: Output data
+        :rtype: ``pandas.DataFrame``
+        """
+        column_aliases = {
+            "Data": "date",
+            "Título": "title",
+            "Titulo": "title",
+            "Descrição": "title",
+            "Valor": "amount",
+        }
+
+        for old, new in column_aliases.items():
+            if old in df.columns and new not in df.columns:
+                df = df.rename(columns={old: new})
+
+        required = {"date", "title", "amount"}
+        missing = required - set(df.columns)
+        if missing:
+            raise KeyError(f"Expected column(s) {sorted(missing)} not found in CSV.")
+
+        return df
+
+
 class BBCDB(DataSet):
 
     def __init__(self, name="BBCDB", alias="BBCDB"):
