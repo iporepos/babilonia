@@ -638,9 +638,6 @@ class CashFlow(DataSet):
         :rtype: dict
         """
 
-        # ------------------------------------------------------------------
-        # Handle defaults
-        # ------------------------------------------------------------------
         if year is None:
             from datetime import datetime
 
@@ -649,67 +646,30 @@ class CashFlow(DataSet):
         if initial_cash is None:
             initial_cash = 0.0
 
-        # ------------------------------------------------------------------
-        # Prepare and filter data
-        # ------------------------------------------------------------------
         df = CashFlow.enrich_time_index(df)
         df = df.query(f"Ano == {year}").copy()
-
-        # Classify flows as inflow / outflow
         df = CashFlow.classify_flows(df)
 
-        # Separate inflow and outflow categories
-
         has_category = "Categoria" in df.columns and df["Categoria"].notna().any()
+        ls_categories = list(df["Categoria"].dropna().unique()) if has_category else []
 
-        if has_category:
-            df_inp = df.query("Flow == 'In'")
-            df_out = df.query("Flow == 'Out'")
-
-            ls_categories_inp = df_inp["Categoria"].dropna().unique()
-            ls_categories_out = df_out["Categoria"].dropna().unique()
-        else:
-            ls_categories_inp = []
-            ls_categories_out = []
-
-        # ------------------------------------------------------------------
-        # Base monthly panel (all categories aggregated)
-        # ------------------------------------------------------------------
         dc_cfa = CashFlow.get_cashflow_analysis(df, category=None)
         df_cfa = dc_cfa["monthly"][["Ano", "Mes", "Fluxo", "Entradas", "Saidas"]].copy()
 
-        # ------------------------------------------------------------------
-        # Add inflow categories (monthly)
-        # ------------------------------------------------------------------
-        for cat in ls_categories_inp:
+        # One merge per category (net Fluxo), not one per (category, flow-direction)
+        # pair -- a category that has both inflow and outflow rows (e.g. a refund
+        # tagged the same category as the original charge) previously produced two
+        # same-named columns and broke the later df_cfa[ls_categories] lookup.
+        for cat in ls_categories:
             dc_cat = CashFlow.get_cashflow_analysis(df, category=cat)
-            df_cat = dc_cat["monthly"][["Mes", "Entradas"]].copy()
-            df_cat.rename(columns={"Entradas": cat}, inplace=True)
-
+            df_cat = dc_cat["monthly"][["Mes", "Fluxo"]].copy()
+            df_cat.rename(columns={"Fluxo": cat}, inplace=True)
             df_cfa = pd.merge(df_cfa, df_cat, how="left", on="Mes")
 
-        # ------------------------------------------------------------------
-        # Add outflow categories (monthly)
-        # ------------------------------------------------------------------
-        for cat in ls_categories_out:
-            dc_cat = CashFlow.get_cashflow_analysis(df, category=cat)
-            df_cat = dc_cat["monthly"][["Mes", "Saidas"]].copy()
-            df_cat.rename(columns={"Saidas": cat}, inplace=True)
-
-            df_cfa = pd.merge(df_cfa, df_cat, how="left", on="Mes")
-
-        # ------------------------------------------------------------------
-        # Compute running balance
-        # ------------------------------------------------------------------
         df_cfa["Saldo"] = initial_cash + df_cfa["Fluxo"].cumsum()
-
-        # ------------------------------------------------------------------
-        # Build yearly summary by category
-        # ------------------------------------------------------------------
 
         total_entradas = df_cfa["Entradas"].sum()
         total_saidas = df_cfa["Saidas"].sum()
-
         media_entradas = df_cfa["Entradas"].mean()
         media_saidas = df_cfa["Saidas"].mean()
 
@@ -734,10 +694,6 @@ class CashFlow(DataSet):
             },
         ]
 
-        ls_categories = list(ls_categories_inp) + list(ls_categories_out)
-
-        ls_categories = list(ls_categories_inp) + list(ls_categories_out)
-
         if ls_categories:
             totals = df_cfa[ls_categories].sum()
             averages = df_cfa[ls_categories].mean()
@@ -759,9 +715,6 @@ class CashFlow(DataSet):
 
         df_summary = pd.DataFrame(rows_summary).round(2)
 
-        # ------------------------------------------------------------------
-        # Output
-        # ------------------------------------------------------------------
         return {
             "Pannel": df_cfa,
             "Summary": df_summary,
