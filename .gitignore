@@ -63,6 +63,15 @@ misc/
 scripts/
 _scripts/
 old/
+prompts/
+prompt.md
+
+# Claude
+# -----------------------------------------------------------------------
+CLAUDE.md
+.claude/
+
+
 # ... [ADD MORE IF NEEDED]
 
 # PyCharm folders
