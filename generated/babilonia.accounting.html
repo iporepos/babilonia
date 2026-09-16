@@ -27,18 +27,18 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../_static/documentation_options.js?v=d45e8c67"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
@@ -443,41 +443,19 @@
                   
   <section id="module-babilonia.accounting">
 <span id="babilonia-accounting"></span><h1>babilonia.accounting<a class="headerlink" href="#module-babilonia.accounting" title="Link to this heading">#</a></h1>
-<p>{Short module description (1-3 sentences)}
-todo docstring</p>
-<section id="features">
-<h2>Features<a class="headerlink" href="#features" title="Link to this heading">#</a></h2>
-<p>todo docstring</p>
-<ul class="simple">
-<li><p>{feature 1}</p></li>
-<li><p>{feature 2}</p></li>
-<li><p>{feature 3}</p></li>
-<li><p>{etc}</p></li>
-</ul>
-</section>
-<section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p>todo docstring
-{Overview description}</p>
-</section>
-<section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h2>
-<p>todo docstring
-{Examples in rST}</p>
-<p>Print a message</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># print message</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
-<span class="c1"># [Output] &gt;&gt; &#39;Hello world!&#39;</span>
-</pre></div>
-</div>
+<p>Brazil-specific accounting classes and tax reference constants.</p>
+<p>Provides data classes for parsing and analyzing bank statements from
+Banco do Brasil and Nubank, computing cash flow summaries, managing
+budget records, and loading NFSe XML invoices. Module-level constants
+hold the 2025 INSS and IRRF progressive tax tables.</p>
 <p class="rubric">Classes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.accounting.BBCDB" title="babilonia.accounting.BBCDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BBCDB</span></code></a>([name, alias])</p></td>
-<td><p></p></td>
+<td><p>Parses Banco do Brasil CDB investment statement text files.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#babilonia.accounting.Budget" title="babilonia.accounting.Budget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Budget</span></code></a>([name, alias])</p></td>
-<td><p></p></td>
+<td><p>A record table for managing budget items.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.accounting.CashFlow" title="babilonia.accounting.CashFlow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CashFlow</span></code></a>([name, alias])</p></td>
 <td><p>A primitive class for handling Cash flow analysis</p></td>
@@ -498,16 +476,20 @@ todo docstring</p>
 <td><p>Class for handling NFSe XML data.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.accounting.NFSeColl" title="babilonia.accounting.NFSeColl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NFSeColl</span></code></a>([base_object, name, alias])</p></td>
-<td><p></p></td>
+<td><p>A collection of <a class="reference internal" href="#babilonia.accounting.NFSe" title="babilonia.accounting.NFSe"><code class="xref py py-class docutils literal notranslate"><span class="pre">NFSe</span></code></a> objects.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-</section>
 <dl class="py class">
 <dt class="sig sig-object py" id="babilonia.accounting.Budget">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">babilonia.accounting.</span></span><span class="sig-name descname"><span class="pre">Budget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyBudget'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Bud'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#Budget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.Budget" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="babilonia.root.html#babilonia.root.RecordTable" title="babilonia.root.RecordTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">RecordTable</span></code></a></p>
+<p>A record table for managing budget items.</p>
+<p>Extends <code class="xref py py-class docutils literal notranslate"><span class="pre">RecordTable</span></code> to track revenues and expenses with
+support for contract grouping, payment status, due dates, and file
+attachments. Signed totals and per-status or per-contract summaries
+are recomputed automatically on update.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="babilonia.accounting.Budget.update">
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#Budget.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.Budget.update" title="Link to this definition">#</a></dt>
@@ -573,17 +555,17 @@ Expected to be incremented downstream.</p>
 <span class="n">cf</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="p">()</span>
 
 <span class="c1"># set the file for CSV</span>
-<span class="n">file_csv</span> <span class="o">=</span> <span class="s2">&quot;path/to/file.csv&quot;</span> <span class="c1"># [change this]</span>
+<span class="n">file_csv</span> <span class="o">=</span> <span class="s2">"path/to/file.csv"</span> <span class="c1"># [change this]</span>
 
 <span class="c1"># load data</span>
 <span class="n">cf</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_csv</span><span class="p">)</span>
 
 <span class="c1"># call method</span>
-<span class="n">dc</span> <span class="o">=</span> <span class="n">cf</span><span class="o">.</span><span class="n">cashflow_analysis</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">cf</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Custeio&quot;</span><span class="p">)</span>
+<span class="n">dc</span> <span class="o">=</span> <span class="n">cf</span><span class="o">.</span><span class="n">cashflow_analysis</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">cf</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">"Custeio"</span><span class="p">)</span>
 
 <span class="c1"># print data</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">dc</span><span class="p">[</span><span class="s2">&quot;monthly&quot;</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">dc</span><span class="p">[</span><span class="s2">&quot;yearly&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dc</span><span class="p">[</span><span class="s2">"monthly"</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dc</span><span class="p">[</span><span class="s2">"yearly"</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -789,7 +771,7 @@ percentage contribution to total inflows.</p>
 <span class="n">cf</span> <span class="o">=</span> <span class="n">CashFlowBBCC</span><span class="p">()</span>
 
 <span class="c1"># set the file for CSV</span>
-<span class="n">file_csv</span> <span class="o">=</span> <span class="s2">&quot;path/to/file.csv&quot;</span> <span class="c1"># [change this]</span>
+<span class="n">file_csv</span> <span class="o">=</span> <span class="s2">"path/to/file.csv"</span> <span class="c1"># [change this]</span>
 
 <span class="c1"># load data</span>
 <span class="n">cf</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_csv</span><span class="p">)</span>
@@ -801,8 +783,8 @@ percentage contribution to total inflows.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">cf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
 
 <span class="c1"># save data</span>
-<span class="n">file_out</span> <span class="o">=</span> <span class="s2">&quot;path/to/output.csv&quot;</span> <span class="c1"># [change this]</span>
-<span class="n">cf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_out</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">file_out</span> <span class="o">=</span> <span class="s2">"path/to/output.csv"</span> <span class="c1"># [change this]</span>
+<span class="n">cf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_out</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1114,7 +1096,7 @@ sign convention instead.</p>
 <span class="n">cf</span> <span class="o">=</span> <span class="n">CashFlowNuCC</span><span class="p">()</span>
 
 <span class="c1"># set the file for CSV</span>
-<span class="n">file_csv</span> <span class="o">=</span> <span class="s2">&quot;path/to/file.csv&quot;</span>  <span class="c1"># [change this]</span>
+<span class="n">file_csv</span> <span class="o">=</span> <span class="s2">"path/to/file.csv"</span>  <span class="c1"># [change this]</span>
 
 <span class="c1"># load data</span>
 <span class="n">cf</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_csv</span><span class="p">)</span>
@@ -1126,8 +1108,8 @@ sign convention instead.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">cf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
 
 <span class="c1"># save data</span>
-<span class="n">file_out</span> <span class="o">=</span> <span class="s2">&quot;path/to/output.csv&quot;</span>  <span class="c1"># [change this]</span>
-<span class="n">cf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_out</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">file_out</span> <span class="o">=</span> <span class="s2">"path/to/output.csv"</span>  <span class="c1"># [change this]</span>
+<span class="n">cf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_out</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1277,6 +1259,12 @@ override or extend this to filter specific transactions if needed.</p>
 <dt class="sig sig-object py" id="babilonia.accounting.BBCDB">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">babilonia.accounting.</span></span><span class="sig-name descname"><span class="pre">BBCDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BBCDB'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BBCDB'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#BBCDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.BBCDB" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="babilonia.root.html#babilonia.root.DataSet" title="babilonia.root.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a></p>
+<p>Parses Banco do Brasil CDB investment statement text files.</p>
+<p>Reads the plain-text report exported by BB for CDB DI and CDB
+Progressivo accounts and splits it into named sections (EXTRATO,
+SALDOS, DEPOSITOS, RENDIMENTOS), normalizing each into a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>. The result is stored in <code class="docutils literal notranslate"><span class="pre">self.data</span></code> as a
+nested dictionary keyed by account then section name.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="babilonia.accounting.BBCDB.load_data">
 <span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#BBCDB.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.BBCDB.load_data" title="Link to this definition">#</a></dt>
@@ -1368,6 +1356,10 @@ override or extend this to filter specific transactions if needed.</p>
 <dt class="sig sig-object py" id="babilonia.accounting.NFSeColl">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">babilonia.accounting.</span></span><span class="sig-name descname"><span class="pre">NFSeColl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_object</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'babilonia.accounting.NFSe'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyNFeCollection'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NFeCol0'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#NFSeColl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.NFSeColl" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="babilonia.root.html#babilonia.root.Collection" title="babilonia.root.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></a></p>
+<p>A collection of <a class="reference internal" href="#babilonia.accounting.NFSe" title="babilonia.accounting.NFSe"><code class="xref py py-class docutils literal notranslate"><span class="pre">NFSe</span></code></a> objects.</p>
+<p>Extends <code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code> to load and aggregate multiple NFSe XML
+files into a shared catalog, either from a folder or an explicit list
+of file paths.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="babilonia.accounting.NFSeColl.load_folder">
 <span class="sig-name descname"><span class="pre">load_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#NFSeColl.load_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.NFSeColl.load_folder" title="Link to this definition">#</a></dt>
@@ -1453,9 +1445,6 @@ override or extend this to filter specific transactions if needed.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.Budget"><code class="docutils literal notranslate"><span class="pre">Budget</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.Budget.update"><code class="docutils literal notranslate"><span class="pre">Budget.update()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.Budget.set_data"><code class="docutils literal notranslate"><span class="pre">Budget.set_data()</span></code></a></li>
@@ -1557,8 +1546,8 @@ override or extend this to filter specific transactions if needed.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1592,7 +1581,7 @@ override or extend this to filter specific transactions if needed.</p>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>
