@@ -4,37 +4,11 @@
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
 """
-{Short package description (1-3 sentences)}
-todo docstring
+babilonia — Python library for accounting and personal finance in Brazil.
 
-Features
---------
-todo docstring
-
-* {feature 1}
-* {feature 2}
-* {feature 3}
-* {etc}
-
-Overview
---------
-todo docstring
-{Overview description}
-
-Examples
---------
-todo docstring
-{Examples in rST}
-
-Print a message
-
-.. code-block:: python
-
-    # print message
-    print("Hello world!")
-    # [Output] >> 'Hello world!'
-
-
+Exposes :mod:`babilonia.root` for foundational base classes and
+:mod:`babilonia.accounting` for Brazil-specific tools including bank
+statement parsers, cash flow analysis, budget records, and NFSe invoices.
 """
 # EXPOSE MODULES FROM PACKAGE
 # ***********************************************************************

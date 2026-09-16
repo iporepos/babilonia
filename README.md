@@ -24,7 +24,7 @@ Handle accounting and finances in Brazil using Python.
 
 ---
 
-# Install easily
+# Install
 
 ```bash
 python -m pip install babilonia
@@ -34,91 +34,148 @@ python -m pip install babilonia
 
 # Quick Gallery
 
-## Parse weird CSV bank statements
+## API
 
-Convert CSV files sourced from banks to ``pandas.DataFrame``. 
+### Parse bank statement CSV
 
-Input (sourced statement from Banco do Brasil)
+Convert raw bank exports to a canonical `pandas.DataFrame`.
+
+Input (`extrato_poupanca.csv` from Banco do Brasil):
 
 ```text
-./extrato_poupanca.csv
-    "Data","Histórico","Valor",
-    "01/08/2025","Juros","3,83 C",
-    "01/08/2025","Reajuste Monetário - BACEN","16,67 C",
-    "01/08/2025","Juros","47,92 C",
-    "11/08/2025","Transferência de Crédito","1.000,00 C",
+"Data","Histórico","Valor",
+"01/08/2025","Juros","3,83 C",
+"01/08/2025","Reajuste Monetário - BACEN","16,67 C",
+"11/08/2025","Transferência de Crédito","1.000,00 C",
 ```
 
-Code block:
 ```python
 from babilonia.accounting import CashFlowBBPP
-file_bb = "./extrato_poupanca.csv"
+
 cf = CashFlowBBPP()
-cf.load_data(file_bb)
+cf.load_data("./extrato_poupanca.csv")
 cf.standardize()
-print(type(cf.data))
-print(cf)
+print(cf.data)
 ```
 
-Output:
 ```text
-<class 'pandas.core.frame.DataFrame'>
-Data           Valor                   Categoria Descricao
-2025-08-01      3.83                       Juros
-2025-08-01     16.67  Reajuste Monetário - BACEN
-2025-08-01     47.92                       Juros
-2025-08-11   1000.00    Transferência de Crédito
+        Data    Valor                   Categoria Descricao
+  2025-08-01     3.83                       Juros
+  2025-08-01    16.67  Reajuste Monetário - BACEN
+  2025-08-11  1000.00    Transferência de Crédito
 ```
 
-## Parse XML Fiscal Notes (NFSe)
+Supported account types: `CashFlowBBCC`, `CashFlowBBCCPJ`, `CashFlowBBPP`, `CashFlowNUCredit`.
 
-Convert XML files sourced from nfse.gov.br as a Python ``dict``. 
+---
 
-Code block:
+### Cash flow analysis
+
+Compute monthly and yearly summaries from a canonical cash flow file.
+
 ```python
-import pprint
-from babilonia.accounting import NFSe
-file_nfse = "./nfse.xml"
-nf = NFSe()
-nf.load_data(file_nfse)
-print(type(nf.data))
-pprint.pp(nf.data)
+from babilonia.accounting import CashFlow
+
+cf = CashFlow()
+cf.load_data("./caixa_diario.csv")
+
+dc = CashFlow.get_cashflow_report(df=cf.data, year=2025, initial_cash=5000.0)
+print(dc["Summary"])
+print(dc["Pannel"])
 ```
 
-Output:
 ```text
-<class 'dict'>
-{'nfse_id': 'NFS43149022227643216000121000000000008025091789495666',
- 'local_emissao': 'Fortaleza',
- 'local_prestacao': 'Fortaleza',
- 'numero_nfse': '80',
- 'codigo_local_incidencia': '6314902',
- 'descricao_servico': 'Serviços de pesquisas de qualquer natureza',
- 'valor_liquido': 3100.0,
- 'data_processo': '2025-09-01T15:36:35-03:00',
- 'Date': '2025-09-01',
- 'Prestador': {'cnpj': '27543216700666',
-               'nome': 'PRESTADOR LTDA',
-               'endereco': {'logradouro': 'R DAS ACACIAS',
-                            'numero': '1244',
-                            'bairro': 'CIDADE ALTA',
-                            'cidade': '4314902',
-                            'uf': 'CE',
-                            'cep': '90880480'},
-               'telefone': '5132692269',
-               'email': 'PRESTADOR@GMAIL.COM'},
- 'Tomador': {'cnpj': '07704429000666',
-             'nif': None,
-             'nome': 'TOMADOR LTDA',
-             'endereco': {'logradouro': 'AV BRASIL',
-                          'numero': '666',
-                          'complemento': 'SALA  666 E 666',
-                          'bairro': 'CENTRO HISTORICO',
-                          'cidade': '6314902',
-                          'cep': '34020023'}},
- 'servico': {'codigo_servico': '020101',
-             'descricao_servico': 'Serviço de suporte técnico.',
-             'valor_servico': 6666.0,
-             'p_tributo_SN': 6.0},
- 'ValorServico': 6666.0}
+   Ano   Categoria     Total     Media  % Entradas
+  2025    ENTRADAS  18200.00   1516.67      100.00
+  2025      SAIDAS  -9430.00   -785.83       51.81
+  2025     Moradia  -3200.00   -266.67       17.58
+  2025  Alimentacao  -1800.00   -150.00        9.89
+
+   Mes  Entradas   Saidas    Fluxo      Saldo
+2025-01   1500.0  -780.0    720.0     5720.0
+2025-02   1500.0  -810.0    690.0     6410.0
+     ...
+```
+
+---
+
+### Parse NFSe XML
+
+Load and inspect a Nota Fiscal de Serviços Eletrônica from `nfse.gov.br`.
+
+```python
+from babilonia.accounting import NFSe
+
+nf = NFSe()
+nf.load_data("./nfse.xml")
+print(nf.date)           # '2025-09-01'
+print(nf.emitter)        # '27543216700666 -- PRESTADOR LTDA'
+print(nf.taker)          # '07704429000666 (CNPJ) -- TOMADOR LTDA'
+print(nf.service_value)  # 6666.0
+```
+
+---
+
+### Batch-load NFSe files
+
+Aggregate a folder of NFSe XML files into a single catalog.
+
+```python
+from babilonia.accounting import NFSeColl
+
+coll = NFSeColl()
+coll.load_folder("./notas_fiscais/")
+print(coll.catalog[["name", "Date", "ValorServico", "Prestador"]])
+```
+
+```text
+          name        Date  ValorServico                          Prestador
+  NFSe_NF0080  2025-09-01        6666.0  27543216700666 -- PRESTADOR LTDA
+  NFSe_NF0081  2025-10-01        5000.0  27543216700666 -- PRESTADOR LTDA
+```
+
+---
+
+## Command-line tools
+
+The `babilonia.tools` scripts form a processing pipeline: raw exports → standardized files → cash flow reports.
+
+### Standardize raw bank exports
+
+Reads T0 raw CSV files and writes T1 canonical CSVs in the same folder tree.
+
+```bash
+python -m babilonia.tools.parse --folder ./data --type bb-cc --year 2025
+```
+
+Available `--type` values: `bb-cc`, `bb-pp`, `bb-ccpj`, `bb-cdb`, `nubank-credito`.
+
+---
+
+### Build cash flow reports
+
+Aggregates T1 files into daily, monthly, and annual summaries. Omit `--year` to process all years.
+
+```bash
+python -m babilonia.tools.cashflow --folder ./data --type bb-cc
+```
+
+---
+
+### Categorize and report by label
+
+Fills the `Categoria` column using a keyword dictionary, then prints and exports a monthly breakdown by category.
+
+```bash
+python -m babilonia.tools.categorize --folder ./data --type nubank-credito --year 2025
+```
+
+---
+
+### Yearly cash flow report
+
+Reads the consolidated daily file and prints a formatted yearly panel and category summary.
+
+```bash
+python -m babilonia.tools.report --folder ./data --type bb-cc --year 2025
 ```

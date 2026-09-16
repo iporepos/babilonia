@@ -4,37 +4,12 @@
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
 """
-{Short module description (1-3 sentences)}
-todo docstring
+Brazil-specific accounting classes and tax reference constants.
 
-Features
---------
-todo docstring
-
-* {feature 1}
-* {feature 2}
-* {feature 3}
-* {etc}
-
-Overview
---------
-todo docstring
-{Overview description}
-
-Examples
---------
-todo docstring
-{Examples in rST}
-
-Print a message
-
-.. code-block:: python
-
-    # print message
-    print("Hello world!")
-    # [Output] >> 'Hello world!'
-
-
+Provides data classes for parsing and analyzing bank statements from
+Banco do Brasil and Nubank, computing cash flow summaries, managing
+budget records, and loading NFSe XML invoices. Module-level constants
+hold the 2025 INSS and IRRF progressive tax tables.
 """
 # IMPORTS
 # ***********************************************************************
@@ -105,6 +80,14 @@ TABELA_IRRF_2025 = [
 # CLASSES -- Project-level
 # =======================================================================
 class Budget(RecordTable):
+    """
+    A record table for managing budget items.
+
+    Extends :class:`RecordTable` to track revenues and expenses with
+    support for contract grouping, payment status, due dates, and file
+    attachments. Signed totals and per-status or per-contract summaries
+    are recomputed automatically on update.
+    """
 
     def __init__(self, name="MyBudget", alias="Bud"):
         super().__init__(name=name, alias=alias)
@@ -1413,6 +1396,15 @@ class CashFlowNUCredit(CashFlow):
 
 
 class BBCDB(DataSet):
+    """
+    Parses Banco do Brasil CDB investment statement text files.
+
+    Reads the plain-text report exported by BB for CDB DI and CDB
+    Progressivo accounts and splits it into named sections (EXTRATO,
+    SALDOS, DEPOSITOS, RENDIMENTOS), normalizing each into a
+    :class:`pandas.DataFrame`. The result is stored in ``self.data`` as a
+    nested dictionary keyed by account then section name.
+    """
 
     def __init__(self, name="BBCDB", alias="BBCDB"):
         super().__init__(name=name, alias=alias)
@@ -1998,6 +1990,13 @@ class NFSe(DataSet):
 
 
 class NFSeColl(Collection):
+    """
+    A collection of :class:`NFSe` objects.
+
+    Extends :class:`Collection` to load and aggregate multiple NFSe XML
+    files into a shared catalog, either from a folder or an explicit list
+    of file paths.
+    """
 
     def __init__(self, base_object=NFSe, name="MyNFeCollection", alias="NFeCol0"):
         """

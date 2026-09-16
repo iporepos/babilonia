@@ -5,8 +5,12 @@
 # See LICENSE for license details.
 
 """
-A set of primitive classes used in other modules.
+Foundational base classes shared across the babilonia package.
 
+Defines the class hierarchy rooted at :class:`MbaE`, from which
+:class:`Collection`, :class:`DataSet`, :class:`FileSys`,
+:class:`RecordTable`, and :class:`Note` derive. Downstream modules
+inherit these primitives rather than Python builtins directly.
 """
 # IMPORTS
 # ***********************************************************************
