@@ -717,6 +717,30 @@ computes cumulative balances across years.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="babilonia.accounting.CashFlow.get_daily_summary">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get_daily_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.get_daily_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.get_daily_summary" title="Link to this definition">#</a></dt>
+<dd><p>Compute daily Entradas/Saidas totals for every calendar day in <code class="docutils literal notranslate"><span class="pre">year</span></code>.</p>
+<p>Unlike <a class="reference internal" href="#babilonia.accounting.CashFlow.get_monthly_summary" title="babilonia.accounting.CashFlow.get_monthly_summary"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_monthly_summary()</span></code></a>, no category breakdown is kept –
+this is meant for plotting a full-year daily timeseries, where every
+day must be present (as a zero bar) even without transactions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pandas.DataFrame</em>) – Cash flow data containing at least <code class="docutils literal notranslate"><span class="pre">Data</span></code> and <code class="docutils literal notranslate"><span class="pre">Valor</span></code>.</p></li>
+<li><p><strong>year</strong> (<em>int</em><em> or </em><em>str</em>) – Calendar year to cover, start to end.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>One row per day of <code class="docutils literal notranslate"><span class="pre">year</span></code>, with <code class="docutils literal notranslate"><span class="pre">Data</span></code>, <code class="docutils literal notranslate"><span class="pre">Entradas</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Saidas</span></code> and <code class="docutils literal notranslate"><span class="pre">Fluxo</span></code> columns.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="babilonia.accounting.CashFlow.get_cashflow_report">
 <span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get_cashflow_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_cash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.get_cashflow_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.get_cashflow_report" title="Link to this definition">#</a></dt>
 <dd><p>Build a yearly cash flow panel and summary by category.</p>
@@ -753,6 +777,177 @@ percentage contribution to total inflows.</p>
 <dt class="sig sig-object py" id="babilonia.accounting.CashFlow.format_currency_columns">
 <span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">format_currency_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.format_currency_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.format_currency_columns" title="Link to this definition">#</a></dt>
 <dd><p>Return a copy of df with selected numeric columns formatted as strings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="babilonia.accounting.CashFlow.format_compact">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">format_compact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decimals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.format_compact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.format_compact" title="Link to this definition">#</a></dt>
+<dd><p>Format a value as a compact string, rounding to <code class="docutils literal notranslate"><span class="pre">K</span></code> (thousand) or
+<code class="docutils literal notranslate"><span class="pre">M</span></code> (million) once the magnitude is too big to annotate as-is.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – Value to format.</p></li>
+<li><p><strong>decimals</strong> (<em>int</em>) – Decimal places kept on the <code class="docutils literal notranslate"><span class="pre">K</span></code>/<code class="docutils literal notranslate"><span class="pre">M</span></code> value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Compact string, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;1.2K&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;-3.4M&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;850&quot;</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="babilonia.accounting.CashFlow.load_plot_config">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">load_plot_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.load_plot_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.load_plot_config" title="Link to this definition">#</a></dt>
+<dd><p>Load tool config overrides from <code class="docutils literal notranslate"><span class="pre">cashflow.json</span></code> in <code class="docutils literal notranslate"><span class="pre">folder</span></code>.</p>
+<p>Every key is optional, and so is the file itself: anything missing
+falls back to <code class="xref py py-data docutils literal notranslate"><span class="pre">PLOT_CONFIG_DEFAULTS</span></code>. Figure size, bar
+colors, bar width, background color, histogram panel size/bins/
+color and font sizes are the tunable surface for
+<a class="reference internal" href="#babilonia.accounting.CashFlow.plot_cashflow_bars" title="babilonia.accounting.CashFlow.plot_cashflow_bars"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_cashflow_bars()</span></code></a>; <code class="docutils literal notranslate"><span class="pre">language</span></code> controls the printed
+table headers in <code class="docutils literal notranslate"><span class="pre">cashflow.py</span></code> (see its <code class="docutils literal notranslate"><span class="pre">COLUMN_LABELS</span></code>) –
+currently <code class="docutils literal notranslate"><span class="pre">&quot;en&quot;</span></code> (default) or <code class="docutils literal notranslate"><span class="pre">&quot;pt-br&quot;</span></code>.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"figsize_mm"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">150</span><span class="p">,</span><span class="w"> </span><span class="mi">80</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"dpi"</span><span class="p">:</span><span class="w"> </span><span class="mi">300</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"color_inflows"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tab:blue"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"color_outflows"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tab:red"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"background_color"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#F7F7FB"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"en"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"fontsize_title"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"fontsize_annotation"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"fontsize_ticks"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"bar_width_pct"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"hist_width_pct"</span><span class="p">:</span><span class="w"> </span><span class="mi">33</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"hist_bin_size"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"color_hist"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">color_hist</span></code> is <code class="docutils literal notranslate"><span class="pre">null</span></code> by default, meaning the histogram
+panel keeps the main panel’s inflow/outflow color split; set it
+to a single color (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;tab:gray&quot;</span></code>) to use that for both
+sides of the histogram instead. <code class="docutils literal notranslate"><span class="pre">hist_bin_size</span></code> is also
+<code class="docutils literal notranslate"><span class="pre">null</span></code> by default, meaning the bin width is computed from the
+data itself via <a class="reference internal" href="#babilonia.accounting.CashFlow.compute_optimal_bin_size" title="babilonia.accounting.CashFlow.compute_optimal_bin_size"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_optimal_bin_size()</span></code></a> (Scott’s rule)
+rather than fixed; set it to a number to use a fixed
+currency-wide bin instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>folder</strong> (<em>str</em><em> or </em><em>pathlib.Path</em>) – Bank/account folder where <code class="docutils literal notranslate"><span class="pre">cashflow.json</span></code> is
+expected (the same folder the plots are written to).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">PLOT_CONFIG_DEFAULTS</span></code> overridden by any keys present
+in the file, or an unmodified copy if the file is absent.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="babilonia.accounting.CashFlow.compute_optimal_bin_size">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">compute_optimal_bin_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.compute_optimal_bin_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.compute_optimal_bin_size" title="Link to this definition">#</a></dt>
+<dd><p>Compute a histogram bin width via Scott’s rule, rounded to a
+clean 1/2/5 x 10^k step for a readable currency axis.</p>
+<p>Scott’s rule (<code class="docutils literal notranslate"><span class="pre">3.49</span> <span class="pre">*</span> <span class="pre">std</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">**</span> <span class="pre">-1/3</span></code>) assumes a roughly
+normal distribution and adapts to sample size – a longer series
+(more months) gets proportionally finer bins on its own, with no
+manual scaling needed. Used as the default for <code class="docutils literal notranslate"><span class="pre">hist_bin_size</span></code>
+(<code class="docutils literal notranslate"><span class="pre">None</span></code> in <code class="xref py py-data docutils literal notranslate"><span class="pre">PLOT_CONFIG_DEFAULTS</span></code>) whenever it is not set
+explicitly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>values</strong> (<em>array-like</em>) – Sample to size bins for (e.g. Entradas and
+<code class="docutils literal notranslate"><span class="pre">Saidas.abs()</span></code> concatenated).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Bin width, always &gt; 0.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="babilonia.accounting.CashFlow.plot_cashflow_bars">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">plot_cashflow_bars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year_ticks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim_default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlow.plot_cashflow_bars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlow.plot_cashflow_bars" title="Link to this definition">#</a></dt>
+<dd><p>Plot Entradas/Saidas as a diverging bar chart and save it as a JPEG.</p>
+<p>Entradas (always &gt;= 0) are drawn above the zero line and Saidas
+(always &lt;= 0) below it, both anchored at the same baseline for
+every value of <code class="docutils literal notranslate"><span class="pre">x_col</span></code>. No legend is drawn – the color
+convention is stated once via <code class="docutils literal notranslate"><span class="pre">scale</span></code> in the title instead of
+repeating a color key on every plot. Month ticks are single letters
+(<code class="docutils literal notranslate"><span class="pre">&quot;J&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code>, …), the y-axis is compacted to whole <code class="docutils literal notranslate"><span class="pre">K</span></code>/<code class="docutils literal notranslate"><span class="pre">M</span></code>
+(no decimals) via <a class="reference internal" href="#babilonia.accounting.CashFlow.format_compact" title="babilonia.accounting.CashFlow.format_compact"><code class="xref py py-meth docutils literal notranslate"><span class="pre">format_compact()</span></code></a>, and the y-limits are
+symmetric around zero so 0 always sits at the vertical center of
+the plot: fixed at <code class="docutils literal notranslate"><span class="pre">ylim_default</span></code> unless some bar would be
+clipped by it, in which case <code class="docutils literal notranslate"><span class="pre">1.1</span> <span class="pre">*</span> <span class="pre">max(|Entradas|,</span> <span class="pre">|Saidas|)</span></code> is
+used instead – this keeps the scale stable (and years comparable)
+for ordinary months, only growing for an outlier year.</p>
+<p>A second panel to the right (<code class="docutils literal notranslate"><span class="pre">hist_width_pct</span></code> of the total width,
+default a third) shares the main panel’s y-axis and shows it as a
+horizontal histogram instead – a sideways projection of the
+monthly series’ distribution. Entradas values are binned into
+<code class="docutils literal notranslate"><span class="pre">hist_bin_size</span></code> currency-wide bins (or, if unset, bins sized by
+<a class="reference internal" href="#babilonia.accounting.CashFlow.compute_optimal_bin_size" title="babilonia.accounting.CashFlow.compute_optimal_bin_size"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_optimal_bin_size()</span></code></a>) from 0 upward and drawn as
+bars extending right from x=0 in the positive region; Saidas are
+binned the same way (by magnitude) and mirrored into the negative
+region, so bin position lines up directly with the main panel’s
+y-scale. The histogram’s x-limit is fixed at twice its tallest
+bar (not autoscaled), so no single bin is ever stretched
+edge-to-edge. Both sides use <code class="docutils literal notranslate"><span class="pre">color_inflows</span></code>/<code class="docutils literal notranslate"><span class="pre">color_outflows</span></code> (the
+same split as the main bars) unless <code class="docutils literal notranslate"><span class="pre">color_hist</span></code> is set, in
+which case it covers both sides with a single color instead. A
+solid horizontal line marks each series’ mean (<code class="docutils literal notranslate"><span class="pre">Entradas.mean()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Saidas.mean()</span></code>) across the histogram panel, in that series’
+own color regardless of <code class="docutils literal notranslate"><span class="pre">color_hist</span></code>, annotated (in the default
+annotation text color, like the bar annotations) with the rounded
+value at the line’s upper-right.</p>
+<p>Every visual aspect – figure size, bar colors, background color,
+bar width, histogram panel width and bin size, font sizes –
+comes from <code class="docutils literal notranslate"><span class="pre">config</span></code> (see <a class="reference internal" href="#babilonia.accounting.CashFlow.load_plot_config" title="babilonia.accounting.CashFlow.load_plot_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_plot_config()</span></code></a>), falling
+back to <code class="xref py py-data docutils literal notranslate"><span class="pre">PLOT_CONFIG_DEFAULTS</span></code> for anything missing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pandas.DataFrame</em>) – Data with <code class="docutils literal notranslate"><span class="pre">x_col</span></code>, <code class="docutils literal notranslate"><span class="pre">Entradas</span></code> and <code class="docutils literal notranslate"><span class="pre">Saidas</span></code> columns.</p></li>
+<li><p><strong>x_col</strong> (<em>str</em>) – Column used for the x-axis (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;Data&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;Mes&quot;</span></code>).</p></li>
+<li><p><strong>file_out</strong> (<em>str</em><em> or </em><em>pathlib.Path</em>) – Destination path for the <code class="docutils literal notranslate"><span class="pre">.jpg</span></code> file.</p></li>
+<li><p><strong>title</strong> (<em>str</em><em>, </em><em>optional</em>) – Optional chart title.</p></li>
+<li><p><strong>scale</strong> (<em>str</em><em>, </em><em>optional</em>) – Granularity label (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;Daily&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Monthly&quot;</span></code>),
+appended to <code class="docutils literal notranslate"><span class="pre">title</span></code>.</p></li>
+<li><p><strong>annotate</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, print each bar’s value at its outer
+edge, compacted via <a class="reference internal" href="#babilonia.accounting.CashFlow.format_compact" title="babilonia.accounting.CashFlow.format_compact"><code class="xref py py-meth docutils literal notranslate"><span class="pre">format_compact()</span></code></a>. Meant for charts with
+few bars (e.g. monthly); too dense for a daily timeseries.</p></li>
+<li><p><strong>date_axis</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">x_col</span></code> is treated as a datetime
+axis and tick marks are placed once per month.</p></li>
+<li><p><strong>year_ticks</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (meant for a multi-year <code class="docutils literal notranslate"><span class="pre">x_col</span></code>
+like <code class="docutils literal notranslate"><span class="pre">&quot;YYYY-MM&quot;</span></code>, e.g. the full-history monthly series),
+only January of each year gets a tick, labeled with that
+year’s number – no per-month letters, so a many-year series
+stays readable. Ignored when <code class="docutils literal notranslate"><span class="pre">date_axis</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>ylim_default</strong> (<em>float</em>) – Fixed symmetric y-limit used as long as it
+does not clip any bar.</p></li>
+<li><p><strong>config</strong> (<em>dict</em><em>, </em><em>optional</em>) – Style overrides, as returned by
+<a class="reference internal" href="#babilonia.accounting.CashFlow.load_plot_config" title="babilonia.accounting.CashFlow.load_plot_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_plot_config()</span></code></a>. Missing keys fall back to
+<code class="xref py py-data docutils literal notranslate"><span class="pre">PLOT_CONFIG_DEFAULTS</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The <code class="docutils literal notranslate"><span class="pre">file_out</span></code> path, for logging by the caller.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str or pathlib.Path</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -932,6 +1127,19 @@ percentage contribution to total inflows.</p>
 <dt class="sig sig-object py" id="babilonia.accounting.CashFlowBBCCPJ.parse_valor">
 <span class="sig-name descname"><span class="pre">parse_valor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/accounting.html#CashFlowBBCCPJ.parse_valor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.accounting.CashFlowBBCCPJ.parse_valor" title="Link to this definition">#</a></dt>
 <dd><p>Convert <code class="docutils literal notranslate"><span class="pre">Valor</span></code> field to float.</p>
+<p>Two T0 export variants are supported, so a file from either
+(or a single file spanning the transition) parses correctly:</p>
+<ul class="simple">
+<li><p>Legacy, marker-suffixed: sign comes from a trailing <code class="docutils literal notranslate"><span class="pre">C</span></code>/<code class="docutils literal notranslate"><span class="pre">D</span></code>
+marker, discarding whatever sign the string itself carries
+(e.g. <code class="docutils literal notranslate"><span class="pre">&quot;5.000,00</span> <span class="pre">C&quot;</span></code> -&gt; credit/inflow, <code class="docutils literal notranslate"><span class="pre">&quot;403,00</span> <span class="pre">D&quot;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">&quot;-403,00</span> <span class="pre">D&quot;</span></code> both -&gt; debit/outflow).</p></li>
+<li><p>Newer, plain signed value with no marker (a separate <code class="docutils literal notranslate"><span class="pre">Tipo</span>
+<span class="pre">Lançamento</span></code> column states “Entrada”/”Saída” redundantly):
+handled by the base <a class="reference internal" href="#babilonia.accounting.CashFlowBBCC.parse_valor" title="babilonia.accounting.CashFlowBBCC.parse_valor"><code class="xref py py-meth docutils literal notranslate"><span class="pre">CashFlowBBCC.parse_valor()</span></code></a>, sign
+taken directly from the string (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;-3.000,00&quot;</span></code> -&gt;
+outflow, <code class="docutils literal notranslate"><span class="pre">&quot;3.423,00&quot;</span></code> -&gt; inflow).</p></li>
+</ul>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3" open="open">
 <summary class="sd-summary-title sd-card-header">
 <span class="sd-summary-text">Examples</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
@@ -947,6 +1155,12 @@ percentage contribution to total inflows.</p>
 </tr>
 <tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">-403,00</span> <span class="pre">D</span></code></p></td>
 <td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">-403.00</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">-3.000,00</span></code></p></td>
+<td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">-3000.00</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">3.423,00</span></code></p></td>
+<td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">3423.00</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1464,9 +1678,14 @@ of file paths.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.filter_category"><code class="docutils literal notranslate"><span class="pre">CashFlow.filter_category()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.get_monthly_summary"><code class="docutils literal notranslate"><span class="pre">CashFlow.get_monthly_summary()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.get_yearly_summary"><code class="docutils literal notranslate"><span class="pre">CashFlow.get_yearly_summary()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.get_daily_summary"><code class="docutils literal notranslate"><span class="pre">CashFlow.get_daily_summary()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.get_cashflow_report"><code class="docutils literal notranslate"><span class="pre">CashFlow.get_cashflow_report()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.format_currency"><code class="docutils literal notranslate"><span class="pre">CashFlow.format_currency()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.format_currency_columns"><code class="docutils literal notranslate"><span class="pre">CashFlow.format_currency_columns()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.format_compact"><code class="docutils literal notranslate"><span class="pre">CashFlow.format_compact()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.load_plot_config"><code class="docutils literal notranslate"><span class="pre">CashFlow.load_plot_config()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.compute_optimal_bin_size"><code class="docutils literal notranslate"><span class="pre">CashFlow.compute_optimal_bin_size()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlow.plot_cashflow_bars"><code class="docutils literal notranslate"><span class="pre">CashFlow.plot_cashflow_bars()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.accounting.CashFlowBBCC"><code class="docutils literal notranslate"><span class="pre">CashFlowBBCC</span></code></a><ul class="nav section-nav flex-column">

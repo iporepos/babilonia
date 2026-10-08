@@ -8,6 +8,7 @@
 
    .. autosummary::
    
+      build_subtotal_rows
       concat_dfs
       get_account
       get_arguments
@@ -15,4 +16,11 @@
       get_file_pattern_cashflow_daily
       get_file_pattern_statement_t0
       preview_df
+      tee_stdout
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      TeeWriter
    

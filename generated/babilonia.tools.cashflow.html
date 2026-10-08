@@ -532,6 +532,7 @@ python<span class="w"> </span><span class="s2">"</span><span class="nv">$SCRIPT<
 <p>The input data is expected to follow a simple hierarchical layout:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>bb/                                 # Bank
 └── cc/                             # Bank account
+    ├── cashflow.json                  # optional, see Plots below
     ├── 2022/
     │   ├── EXTRATO_BB_CC_2022-01_T1.csv
     │   └── EXTRATO_BB_CC_2022-02_T1.csv
@@ -548,12 +549,22 @@ bank statement.</p>
 outputs:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>bb/                                 # Bank
 └── cc/                             # Bank account
+    ├── CAIXA_BB_CC_MENSAL_2023.jpg
+    ├── CAIXA_BB_CC_MENSAL_2024.jpg
+    ├── CAIXA_BB_CC_MENSAL_LT.jpg
     └── 2024/
         ├── CAIXA_BB_CC_2024_DIARIO.csv
         ├── CAIXA_BB_CC_2024_MENSAL.csv
-        └── CAIXA_BB_CC_2024_ANUAL.csv
+        ├── CAIXA_BB_CC_2024_ANUAL.csv
+        └── CAIXA_BB_CC_2024_REPORT.txt
 </pre></div>
 </div>
+<p>Plots are written directly under the bank/account folder (not inside
+the per-year subfolder) so every year’s <code class="docutils literal notranslate"><span class="pre">.jpg</span></code> files sit side by
+side for easy comparison – they share a common y-axis scale computed
+once over the whole series (see Plots below). The year comes last in
+the plot filename (unlike the per-year CSV/report names) so files
+across years sort next to each other.</p>
 <p>Global merged outputs (all years):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>bb/                                 # Bank
 └── cc/                             # Bank account
@@ -570,21 +581,97 @@ outputs:</p>
 the parsing stage.</p></li>
 <li><p><strong>Daily</strong>: Concatenated transaction-level data, bucketed by the real
 transaction year (from <code class="docutils literal notranslate"><span class="pre">Data</span></code>), not by source file/folder.</p></li>
-<li><p><strong>Monthly</strong>: Aggregated per month with cumulative fields.</p></li>
+<li><p><strong>Monthly</strong>: Aggregated per month with cumulative fields. The
+on-screen preview appends <code class="docutils literal notranslate"><span class="pre">SUBTOTAL</span></code> and <code class="docutils literal notranslate"><span class="pre">MEDIA</span></code> (subtotal / 12)
+rows for <code class="docutils literal notranslate"><span class="pre">Entradas</span></code>/<code class="docutils literal notranslate"><span class="pre">Saidas</span></code>/<code class="docutils literal notranslate"><span class="pre">Fluxo</span></code> and their transaction
+counts; cumulative columns are left blank there, since summing a
+running total isn’t meaningful. These two rows are display-only and
+not written to the exported CSV.</p></li>
 <li><p><strong>Annual</strong>: Aggregated per year with cumulative fields.</p></li>
+<li><p><strong>Report</strong>: A <code class="docutils literal notranslate"><span class="pre">.txt</span></code> file per year, a verbatim copy of everything
+printed to the terminal for that year (header, daily/monthly/annual
+previews), produced by mirroring <code class="docutils literal notranslate"><span class="pre">stdout</span></code> while that year is
+processed so it can never drift from what was shown on screen. Table
+headers follow the <code class="docutils literal notranslate"><span class="pre">language</span></code> setting below.</p></li>
+<li><p><strong>Plots</strong>: A <code class="docutils literal notranslate"><span class="pre">.jpg</span></code> bar chart per year for the monthly scale,
+written to the bank/account folder (not the per-year subfolder).
+Entradas are drawn above zero, Saidas below zero, both anchored at
+the same baseline, and each bar is annotated with its value,
+compacted to <code class="docutils literal notranslate"><span class="pre">K</span></code>/<code class="docutils literal notranslate"><span class="pre">M</span></code> for large amounts. The y-axis limits are
+computed once from the whole series (every year available, 1.2x the
+absolute max flow) and reused for every year’s plot, so all years
+share the same scale and are directly comparable. A second panel to
+the right shows the same series as a horizontal histogram sharing
+that y-axis – a sideways projection of the distribution, binned by
+a fixed currency interval, inflows mirroring outflows across zero.
+Figure size, bar colors/width, histogram panel size/bins, background
+color and font sizes come from the config file below. Alongside the
+per-year plots, one more covers the full history: every year’s
+months in one chart (<code class="docutils literal notranslate"><span class="pre">..._MENSAL_LT.jpg</span></code>, “LT” for long-term),
+using the same y-scale, with annotations dropped (too many bars
+across several years) and only a January tick per year, labeled
+with that year’s number – no per-month letters. Its histogram bin
+size always comes from Scott’s rule on its own (larger) series,
+regardless of any fixed <code class="docutils literal notranslate"><span class="pre">hist_bin_size</span></code> set in <code class="docutils literal notranslate"><span class="pre">cashflow.json</span></code>
+for the per-year plots – the LT series is a different sample and
+keeps its own bin width. A daily plot is not produced for now – it added
+little over the monthly one – though the underlying
+<a class="reference internal" href="babilonia.accounting.html#babilonia.accounting.CashFlow.get_daily_summary" title="babilonia.accounting.CashFlow.get_daily_summary"><code class="xref py py-meth docutils literal notranslate"><span class="pre">babilonia.accounting.CashFlow.get_daily_summary()</span></code></a> and the
+<code class="docutils literal notranslate"><span class="pre">date_axis</span></code> option on <a class="reference internal" href="babilonia.accounting.html#babilonia.accounting.CashFlow.plot_cashflow_bars" title="babilonia.accounting.CashFlow.plot_cashflow_bars"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_cashflow_bars</span></code></a> still support it.</p></li>
 </ul>
+</section>
+<section id="config-file">
+<h2>Config File<a class="headerlink" href="#config-file" title="Link to this heading">#</a></h2>
+<p>Plot style and the report language are both read from an optional
+<code class="docutils literal notranslate"><span class="pre">cashflow.json</span></code> sitting in the bank/account folder (next to the
+plots). Every key is optional, and so is the file itself: anything
+missing falls back to <code class="xref py py-data docutils literal notranslate"><span class="pre">babilonia.accounting.PLOT_CONFIG_DEFAULTS</span></code>.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"figsize_mm"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">150</span><span class="p">,</span><span class="w"> </span><span class="mi">80</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"dpi"</span><span class="p">:</span><span class="w"> </span><span class="mi">300</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"color_inflows"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tab:blue"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"color_outflows"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tab:red"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"background_color"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#F7F7FB"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"en"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"fontsize_title"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"fontsize_annotation"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"fontsize_ticks"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"bar_width_pct"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"hist_width_pct"</span><span class="p">:</span><span class="w"> </span><span class="mi">33</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"hist_bin_size"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"color_hist"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">language</span></code> controls the printed table headers (terminal + <code class="docutils literal notranslate"><span class="pre">.txt</span></code>
+report: <code class="docutils literal notranslate"><span class="pre">Ano</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Year</span></code>, <code class="docutils literal notranslate"><span class="pre">Entradas</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Inflows</span></code>, etc. – see
+<code class="docutils literal notranslate"><span class="pre">COLUMN_LABELS</span></code> in this module), not the plots. Currently <code class="docutils literal notranslate"><span class="pre">&quot;en&quot;</span></code>
+(default) or <code class="docutils literal notranslate"><span class="pre">&quot;pt-br&quot;</span></code> (the data’s native language, a no-op); more
+may be added later. Every other key tunes <a class="reference internal" href="babilonia.accounting.html#babilonia.accounting.CashFlow.plot_cashflow_bars" title="babilonia.accounting.CashFlow.plot_cashflow_bars"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_cashflow_bars()</span></code></a> – see
+<a class="reference internal" href="babilonia.accounting.html#babilonia.accounting.CashFlow.load_plot_config" title="babilonia.accounting.CashFlow.load_plot_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">babilonia.accounting.CashFlow.load_plot_config()</span></code></a> for details.</p>
 <p>The script does not modify input files; all outputs are written as new
-CSV files.</p>
+CSV, <code class="docutils literal notranslate"><span class="pre">.txt</span></code> and <code class="docutils literal notranslate"><span class="pre">.jpg</span></code> files.</p>
 <p class="rubric">Functions</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.cashflow.main" title="babilonia.tools.cashflow.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.cashflow.localize_columns" title="babilonia.tools.cashflow.localize_columns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">localize_columns</span></code></a>(df, column_labels)</p></td>
+<td><p>Rename df's columns for display, falling back to the original name for any column not covered by <code class="docutils literal notranslate"><span class="pre">column_labels</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.tools.cashflow.main" title="babilonia.tools.cashflow.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </section>
+<dl class="py function">
+<dt class="sig sig-object py" id="babilonia.tools.cashflow.localize_columns">
+<span class="sig-prename descclassname"><span class="pre">babilonia.tools.cashflow.</span></span><span class="sig-name descname"><span class="pre">localize_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_labels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/tools/cashflow.html#localize_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.tools.cashflow.localize_columns" title="Link to this definition">#</a></dt>
+<dd><p>Rename df’s columns for display, falling back to the original name
+for any column not covered by <code class="docutils literal notranslate"><span class="pre">column_labels</span></code>. Display-only –
+never used before a dataframe is exported to CSV.</p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="babilonia.tools.cashflow.main">
 <span class="sig-prename descclassname"><span class="pre">babilonia.tools.cashflow.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/tools/cashflow.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.tools.cashflow.main" title="Link to this definition">#</a></dt>
@@ -642,6 +729,8 @@ CSV files.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#script-examples">Script Examples</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#expected-folder-structure">Expected Folder Structure</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-levels">Data Levels</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#config-file">Config File</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.cashflow.localize_columns"><code class="docutils literal notranslate"><span class="pre">localize_columns()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.cashflow.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
 </ul>
   </nav></div>

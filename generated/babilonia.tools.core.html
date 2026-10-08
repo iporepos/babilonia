@@ -447,30 +447,109 @@
 <p class="rubric">Functions</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.core.concat_dfs" title="babilonia.tools.core.concat_dfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">concat_dfs</span></code></a>(ls_files)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.core.build_subtotal_rows" title="babilonia.tools.core.build_subtotal_rows"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_subtotal_rows</span></code></a>(df, columns, ...[, ...])</p></td>
+<td><p>Build a subtotal row and an average row for a monthly table.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.tools.core.concat_dfs" title="babilonia.tools.core.concat_dfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">concat_dfs</span></code></a>(ls_files)</p></td>
 <td><p>Reads multiple CSV files and concatenates them into a single DataFrame.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.tools.core.get_account" title="babilonia.tools.core.get_account"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_account</span></code></a>(data_type)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.core.get_account" title="babilonia.tools.core.get_account"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_account</span></code></a>(data_type)</p></td>
 <td><p>Extracts the account identifier from a formatted data type string.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.core.get_arguments" title="babilonia.tools.core.get_arguments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_arguments</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.tools.core.get_arguments" title="babilonia.tools.core.get_arguments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_arguments</span></code></a>()</p></td>
 <td><p>Parses command-line arguments for the Babilonia utilities.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.tools.core.get_bank" title="babilonia.tools.core.get_bank"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_bank</span></code></a>(data_type)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.core.get_bank" title="babilonia.tools.core.get_bank"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_bank</span></code></a>(data_type)</p></td>
 <td><p>Extracts the bank name from a formatted data type string.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.core.get_file_pattern_cashflow_daily" title="babilonia.tools.core.get_file_pattern_cashflow_daily"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_file_pattern_cashflow_daily</span></code></a>(data_type, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.tools.core.get_file_pattern_cashflow_daily" title="babilonia.tools.core.get_file_pattern_cashflow_daily"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_file_pattern_cashflow_daily</span></code></a>(data_type, ...)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.tools.core.get_file_pattern_statement_t0" title="babilonia.tools.core.get_file_pattern_statement_t0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_file_pattern_statement_t0</span></code></a>(data_type, folder)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.core.get_file_pattern_statement_t0" title="babilonia.tools.core.get_file_pattern_statement_t0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_file_pattern_statement_t0</span></code></a>(data_type, folder)</p></td>
 <td><p>Constructs a glob-style file path pattern for bank statement CSV files.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.core.preview_df" title="babilonia.tools.core.preview_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preview_df</span></code></a>(df[, row_max])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#babilonia.tools.core.preview_df" title="babilonia.tools.core.preview_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preview_df</span></code></a>(df[, row_max])</p></td>
 <td><p>Displays a preview of a DataFrame with a specified maximum number of rows.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.core.tee_stdout" title="babilonia.tools.core.tee_stdout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tee_stdout</span></code></a>(file_handle)</p></td>
+<td><p>Temporarily duplicate everything printed to <code class="docutils literal notranslate"><span class="pre">stdout</span></code> into <code class="docutils literal notranslate"><span class="pre">file_handle</span></code>.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#babilonia.tools.core.TeeWriter" title="babilonia.tools.core.TeeWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TeeWriter</span></code></a>(*streams)</p></td>
+<td><p>File-like object that duplicates writes across several streams.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="babilonia.tools.core.TeeWriter">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">babilonia.tools.core.</span></span><span class="sig-name descname"><span class="pre">TeeWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">streams</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/tools/core.html#TeeWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.tools.core.TeeWriter" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>File-like object that duplicates writes across several streams.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>streams</strong> (<em>TextIO</em>) – Writable file-like objects to fan writes out to.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="babilonia.tools.core.TeeWriter.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/tools/core.html#TeeWriter.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.tools.core.TeeWriter.write" title="Link to this definition">#</a></dt>
+<dd><p>Write <code class="docutils literal notranslate"><span class="pre">data</span></code> to every stream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>str</em>) – Text to write.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="babilonia.tools.core.TeeWriter.flush">
+<span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/tools/core.html#TeeWriter.flush"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.tools.core.TeeWriter.flush" title="Link to this definition">#</a></dt>
+<dd><p>Flush every stream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="babilonia.tools.core.tee_stdout">
+<span class="sig-prename descclassname"><span class="pre">babilonia.tools.core.</span></span><span class="sig-name descname"><span class="pre">tee_stdout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/tools/core.html#tee_stdout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.tools.core.tee_stdout" title="Link to this definition">#</a></dt>
+<dd><p>Temporarily duplicate everything printed to <code class="docutils literal notranslate"><span class="pre">stdout</span></code> into <code class="docutils literal notranslate"><span class="pre">file_handle</span></code>.</p>
+<p>Used to produce a <code class="docutils literal notranslate"><span class="pre">.txt</span></code> report that is guaranteed to match the
+terminal output for the same block of code, without reformatting
+anything a second time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_handle</strong> (<em>TextIO</em>) – Writable text file object to receive a copy of
+everything printed while the context is active.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="babilonia.tools.core.preview_df">
 <span class="sig-prename descclassname"><span class="pre">babilonia.tools.core.</span></span><span class="sig-name descname"><span class="pre">preview_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/tools/core.html#preview_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.tools.core.preview_df" title="Link to this definition">#</a></dt>
@@ -512,6 +591,41 @@
 type to avoid type inference issues during concatenation.
 The resulting index is reset and the old index is dropped.</p>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="babilonia.tools.core.build_subtotal_rows">
+<span class="sig-prename descclassname"><span class="pre">babilonia.tools.core.</span></span><span class="sig-name descname"><span class="pre">build_subtotal_rows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">formatters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtotal_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SUBTOTAL'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MEDIA'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_periods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/babilonia/tools/core.html#build_subtotal_rows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#babilonia.tools.core.build_subtotal_rows" title="Link to this definition">#</a></dt>
+<dd><p>Build a subtotal row and an average row for a monthly table.</p>
+<p>Only <code class="docutils literal notranslate"><span class="pre">sum_columns</span></code> are summed (subtotal) and divided by
+<code class="docutils literal notranslate"><span class="pre">n_periods</span></code> (average); every other column is left blank on both
+rows. This is the right default for a running/cumulative column
+(e.g. a balance), where a sum across periods has no real meaning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pandas.DataFrame</em>) – Monthly table to summarize, one row per period, with
+raw (not yet display-formatted) numeric values.</p></li>
+<li><p><strong>columns</strong> (<em>list</em>) – Column order for the returned rows – normally
+<code class="docutils literal notranslate"><span class="pre">df.columns</span></code>, kept explicit so the caller controls it.</p></li>
+<li><p><strong>sum_columns</strong> (<em>list</em>) – Columns to sum and average.</p></li>
+<li><p><strong>label_column</strong> (<em>str</em>) – Column that carries the row label.</p></li>
+<li><p><strong>formatters</strong> (<em>dict</em><em>, </em><em>optional</em>) – Optional mapping of column name to a formatting
+callable, applied to that column’s subtotal/average value.
+Columns not listed fall back to <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p></li>
+<li><p><strong>subtotal_label</strong> (<em>str</em>) – Label written to <code class="docutils literal notranslate"><span class="pre">label_column</span></code> on the subtotal row.</p></li>
+<li><p><strong>average_label</strong> (<em>str</em>) – Label written to <code class="docutils literal notranslate"><span class="pre">label_column</span></code> on the average row.</p></li>
+<li><p><strong>n_periods</strong> (<em>int</em>) – Divisor used for the average row.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Two-row DataFrame, ready to <code class="docutils literal notranslate"><span class="pre">pandas.concat</span></code> onto a
+display-formatted version of <code class="docutils literal notranslate"><span class="pre">df</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -645,8 +759,15 @@ The resulting index is reset and the old index is dropped.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.core.TeeWriter"><code class="docutils literal notranslate"><span class="pre">TeeWriter</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.core.TeeWriter.write"><code class="docutils literal notranslate"><span class="pre">TeeWriter.write()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.core.TeeWriter.flush"><code class="docutils literal notranslate"><span class="pre">TeeWriter.flush()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.core.tee_stdout"><code class="docutils literal notranslate"><span class="pre">tee_stdout()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.core.preview_df"><code class="docutils literal notranslate"><span class="pre">preview_df()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.core.concat_dfs"><code class="docutils literal notranslate"><span class="pre">concat_dfs()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.core.build_subtotal_rows"><code class="docutils literal notranslate"><span class="pre">build_subtotal_rows()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.core.get_bank"><code class="docutils literal notranslate"><span class="pre">get_bank()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.core.get_account"><code class="docutils literal notranslate"><span class="pre">get_account()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#babilonia.tools.core.get_file_pattern_statement_t0"><code class="docutils literal notranslate"><span class="pre">get_file_pattern_statement_t0()</span></code></a></li>

@@ -415,9 +415,11 @@
 
 <span class="c1"># Native imports</span>
 <span class="c1"># =======================================================================</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pprint</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="c1"># ... {develop}</span>
@@ -457,7 +459,7 @@
     <span class="s2">"bb-pp"</span><span class="p">:</span> <span class="s2">"Banco do Brasil"</span><span class="p">,</span>
     <span class="s2">"bb-ccpj"</span><span class="p">:</span> <span class="s2">"Banco do Brasil"</span><span class="p">,</span>
     <span class="s2">"bb-cdb"</span><span class="p">:</span> <span class="s2">"Banco do Brasil"</span><span class="p">,</span>
-    <span class="s2">"nubank-credito"</span><span class="p">:</span> <span class="s2">"NuBank Crédito"</span><span class="p">,</span>
+    <span class="s2">"nubank-credito"</span><span class="p">:</span> <span class="s2">"Nubank"</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">ACCOUNT_NAMES</span> <span class="o">=</span> <span class="p">{</span>
@@ -468,8 +470,83 @@
     <span class="s2">"nubank-credito"</span><span class="p">:</span> <span class="s2">"Crédito"</span><span class="p">,</span>
 <span class="p">}</span>
 
+<span class="c1"># CLASSES</span>
+<span class="c1"># ***********************************************************************</span>
+
+
+<div class="viewcode-block" id="TeeWriter">
+<a class="viewcode-back" href="../../../generated/babilonia.tools.core.html#babilonia.tools.core.TeeWriter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TeeWriter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    File-like object that duplicates writes across several streams.</span>
+
+<span class="sd">    :param streams: Writable file-like objects to fan writes out to.</span>
+<span class="sd">    :type streams: typing.TextIO</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">streams</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">streams</span> <span class="o">=</span> <span class="n">streams</span>
+
+<div class="viewcode-block" id="TeeWriter.write">
+<a class="viewcode-back" href="../../../generated/babilonia.tools.core.html#babilonia.tools.core.TeeWriter.write">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Write ``data`` to every stream.</span>
+
+<span class="sd">        :param data: Text to write.</span>
+<span class="sd">        :type data: str</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">stream</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streams</span><span class="p">:</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="TeeWriter.flush">
+<a class="viewcode-back" href="../../../generated/babilonia.tools.core.html#babilonia.tools.core.TeeWriter.flush">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Flush every stream.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">stream</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streams</span><span class="p">:</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+
+
 <span class="c1"># FUNCTIONS</span>
 <span class="c1"># ***********************************************************************</span>
+
+
+<div class="viewcode-block" id="tee_stdout">
+<a class="viewcode-back" href="../../../generated/babilonia.tools.core.html#babilonia.tools.core.tee_stdout">[docs]</a>
+<span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tee_stdout</span><span class="p">(</span><span class="n">file_handle</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Temporarily duplicate everything printed to ``stdout`` into ``file_handle``.</span>
+
+<span class="sd">    Used to produce a ``.txt`` report that is guaranteed to match the</span>
+<span class="sd">    terminal output for the same block of code, without reformatting</span>
+<span class="sd">    anything a second time.</span>
+
+<span class="sd">    :param file_handle: Writable text file object to receive a copy of</span>
+<span class="sd">        everything printed while the context is active.</span>
+<span class="sd">    :type file_handle: typing.TextIO</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    :rtype: None</span>
+<span class="sd">    """</span>
+    <span class="n">original_stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">TeeWriter</span><span class="p">(</span><span class="n">original_stdout</span><span class="p">,</span> <span class="n">file_handle</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">original_stdout</span></div>
+
 
 
 <div class="viewcode-block" id="preview_df">
@@ -516,6 +593,67 @@
         <span class="n">ls_dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
     <span class="n">df_full</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">ls_dfs</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df_full</span></div>
+
+
+
+<div class="viewcode-block" id="build_subtotal_rows">
+<a class="viewcode-back" href="../../../generated/babilonia.tools.core.html#babilonia.tools.core.build_subtotal_rows">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_subtotal_rows</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">,</span>
+    <span class="n">columns</span><span class="p">,</span>
+    <span class="n">sum_columns</span><span class="p">,</span>
+    <span class="n">label_column</span><span class="p">,</span>
+    <span class="n">formatters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subtotal_label</span><span class="o">=</span><span class="s2">"SUBTOTAL"</span><span class="p">,</span>
+    <span class="n">average_label</span><span class="o">=</span><span class="s2">"MEDIA"</span><span class="p">,</span>
+    <span class="n">n_periods</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Build a subtotal row and an average row for a monthly table.</span>
+
+<span class="sd">    Only ``sum_columns`` are summed (subtotal) and divided by</span>
+<span class="sd">    ``n_periods`` (average); every other column is left blank on both</span>
+<span class="sd">    rows. This is the right default for a running/cumulative column</span>
+<span class="sd">    (e.g. a balance), where a sum across periods has no real meaning.</span>
+
+<span class="sd">    :param df: Monthly table to summarize, one row per period, with</span>
+<span class="sd">        raw (not yet display-formatted) numeric values.</span>
+<span class="sd">    :type df: pandas.DataFrame</span>
+<span class="sd">    :param columns: Column order for the returned rows -- normally</span>
+<span class="sd">        ``df.columns``, kept explicit so the caller controls it.</span>
+<span class="sd">    :type columns: list</span>
+<span class="sd">    :param sum_columns: Columns to sum and average.</span>
+<span class="sd">    :type sum_columns: list</span>
+<span class="sd">    :param label_column: Column that carries the row label.</span>
+<span class="sd">    :type label_column: str</span>
+<span class="sd">    :param formatters: Optional mapping of column name to a formatting</span>
+<span class="sd">        callable, applied to that column's subtotal/average value.</span>
+<span class="sd">        Columns not listed fall back to ``str``.</span>
+<span class="sd">    :type formatters: dict, optional</span>
+<span class="sd">    :param subtotal_label: Label written to ``label_column`` on the subtotal row.</span>
+<span class="sd">    :type subtotal_label: str</span>
+<span class="sd">    :param average_label: Label written to ``label_column`` on the average row.</span>
+<span class="sd">    :type average_label: str</span>
+<span class="sd">    :param n_periods: Divisor used for the average row.</span>
+<span class="sd">    :type n_periods: int</span>
+<span class="sd">    :return: Two-row DataFrame, ready to ``pandas.concat`` onto a</span>
+<span class="sd">        display-formatted version of ``df``.</span>
+<span class="sd">    :rtype: pandas.DataFrame</span>
+<span class="sd">    """</span>
+    <span class="n">formatters</span> <span class="o">=</span> <span class="n">formatters</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">subtotal</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">sum_columns</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">average</span> <span class="o">=</span> <span class="n">subtotal</span> <span class="o">/</span> <span class="n">n_periods</span>
+
+    <span class="n">row_subtotal</span> <span class="o">=</span> <span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="s2">""</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">}</span>
+    <span class="n">row_average</span> <span class="o">=</span> <span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="s2">""</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">}</span>
+    <span class="n">row_subtotal</span><span class="p">[</span><span class="n">label_column</span><span class="p">]</span> <span class="o">=</span> <span class="n">subtotal_label</span>
+    <span class="n">row_average</span><span class="p">[</span><span class="n">label_column</span><span class="p">]</span> <span class="o">=</span> <span class="n">average_label</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">sum_columns</span><span class="p">:</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="n">formatters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="n">row_subtotal</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">fmt</span><span class="p">(</span><span class="n">subtotal</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+        <span class="n">row_average</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">fmt</span><span class="p">(</span><span class="n">average</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">row_subtotal</span><span class="p">,</span> <span class="n">row_average</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span></div>
 
 
 

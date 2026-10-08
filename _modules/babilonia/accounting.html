@@ -419,6 +419,7 @@
 <span class="c1"># Native imports</span>
 <span class="c1"># =======================================================================</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ET</span>
 
 <span class="c1"># ... {develop}</span>
@@ -428,6 +429,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.dates</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mdates</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.ticker</span><span class="w"> </span><span class="kn">import</span> <span class="n">FuncFormatter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.gridspec</span><span class="w"> </span><span class="kn">import</span> <span class="n">GridSpec</span>
 
 <span class="c1"># ... {develop}</span>
@@ -459,7 +462,42 @@
 
 <span class="c1"># CONSTANTS -- Module-level</span>
 <span class="c1"># =======================================================================</span>
-<span class="c1"># ... {develop}</span>
+<span class="n">MM_PER_INCH</span> <span class="o">=</span> <span class="mf">25.4</span>
+
+<span class="c1"># every tunable part of plot_cashflow_bars(), plus the tool's report</span>
+<span class="c1"># language, all overridable via cashflow.json (see CashFlow.load_plot_config)</span>
+<span class="c1"># -- figsize in mm, converted to inches for matplotlib at plot time</span>
+<span class="n">PLOT_CONFIG_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"figsize_mm"</span><span class="p">:</span> <span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">80</span><span class="p">],</span>
+    <span class="s2">"dpi"</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+    <span class="s2">"color_inflows"</span><span class="p">:</span> <span class="s2">"tab:blue"</span><span class="p">,</span>
+    <span class="s2">"color_outflows"</span><span class="p">:</span> <span class="s2">"tab:red"</span><span class="p">,</span>
+    <span class="s2">"background_color"</span><span class="p">:</span> <span class="s2">"#F7F7FB"</span><span class="p">,</span>
+    <span class="s2">"language"</span><span class="p">:</span> <span class="s2">"en"</span><span class="p">,</span>
+    <span class="s2">"fontsize_title"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">"fontsize_annotation"</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">"fontsize_ticks"</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="s2">"bar_width_pct"</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+    <span class="s2">"hist_width_pct"</span><span class="p">:</span> <span class="mi">33</span><span class="p">,</span>
+    <span class="s2">"hist_bin_size"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="s2">"color_hist"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># single-letter month labels for compact plot axes ("Jan" -&gt; "J")</span>
+<span class="n">MONTH_LETTERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="s2">"J"</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="s2">"F"</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="s2">"M"</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="s2">"A"</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="s2">"M"</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="s2">"J"</span><span class="p">,</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="s2">"J"</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="s2">"A"</span><span class="p">,</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="s2">"S"</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="s2">"O"</span><span class="p">,</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="s2">"N"</span><span class="p">,</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="s2">"D"</span><span class="p">,</span>
+<span class="p">}</span>
 
 
 <span class="c1"># FUNCTIONS</span>
@@ -1043,6 +1081,44 @@
         <span class="p">]</span></div>
 
 
+<div class="viewcode-block" id="CashFlow.get_daily_summary">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.get_daily_summary">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_daily_summary</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Compute daily Entradas/Saidas totals for every calendar day in ``year``.</span>
+
+<span class="sd">        Unlike :meth:`get_monthly_summary`, no category breakdown is kept --</span>
+<span class="sd">        this is meant for plotting a full-year daily timeseries, where every</span>
+<span class="sd">        day must be present (as a zero bar) even without transactions.</span>
+
+<span class="sd">        :param df:</span>
+<span class="sd">            Cash flow data containing at least ``Data`` and ``Valor``.</span>
+<span class="sd">        :type df: pandas.DataFrame</span>
+
+<span class="sd">        :param year:</span>
+<span class="sd">            Calendar year to cover, start to end.</span>
+<span class="sd">        :type year: int or str</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            One row per day of ``year``, with ``Data``, ``Entradas``,</span>
+<span class="sd">            ``Saidas`` and ``Fluxo`` columns.</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+<span class="sd">        """</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">classify_flows</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+        <span class="n">inp</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"Flow == 'In'"</span><span class="p">)</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Data"</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">)[</span><span class="s2">"Valor"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"Flow == 'Out'"</span><span class="p">)</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Data"</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">)[</span><span class="s2">"Valor"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="n">ls_days</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">-12-31"</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">)</span>
+        <span class="n">df_daily</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"Data"</span><span class="p">:</span> <span class="n">ls_days</span><span class="p">})</span>
+        <span class="n">df_daily</span><span class="p">[</span><span class="s2">"Entradas"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_daily</span><span class="p">[</span><span class="s2">"Data"</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">df_daily</span><span class="p">[</span><span class="s2">"Saidas"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_daily</span><span class="p">[</span><span class="s2">"Data"</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">df_daily</span><span class="p">[</span><span class="s2">"Fluxo"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_daily</span><span class="p">[</span><span class="s2">"Entradas"</span><span class="p">]</span> <span class="o">+</span> <span class="n">df_daily</span><span class="p">[</span><span class="s2">"Saidas"</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">df_daily</span></div>
+
+
 <div class="viewcode-block" id="CashFlow.get_cashflow_report">
 <a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.get_cashflow_report">[docs]</a>
     <span class="nd">@staticmethod</span>
@@ -1186,6 +1262,371 @@
             <span class="n">out</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">CashFlow</span><span class="o">.</span><span class="n">format_currency</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="CashFlow.format_compact">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.format_compact">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_compact</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Format a value as a compact string, rounding to ``K`` (thousand) or</span>
+<span class="sd">        ``M`` (million) once the magnitude is too big to annotate as-is.</span>
+
+<span class="sd">        :param x: Value to format.</span>
+<span class="sd">        :type x: float</span>
+<span class="sd">        :param decimals: Decimal places kept on the ``K``/``M`` value.</span>
+<span class="sd">        :type decimals: int</span>
+<span class="sd">        :return: Compact string, e.g. ``"1.2K"``, ``"-3.4M"``, ``"850"``.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        """</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="s2">"-"</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">""</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;=</span> <span class="mi">1_000_000</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sign</span><span class="si">}{</span><span class="n">value</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1_000_000</span><span class="si">:</span><span class="s2">.</span><span class="si">{</span><span class="n">decimals</span><span class="si">}</span><span class="s2">f</span><span class="si">}</span><span class="s2">M"</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;=</span> <span class="mi">1_000</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sign</span><span class="si">}{</span><span class="n">value</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1_000</span><span class="si">:</span><span class="s2">.</span><span class="si">{</span><span class="n">decimals</span><span class="si">}</span><span class="s2">f</span><span class="si">}</span><span class="s2">K"</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sign</span><span class="si">}{</span><span class="n">value</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">"</span></div>
+
+
+<div class="viewcode-block" id="CashFlow.load_plot_config">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.load_plot_config">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_plot_config</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Load tool config overrides from ``cashflow.json`` in ``folder``.</span>
+
+<span class="sd">        Every key is optional, and so is the file itself: anything missing</span>
+<span class="sd">        falls back to :data:`PLOT_CONFIG_DEFAULTS`. Figure size, bar</span>
+<span class="sd">        colors, bar width, background color, histogram panel size/bins/</span>
+<span class="sd">        color and font sizes are the tunable surface for</span>
+<span class="sd">        :meth:`plot_cashflow_bars`; ``language`` controls the printed</span>
+<span class="sd">        table headers in ``cashflow.py`` (see its ``COLUMN_LABELS``) --</span>
+<span class="sd">        currently ``"en"`` (default) or ``"pt-br"``.</span>
+
+<span class="sd">        .. code-block:: json</span>
+
+<span class="sd">            {</span>
+<span class="sd">                "figsize_mm": [150, 80],</span>
+<span class="sd">                "dpi": 300,</span>
+<span class="sd">                "color_inflows": "tab:blue",</span>
+<span class="sd">                "color_outflows": "tab:red",</span>
+<span class="sd">                "background_color": "#F7F7FB",</span>
+<span class="sd">                "language": "en",</span>
+<span class="sd">                "fontsize_title": 10,</span>
+<span class="sd">                "fontsize_annotation": 5,</span>
+<span class="sd">                "fontsize_ticks": 8,</span>
+<span class="sd">                "bar_width_pct": 60,</span>
+<span class="sd">                "hist_width_pct": 33,</span>
+<span class="sd">                "hist_bin_size": null,</span>
+<span class="sd">                "color_hist": null</span>
+<span class="sd">            }</span>
+
+<span class="sd">        ``color_hist`` is ``null`` by default, meaning the histogram</span>
+<span class="sd">        panel keeps the main panel's inflow/outflow color split; set it</span>
+<span class="sd">        to a single color (e.g. ``"tab:gray"``) to use that for both</span>
+<span class="sd">        sides of the histogram instead. ``hist_bin_size`` is also</span>
+<span class="sd">        ``null`` by default, meaning the bin width is computed from the</span>
+<span class="sd">        data itself via :meth:`compute_optimal_bin_size` (Scott's rule)</span>
+<span class="sd">        rather than fixed; set it to a number to use a fixed</span>
+<span class="sd">        currency-wide bin instead.</span>
+
+<span class="sd">        :param folder: Bank/account folder where ``cashflow.json`` is</span>
+<span class="sd">            expected (the same folder the plots are written to).</span>
+<span class="sd">        :type folder: str or pathlib.Path</span>
+<span class="sd">        :return: ``PLOT_CONFIG_DEFAULTS`` overridden by any keys present</span>
+<span class="sd">            in the file, or an unmodified copy if the file is absent.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        """</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">PLOT_CONFIG_DEFAULTS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">file_config</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"cashflow.json"</span>
+        <span class="k">if</span> <span class="n">file_config</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_config</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">config</span></div>
+
+
+<div class="viewcode-block" id="CashFlow.compute_optimal_bin_size">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.compute_optimal_bin_size">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_optimal_bin_size</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Compute a histogram bin width via Scott's rule, rounded to a</span>
+<span class="sd">        clean 1/2/5 x 10^k step for a readable currency axis.</span>
+
+<span class="sd">        Scott's rule (``3.49 * std * n ** -1/3``) assumes a roughly</span>
+<span class="sd">        normal distribution and adapts to sample size -- a longer series</span>
+<span class="sd">        (more months) gets proportionally finer bins on its own, with no</span>
+<span class="sd">        manual scaling needed. Used as the default for ``hist_bin_size``</span>
+<span class="sd">        (``None`` in :data:`PLOT_CONFIG_DEFAULTS`) whenever it is not set</span>
+<span class="sd">        explicitly.</span>
+
+<span class="sd">        :param values: Sample to size bins for (e.g. Entradas and</span>
+<span class="sd">            ``Saidas.abs()`` concatenated).</span>
+<span class="sd">        :type values: array-like</span>
+<span class="sd">        :return: Bin width, always &gt; 0.</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        """</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">1.0</span>
+
+        <span class="n">std</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">std</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">1.0</span>
+
+        <span class="n">raw_width</span> <span class="o">=</span> <span class="mf">3.49</span> <span class="o">*</span> <span class="n">std</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">))</span>
+
+        <span class="n">magnitude</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">raw_width</span><span class="p">))</span>
+        <span class="n">residual</span> <span class="o">=</span> <span class="n">raw_width</span> <span class="o">/</span> <span class="n">magnitude</span>
+        <span class="n">nice</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">step</span> <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="k">if</span> <span class="n">residual</span> <span class="o">&lt;=</span> <span class="n">step</span><span class="p">),</span> <span class="mi">10</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">nice</span> <span class="o">*</span> <span class="n">magnitude</span></div>
+
+
+<div class="viewcode-block" id="CashFlow.plot_cashflow_bars">
+<a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlow.plot_cashflow_bars">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_cashflow_bars</span><span class="p">(</span>
+        <span class="n">df</span><span class="p">,</span>
+        <span class="n">x_col</span><span class="p">,</span>
+        <span class="n">file_out</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">scale</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">annotate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">date_axis</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">year_ticks</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">ylim_default</span><span class="o">=</span><span class="mi">100_000</span><span class="p">,</span>
+        <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Plot Entradas/Saidas as a diverging bar chart and save it as a JPEG.</span>
+
+<span class="sd">        Entradas (always &gt;= 0) are drawn above the zero line and Saidas</span>
+<span class="sd">        (always &lt;= 0) below it, both anchored at the same baseline for</span>
+<span class="sd">        every value of ``x_col``. No legend is drawn -- the color</span>
+<span class="sd">        convention is stated once via ``scale`` in the title instead of</span>
+<span class="sd">        repeating a color key on every plot. Month ticks are single letters</span>
+<span class="sd">        (``"J"``, ``"F"``, ...), the y-axis is compacted to whole ``K``/``M``</span>
+<span class="sd">        (no decimals) via :meth:`format_compact`, and the y-limits are</span>
+<span class="sd">        symmetric around zero so 0 always sits at the vertical center of</span>
+<span class="sd">        the plot: fixed at ``ylim_default`` unless some bar would be</span>
+<span class="sd">        clipped by it, in which case ``1.1 * max(|Entradas|, |Saidas|)`` is</span>
+<span class="sd">        used instead -- this keeps the scale stable (and years comparable)</span>
+<span class="sd">        for ordinary months, only growing for an outlier year.</span>
+
+<span class="sd">        A second panel to the right (``hist_width_pct`` of the total width,</span>
+<span class="sd">        default a third) shares the main panel's y-axis and shows it as a</span>
+<span class="sd">        horizontal histogram instead -- a sideways projection of the</span>
+<span class="sd">        monthly series' distribution. Entradas values are binned into</span>
+<span class="sd">        ``hist_bin_size`` currency-wide bins (or, if unset, bins sized by</span>
+<span class="sd">        :meth:`compute_optimal_bin_size`) from 0 upward and drawn as</span>
+<span class="sd">        bars extending right from x=0 in the positive region; Saidas are</span>
+<span class="sd">        binned the same way (by magnitude) and mirrored into the negative</span>
+<span class="sd">        region, so bin position lines up directly with the main panel's</span>
+<span class="sd">        y-scale. The histogram's x-limit is fixed at twice its tallest</span>
+<span class="sd">        bar (not autoscaled), so no single bin is ever stretched</span>
+<span class="sd">        edge-to-edge. Both sides use ``color_inflows``/``color_outflows`` (the</span>
+<span class="sd">        same split as the main bars) unless ``color_hist`` is set, in</span>
+<span class="sd">        which case it covers both sides with a single color instead. A</span>
+<span class="sd">        solid horizontal line marks each series' mean (``Entradas.mean()``,</span>
+<span class="sd">        ``Saidas.mean()``) across the histogram panel, in that series'</span>
+<span class="sd">        own color regardless of ``color_hist``, annotated (in the default</span>
+<span class="sd">        annotation text color, like the bar annotations) with the rounded</span>
+<span class="sd">        value at the line's upper-right.</span>
+
+<span class="sd">        Every visual aspect -- figure size, bar colors, background color,</span>
+<span class="sd">        bar width, histogram panel width and bin size, font sizes --</span>
+<span class="sd">        comes from ``config`` (see :meth:`load_plot_config`), falling</span>
+<span class="sd">        back to :data:`PLOT_CONFIG_DEFAULTS` for anything missing.</span>
+
+<span class="sd">        :param df: Data with ``x_col``, ``Entradas`` and ``Saidas`` columns.</span>
+<span class="sd">        :type df: pandas.DataFrame</span>
+<span class="sd">        :param x_col: Column used for the x-axis (e.g. ``"Data"`` or ``"Mes"``).</span>
+<span class="sd">        :type x_col: str</span>
+<span class="sd">        :param file_out: Destination path for the ``.jpg`` file.</span>
+<span class="sd">        :type file_out: str or pathlib.Path</span>
+<span class="sd">        :param title: Optional chart title.</span>
+<span class="sd">        :type title: str, optional</span>
+<span class="sd">        :param scale: Granularity label (e.g. ``"Daily"``, ``"Monthly"``),</span>
+<span class="sd">            appended to ``title``.</span>
+<span class="sd">        :type scale: str, optional</span>
+<span class="sd">        :param annotate: If ``True``, print each bar's value at its outer</span>
+<span class="sd">            edge, compacted via :meth:`format_compact`. Meant for charts with</span>
+<span class="sd">            few bars (e.g. monthly); too dense for a daily timeseries.</span>
+<span class="sd">        :type annotate: bool</span>
+<span class="sd">        :param date_axis: If ``True``, ``x_col`` is treated as a datetime</span>
+<span class="sd">            axis and tick marks are placed once per month.</span>
+<span class="sd">        :type date_axis: bool</span>
+<span class="sd">        :param year_ticks: If ``True`` (meant for a multi-year ``x_col``</span>
+<span class="sd">            like ``"YYYY-MM"``, e.g. the full-history monthly series),</span>
+<span class="sd">            only January of each year gets a tick, labeled with that</span>
+<span class="sd">            year's number -- no per-month letters, so a many-year series</span>
+<span class="sd">            stays readable. Ignored when ``date_axis`` is ``True``.</span>
+<span class="sd">        :type year_ticks: bool</span>
+<span class="sd">        :param ylim_default: Fixed symmetric y-limit used as long as it</span>
+<span class="sd">            does not clip any bar.</span>
+<span class="sd">        :type ylim_default: float</span>
+<span class="sd">        :param config: Style overrides, as returned by</span>
+<span class="sd">            :meth:`load_plot_config`. Missing keys fall back to</span>
+<span class="sd">            :data:`PLOT_CONFIG_DEFAULTS`.</span>
+<span class="sd">        :type config: dict, optional</span>
+<span class="sd">        :return: The ``file_out`` path, for logging by the caller.</span>
+<span class="sd">        :rtype: str or pathlib.Path</span>
+<span class="sd">        """</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">PLOT_CONFIG_DEFAULTS</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="n">config</span> <span class="ow">or</span> <span class="p">{})}</span>
+        <span class="n">figsize_mm_w</span><span class="p">,</span> <span class="n">figsize_mm_h</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"figsize_mm"</span><span class="p">]</span>
+        <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="n">figsize_mm_w</span> <span class="o">/</span> <span class="n">MM_PER_INCH</span><span class="p">,</span> <span class="n">figsize_mm_h</span> <span class="o">/</span> <span class="n">MM_PER_INCH</span><span class="p">)</span>
+
+        <span class="n">hist_pct</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"hist_width_pct"</span><span class="p">]</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+        <span class="n">gs</span> <span class="o">=</span> <span class="n">GridSpec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">width_ratios</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span> <span class="o">-</span> <span class="n">hist_pct</span><span class="p">,</span> <span class="n">hist_pct</span><span class="p">],</span> <span class="n">wspace</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="n">ax_main</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">ax_hist</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sharey</span><span class="o">=</span><span class="n">ax_main</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ax_main</span><span class="p">,</span> <span class="n">ax_hist</span><span class="p">):</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">"background_color"</span><span class="p">])</span>
+
+        <span class="n">bar_width</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"bar_width_pct"</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">x_col</span><span class="p">]</span>
+        <span class="n">ax_main</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Entradas"</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">"color_inflows"</span><span class="p">],</span> <span class="n">width</span><span class="o">=</span><span class="n">bar_width</span><span class="p">)</span>
+        <span class="n">ax_main</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Saidas"</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">"color_outflows"</span><span class="p">],</span> <span class="n">width</span><span class="o">=</span><span class="n">bar_width</span><span class="p">)</span>
+        <span class="n">ax_main</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+
+        <span class="n">max_abs_flow</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Entradas"</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Saidas"</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">ylim</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ylim_default</span><span class="p">,</span> <span class="mf">1.1</span> <span class="o">*</span> <span class="n">max_abs_flow</span><span class="p">)</span>
+        <span class="n">ax_main</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="n">ylim</span><span class="p">,</span> <span class="n">ylim</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">annotate</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">xi</span><span class="p">,</span> <span class="n">entrada</span><span class="p">,</span> <span class="n">saida</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Entradas"</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Saidas"</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">entrada</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">ax_main</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+                        <span class="n">CashFlow</span><span class="o">.</span><span class="n">format_compact</span><span class="p">(</span><span class="n">entrada</span><span class="p">),</span>
+                        <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">entrada</span><span class="p">),</span>
+                        <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+                        <span class="n">textcoords</span><span class="o">=</span><span class="s2">"offset points"</span><span class="p">,</span>
+                        <span class="n">ha</span><span class="o">=</span><span class="s2">"center"</span><span class="p">,</span>
+                        <span class="n">va</span><span class="o">=</span><span class="s2">"bottom"</span><span class="p">,</span>
+                        <span class="n">fontsize</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">"fontsize_annotation"</span><span class="p">],</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">saida</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">ax_main</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+                        <span class="n">CashFlow</span><span class="o">.</span><span class="n">format_compact</span><span class="p">(</span><span class="n">saida</span><span class="p">),</span>
+                        <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">saida</span><span class="p">),</span>
+                        <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
+                        <span class="n">textcoords</span><span class="o">=</span><span class="s2">"offset points"</span><span class="p">,</span>
+                        <span class="n">ha</span><span class="o">=</span><span class="s2">"center"</span><span class="p">,</span>
+                        <span class="n">va</span><span class="o">=</span><span class="s2">"top"</span><span class="p">,</span>
+                        <span class="n">fontsize</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">"fontsize_annotation"</span><span class="p">],</span>
+                    <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">date_axis</span><span class="p">:</span>
+            <span class="n">ax_main</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">MonthLocator</span><span class="p">())</span>
+            <span class="n">ax_main</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span>
+                <span class="n">FuncFormatter</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">val</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="n">MONTH_LETTERS</span><span class="p">[</span><span class="n">mdates</span><span class="o">.</span><span class="n">num2date</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">month</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">months</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">year_ticks</span><span class="p">:</span>
+                <span class="c1"># only a January tick per year, labeled with the year --</span>
+                <span class="c1"># no per-month ticks, which is what a many-year series</span>
+                <span class="c1"># needs to stay readable</span>
+                <span class="n">years</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+                <span class="n">jan_positions</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">months</span><span class="p">)</span> <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">jan_years</span> <span class="o">=</span> <span class="p">[</span><span class="n">y</span> <span class="k">for</span> <span class="n">y</span><span class="p">,</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">years</span><span class="p">,</span> <span class="n">months</span><span class="p">)</span> <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">ax_main</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">jan_positions</span><span class="p">)</span>
+                <span class="n">ax_main</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">jan_years</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ax_main</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+                <span class="n">ax_main</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="n">MONTH_LETTERS</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">months</span><span class="p">])</span>
+
+        <span class="n">ax_main</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span>
+            <span class="n">FuncFormatter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">val</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">format_compact</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="n">ax_main</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"both"</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">"fontsize_ticks"</span><span class="p">])</span>
+
+        <span class="n">full_title</span> <span class="o">=</span> <span class="s2">" -- "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">part</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span> <span class="k">if</span> <span class="n">part</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full_title</span><span class="p">:</span>
+            <span class="c1"># suptitle, not ax_main.set_title: centers over the whole</span>
+            <span class="c1"># figure (both panels), not just the main (2/3-width) axes.</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">full_title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">"fontsize_title"</span><span class="p">])</span>
+
+        <span class="c1"># Side histogram -- a horizontal projection of the same series onto</span>
+        <span class="c1"># the shared y-axis, binned by a fixed currency interval rather than</span>
+        <span class="c1"># a bin count (so bin edges stay meaningful as the y-scale changes</span>
+        <span class="c1"># year to year). hist_bin_size=None (the default) sizes that</span>
+        <span class="c1"># interval from the data itself via Scott's rule.</span>
+        <span class="n">bin_size</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"hist_bin_size"</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">bin_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">combined</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"Entradas"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Saidas"</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">bin_size</span> <span class="o">=</span> <span class="n">CashFlow</span><span class="o">.</span><span class="n">compute_optimal_bin_size</span><span class="p">(</span><span class="n">combined</span><span class="p">)</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ylim</span> <span class="o">+</span> <span class="n">bin_size</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">)</span>
+        <span class="n">bin_centers</span> <span class="o">=</span> <span class="p">(</span><span class="n">edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="n">inflow_counts</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Entradas"</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">edges</span><span class="p">)</span>
+        <span class="n">outflow_counts</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Saidas"</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="n">edges</span><span class="p">)</span>
+
+        <span class="c1"># a single color_hist covers both sides; absent, each side keeps</span>
+        <span class="c1"># the main panel's own color (the usual inflow/outflow split)</span>
+        <span class="n">hist_color_inflows</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"color_hist"</span><span class="p">]</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s2">"color_inflows"</span><span class="p">]</span>
+        <span class="n">hist_color_outflows</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"color_hist"</span><span class="p">]</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s2">"color_outflows"</span><span class="p">]</span>
+
+        <span class="n">ax_hist</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span>
+            <span class="n">bin_centers</span><span class="p">,</span>
+            <span class="n">inflow_counts</span><span class="p">,</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">bin_size</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">hist_color_inflows</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ax_hist</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span>
+            <span class="o">-</span><span class="n">bin_centers</span><span class="p">,</span>
+            <span class="n">outflow_counts</span><span class="p">,</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">bin_size</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">hist_color_outflows</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ax_hist</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+        <span class="c1"># fixed at 2x the tallest bar, not autoscaled, so a bin is never</span>
+        <span class="c1"># stretched edge-to-edge and there's always headroom to compare</span>
+        <span class="c1"># against</span>
+        <span class="n">max_count</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">inflow_counts</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">outflow_counts</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">ax_hist</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">max_count</span><span class="p">)</span>
+        <span class="n">ax_hist</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"both"</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">"fontsize_ticks"</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ax_hist</span><span class="o">.</span><span class="n">get_yticklabels</span><span class="p">(),</span> <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Average lines -- follow the time series' own colors (not</span>
+        <span class="c1"># hist_color_*), so they read as "the average of that series",</span>
+        <span class="c1"># independent of how the histogram bars themselves are colored.</span>
+        <span class="n">mean_inflow</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Entradas"</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">mean_outflow</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Saidas"</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">mean_value</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">mean_inflow</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">"color_inflows"</span><span class="p">]),</span>
+            <span class="p">(</span><span class="n">mean_outflow</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">"color_outflows"</span><span class="p">]),</span>
+        <span class="p">):</span>
+            <span class="n">ax_hist</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">mean_value</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">ax_hist</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+                <span class="n">CashFlow</span><span class="o">.</span><span class="n">format_compact</span><span class="p">(</span><span class="n">mean_value</span><span class="p">),</span>
+                <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">mean_value</span><span class="p">),</span>
+                <span class="n">xycoords</span><span class="o">=</span><span class="n">ax_hist</span><span class="o">.</span><span class="n">get_yaxis_transform</span><span class="p">(),</span>
+                <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+                <span class="n">textcoords</span><span class="o">=</span><span class="s2">"offset points"</span><span class="p">,</span>
+                <span class="n">ha</span><span class="o">=</span><span class="s2">"right"</span><span class="p">,</span>
+                <span class="n">va</span><span class="o">=</span><span class="s2">"bottom"</span><span class="p">,</span>
+                <span class="n">fontsize</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">"fontsize_annotation"</span><span class="p">],</span>
+            <span class="p">)</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="mf">0.14</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mf">0.96</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mf">0.88</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mf">0.14</span><span class="p">)</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">file_out</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">"dpi"</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"jpg"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">file_out</span></div>
 </div>
 
 
@@ -1479,6 +1920,19 @@
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Convert ``Valor`` field to float.</span>
 
+<span class="sd">        Two T0 export variants are supported, so a file from either</span>
+<span class="sd">        (or a single file spanning the transition) parses correctly:</span>
+
+<span class="sd">        - Legacy, marker-suffixed: sign comes from a trailing ``C``/``D``</span>
+<span class="sd">          marker, discarding whatever sign the string itself carries</span>
+<span class="sd">          (e.g. ``"5.000,00 C"`` -&gt; credit/inflow, ``"403,00 D"`` and</span>
+<span class="sd">          ``"-403,00 D"`` both -&gt; debit/outflow).</span>
+<span class="sd">        - Newer, plain signed value with no marker (a separate ``Tipo</span>
+<span class="sd">          Lançamento`` column states "Entrada"/"Saída" redundantly):</span>
+<span class="sd">          handled by the base :meth:`CashFlowBBCC.parse_valor`, sign</span>
+<span class="sd">          taken directly from the string (e.g. ``"-3.000,00"`` -&gt;</span>
+<span class="sd">          outflow, ``"3.423,00"`` -&gt; inflow).</span>
+
 <span class="sd">        .. dropdown:: Examples</span>
 <span class="sd">            :open:</span>
 
@@ -1492,7 +1946,10 @@
 <span class="sd">                 - ``5000.00``</span>
 <span class="sd">               * - ``-403,00 D``</span>
 <span class="sd">                 - ``-403.00``</span>
-
+<span class="sd">               * - ``-3.000,00``</span>
+<span class="sd">                 - ``-3000.00``</span>
+<span class="sd">               * - ``3.423,00``</span>
+<span class="sd">                 - ``3423.00``</span>
 
 <span class="sd">        :param series: String series</span>
 <span class="sd">        :type series: ``pandas.Series``</span>
@@ -1501,22 +1958,20 @@
 <span class="sd">        """</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
-        <span class="c1"># Identify credit / debit</span>
-        <span class="n">is_credit</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"C"</span><span class="p">)</span>
+        <span class="n">has_marker</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"C"</span><span class="p">)</span> <span class="o">|</span> <span class="n">s</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"D"</span><span class="p">)</span>
         <span class="n">is_debit</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"D"</span><span class="p">)</span>
 
-        <span class="c1"># Remove currency markers and spaces</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[CD]"</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="c1"># strip the trailing marker where present; markerless values are</span>
+        <span class="c1"># left untouched, carrying their own sign</span>
+        <span class="n">s_clean</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">has_marker</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">"\s*[CD]$"</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 
-        <span class="c1"># Remove thousands separator and fix decimal separator</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">","</span><span class="p">,</span> <span class="s2">"."</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># base class already parses a plain signed Brazilian-format number</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse_valor</span><span class="p">(</span><span class="n">s_clean</span><span class="p">)</span>
 
-        <span class="c1"># Convert to float (absolute value)</span>
-        <span class="n">values</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span>
-
-        <span class="c1"># Apply sign</span>
-        <span class="n">values</span><span class="p">[</span><span class="n">is_debit</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="c1"># marker rows: sign comes only from the marker, regardless of</span>
+        <span class="c1"># whatever sign the string itself carried</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">has_marker</span><span class="p">,</span> <span class="n">values</span><span class="o">.</span><span class="n">abs</span><span class="p">())</span>
+        <span class="n">values</span><span class="p">[</span><span class="n">has_marker</span> <span class="o">&amp;</span> <span class="n">is_debit</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
 
         <span class="k">return</span> <span class="n">values</span></div>
 
@@ -1524,9 +1979,9 @@
 <div class="viewcode-block" id="CashFlowBBCCPJ.apply_drops">
 <a class="viewcode-back" href="../../generated/babilonia.accounting.html#babilonia.accounting.CashFlowBBCCPJ.apply_drops">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_drops</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">apply_drops</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">apply_drops</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"Lançamento != 'BB Rende Fácil'"</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"Valor != '0,00 C'"</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"Valor not in ['0,00 C', '0,00']"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">df</span></div>
 </div>
 
