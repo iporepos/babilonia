@@ -101,8 +101,8 @@ Report
 Builds a 12-row monthly panel (Jan-Dec of the target year, zero-filled
 for months with no data -- including future months) with one column
 per category, plus ``Fluxo``/``Entradas``/``Saidas``/``Saldo``; and a
-yearly summary with each category's total, average, and share of total
-inflows. Prints both to the screen (wrapped to a fixed width so wide
+yearly summary with each category's transaction count, total, average,
+and share of total inflows. Prints both to the screen (wrapped to a fixed width so wide
 category lists don't overflow the terminal) plus a dedicated line
 calling out the fallback category's share of total spending, and
 exports both tables as CSV into the target year's folder.
@@ -204,6 +204,7 @@ EXCLUDE_COLUMNS = ["Data", "Valor", "Categoria"]
 
 DEFAULT_FALLBACK_CATEGORY = "outros"
 DEFAULT_SCREEN_WIDTH = 120
+DEFAULT_UNCATEGORIZED_PREVIEW = 20
 
 # Fixed columns of the monthly report panel -- everything else in it
 # is a dynamically-added per-category column.
@@ -371,13 +372,14 @@ def categorize_dataframe(df, dc_categories, fallback_category):
     Apply the categorization rules to a single T1 dataframe.
 
     :return: Tuple of (updated Categoria list, stats dict, list of
-        search texts that fell back to ``fallback_category``)
+        (search text, Valor) pairs for rows that fell back to
+        ``fallback_category``)
     :rtype: tuple
     """
     fallback_norm = fallback_category.strip().lower()
 
     new_categoria = []
-    ls_fallback_texts = []
+    ls_fallback_rows = []
     stats = {"untouched": 0, "matched": 0, "fallback": 0}
 
     # Row-by-row on purpose: this is a labeling step whose correctness
@@ -400,9 +402,9 @@ def categorize_dataframe(df, dc_categories, fallback_category):
         else:
             new_categoria.append(fallback_norm)
             stats["fallback"] += 1
-            ls_fallback_texts.append(search_text)
+            ls_fallback_rows.append((search_text, float(row["Valor"])))
 
-    return new_categoria, stats, ls_fallback_texts
+    return new_categoria, stats, ls_fallback_rows
 
 
 def run_categorize_phase(
@@ -426,7 +428,7 @@ def run_categorize_phase(
         return [], [], {"untouched": 0, "matched": 0, "fallback": 0}
 
     total_stats = {"untouched": 0, "matched": 0, "fallback": 0}
-    ls_all_fallback_texts = []
+    ls_all_fallback_rows = []
     ls_dfs_labeled = []
     total_files_written = 0
 
@@ -438,14 +440,14 @@ def run_categorize_phase(
             print(f"[{i:02d}] {fpath.name} -> SKIPPED (no Categoria column)")
             continue
 
-        new_categoria, stats, ls_fallback_texts = categorize_dataframe(
+        new_categoria, stats, ls_fallback_rows = categorize_dataframe(
             df, dc_categories, fallback_category
         )
         df["Categoria"] = new_categoria
 
         for k in total_stats:
             total_stats[k] += stats[k]
-        ls_all_fallback_texts.extend(ls_fallback_texts)
+        ls_all_fallback_rows.extend(ls_fallback_rows)
 
         print(
             f"[{i:02d}] {fpath.name} -> "
@@ -472,11 +474,21 @@ def run_categorize_phase(
     print(f" Rows -> {fallback_category:<10}: {total_stats['fallback']}")
     print(f" Rows untouched  : {total_stats['untouched']}")
 
-    if ls_all_fallback_texts:
-        print(f"\n Top uncategorized descriptions (-> '{fallback_category}'):")
-        counts = Counter(t for t in ls_all_fallback_texts if t)
-        for text, n in counts.most_common(10):
-            print(f"   [{n:>3}x] {text}")
+    if ls_all_fallback_rows:
+        print(
+            f"\n Top {DEFAULT_UNCATEGORIZED_PREVIEW} uncategorized descriptions "
+            f"(-> '{fallback_category}'), by total value:"
+        )
+        counts = Counter()
+        totals = Counter()
+        for text, valor in ls_all_fallback_rows:
+            if not text:
+                continue
+            counts[text] += 1
+            totals[text] += valor
+        ranked = sorted(totals.items(), key=lambda kv: abs(kv[1]), reverse=True)
+        for text, total in ranked[:DEFAULT_UNCATEGORIZED_PREVIEW]:
+            print(f"   [{format_currency(total)}] ({counts[text]:>3}x) {text}")
 
     return ls_dfs_labeled, ls_files, total_stats
 
@@ -635,10 +647,17 @@ def build_year_report(df_all, target_year, initial_cash=0.0):
     media_entradas = df_pannel["Entradas"].mean()
     media_saidas = df_pannel["Saidas"].mean()
 
+    n_entradas = int((df["Valor"] >= 0).sum())
+    n_saidas = int((df["Valor"] < 0).sum())
+    cat_counts = (
+        df.groupby("Categoria").size() if has_category else pd.Series(dtype=int)
+    )
+
     rows_summary = [
         {
             "Ano": target_year,
             "Categoria": "ENTRADAS",
+            "Transacoes": n_entradas,
             "Total": total_entradas,
             "Media": media_entradas,
             "% Entradas": 100.0,
@@ -646,6 +665,7 @@ def build_year_report(df_all, target_year, initial_cash=0.0):
         {
             "Ano": target_year,
             "Categoria": "SAIDAS",
+            "Transacoes": n_saidas,
             "Total": total_saidas,
             "Media": media_saidas,
             "% Entradas": (
@@ -661,6 +681,7 @@ def build_year_report(df_all, target_year, initial_cash=0.0):
             {
                 "Ano": target_year,
                 "Categoria": cat,
+                "Transacoes": int(cat_counts.get(cat, 0)),
                 "Total": total_cat,
                 "Media": media_cat,
                 "% Entradas": pct_cat,
