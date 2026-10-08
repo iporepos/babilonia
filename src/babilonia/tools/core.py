@@ -14,9 +14,11 @@ Core constants and functions for the ``babilonia.tools`` package.
 
 # Native imports
 # =======================================================================
+import sys
 import glob
 import argparse
 import pprint
+import contextlib
 from pathlib import Path
 
 # ... {develop}
@@ -56,7 +58,7 @@ BANK_NAMES = {
     "bb-pp": "Banco do Brasil",
     "bb-ccpj": "Banco do Brasil",
     "bb-cdb": "Banco do Brasil",
-    "nubank-credito": "NuBank Crédito",
+    "nubank-credito": "Nubank",
 }
 
 ACCOUNT_NAMES = {
@@ -67,8 +69,71 @@ ACCOUNT_NAMES = {
     "nubank-credito": "Crédito",
 }
 
+# CLASSES
+# ***********************************************************************
+
+
+class TeeWriter:
+    """
+    File-like object that duplicates writes across several streams.
+
+    :param streams: Writable file-like objects to fan writes out to.
+    :type streams: typing.TextIO
+    """
+
+    def __init__(self, *streams):
+        self.streams = streams
+
+    def write(self, data):
+        """
+        Write ``data`` to every stream.
+
+        :param data: Text to write.
+        :type data: str
+        :return: None
+        :rtype: None
+        """
+        for stream in self.streams:
+            stream.write(data)
+        return None
+
+    def flush(self):
+        """
+        Flush every stream.
+
+        :return: None
+        :rtype: None
+        """
+        for stream in self.streams:
+            stream.flush()
+        return None
+
+
 # FUNCTIONS
 # ***********************************************************************
+
+
+@contextlib.contextmanager
+def tee_stdout(file_handle):
+    """
+    Temporarily duplicate everything printed to ``stdout`` into ``file_handle``.
+
+    Used to produce a ``.txt`` report that is guaranteed to match the
+    terminal output for the same block of code, without reformatting
+    anything a second time.
+
+    :param file_handle: Writable text file object to receive a copy of
+        everything printed while the context is active.
+    :type file_handle: typing.TextIO
+    :return: None
+    :rtype: None
+    """
+    original_stdout = sys.stdout
+    sys.stdout = TeeWriter(original_stdout, file_handle)
+    try:
+        yield
+    finally:
+        sys.stdout = original_stdout
 
 
 def preview_df(df, row_max=20):
@@ -110,6 +175,64 @@ def concat_dfs(ls_files):
         ls_dfs.append(df)
     df_full = pd.concat(ls_dfs).reset_index(drop=True)
     return df_full
+
+
+def build_subtotal_rows(
+    df,
+    columns,
+    sum_columns,
+    label_column,
+    formatters=None,
+    subtotal_label="SUBTOTAL",
+    average_label="MEDIA",
+    n_periods=12,
+):
+    """
+    Build a subtotal row and an average row for a monthly table.
+
+    Only ``sum_columns`` are summed (subtotal) and divided by
+    ``n_periods`` (average); every other column is left blank on both
+    rows. This is the right default for a running/cumulative column
+    (e.g. a balance), where a sum across periods has no real meaning.
+
+    :param df: Monthly table to summarize, one row per period, with
+        raw (not yet display-formatted) numeric values.
+    :type df: pandas.DataFrame
+    :param columns: Column order for the returned rows -- normally
+        ``df.columns``, kept explicit so the caller controls it.
+    :type columns: list
+    :param sum_columns: Columns to sum and average.
+    :type sum_columns: list
+    :param label_column: Column that carries the row label.
+    :type label_column: str
+    :param formatters: Optional mapping of column name to a formatting
+        callable, applied to that column's subtotal/average value.
+        Columns not listed fall back to ``str``.
+    :type formatters: dict, optional
+    :param subtotal_label: Label written to ``label_column`` on the subtotal row.
+    :type subtotal_label: str
+    :param average_label: Label written to ``label_column`` on the average row.
+    :type average_label: str
+    :param n_periods: Divisor used for the average row.
+    :type n_periods: int
+    :return: Two-row DataFrame, ready to ``pandas.concat`` onto a
+        display-formatted version of ``df``.
+    :rtype: pandas.DataFrame
+    """
+    formatters = formatters or {}
+    subtotal = df[sum_columns].sum()
+    average = subtotal / n_periods
+
+    row_subtotal = {col: "" for col in columns}
+    row_average = {col: "" for col in columns}
+    row_subtotal[label_column] = subtotal_label
+    row_average[label_column] = average_label
+    for col in sum_columns:
+        fmt = formatters.get(col, str)
+        row_subtotal[col] = fmt(subtotal[col])
+        row_average[col] = fmt(average[col])
+
+    return pd.DataFrame([row_subtotal, row_average], columns=columns)
 
 
 def get_bank(data_type):

@@ -102,10 +102,15 @@ Builds a 12-row monthly panel (Jan-Dec of the target year, zero-filled
 for months with no data -- including future months) with one column
 per category, plus ``Fluxo``/``Entradas``/``Saidas``/``Saldo``; and a
 yearly summary with each category's transaction count, total, average,
-and share of total inflows. Prints both to the screen (wrapped to a fixed width so wide
-category lists don't overflow the terminal) plus a dedicated line
-calling out the fallback category's share of total spending, and
-exports both tables as CSV into the target year's folder.
+and share of total inflows. The on-screen panel gets two extra rows
+(``SUBTOTAL`` and ``MEDIA``, the latter the subtotal divided by 12) for
+every flow column; ``Saldo`` is left blank there since a running
+balance isn't meaningful to sum. These two rows are display-only and
+not written to the exported CSV. Prints both tables to the screen
+(wrapped to a fixed width so wide category lists don't overflow the
+terminal) plus a dedicated line calling out the fallback category's
+share of total spending, and exports both tables as CSV into the
+target year's folder.
 
 .. note::
 
@@ -134,10 +139,43 @@ Outputs
     {bank}/                             # Bank
     └── {account}/                      # Bank account
         ├── CATEGORIAS_{BANK}_{ACCOUNT}.json    # keyword dictionary (input)
+        ├── categorize.json                     # optional, see Plots below
+        ├── RESUMO_CATEGORIAS_{BANK}_{ACCOUNT}_{year}_RANKING_ENTRADAS.jpg
+        ├── RESUMO_CATEGORIAS_{BANK}_{ACCOUNT}_{year}_RANKING_SAIDAS.jpg
         └── {year}/
             ├── EXTRATO_..._T1.csv                            # updated in place
             ├── RESUMO_CATEGORIAS_{BANK}_{ACCOUNT}_{year}_MENSAL.csv
             └── RESUMO_CATEGORIAS_{BANK}_{ACCOUNT}_{year}_ANUAL.csv
+
+Plots
+-----
+
+Two horizontal bar rankings of the target year's categories by
+absolute total, highest first, written to the account folder itself
+(not the per-year subfolder, same convention as ``cashflow.py``'s
+``.jpg`` outputs): ``..._RANKING_ENTRADAS.jpg`` (net-inflow categories,
+blue bars) and ``..._RANKING_SAIDAS.jpg`` (net-outflow, red). They're
+separate because one dominant category -- income is typically far
+larger than any single expense category -- would otherwise compress
+every other bar into an unreadable sliver on a shared scale. Bars
+always run left-to-right (length is the category's magnitude); the
+real sign is kept in the annotation instead, alongside that category's
+share of total Entradas in parentheses, rounded to a whole number
+(e.g. ``"-17.5K (6%)"`` for an expense category). The canvas is a 3:2
+landscape, but the bar axes themselves are kept square; the extra
+width goes to a left-hand margin sized for the category labels,
+however long they are. This is the first pair of what may become
+several category plots.
+
+Figure size, bar colors/width, how many categories to rank per plot
+(``top_n``), categories to leave out entirely (``ignore_categories``),
+background color and font sizes are read from an optional
+``categorize.json`` in the account folder -- same pattern as
+``cashflow.py``'s ``cashflow.json``, reimplemented self-contained here
+(see the module docstring's "no dependency on babilonia.accounting"
+note above). See :func:`load_category_plot_config` for the full key
+list and a sample file; anything missing, or the file itself, falls
+back to :data:`CATEGORY_PLOT_DEFAULTS`.
 
 Script Examples
 ----------------
@@ -183,6 +221,8 @@ from collections import Counter
 # External imports
 # =======================================================================
 import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 
 # ... {develop}
 
@@ -212,6 +252,27 @@ PANNEL_FIXED_COLUMNS = {"Ano", "Mes", "Fluxo", "Entradas", "Saidas", "Saldo"}
 
 # Aggregate rows in the yearly summary that are not real categories.
 SUMMARY_AGGREGATE_ROWS = {"ENTRADAS", "SAIDAS"}
+
+MM_PER_INCH = 25.4
+
+# Every tunable part of plot_category_ranking(), overridable via a
+# categorize.json sidecar in the account folder (see
+# load_category_plot_config) -- same pattern as cashflow.py's
+# cashflow.json/PLOT_CONFIG_DEFAULTS, reimplemented self-contained here
+# rather than imported, per this module's no-accounting-dependency design.
+CATEGORY_PLOT_DEFAULTS = {
+    "figsize_mm": [150, 100],  # 3:2 landscape
+    "dpi": 300,
+    "color_inflows": "tab:blue",
+    "color_outflows": "tab:red",
+    "background_color": "#F7F7FB",
+    "fontsize_title": 10,
+    "fontsize_annotation": 5,
+    "fontsize_ticks": 8,
+    "bar_width_pct": 60,
+    "top_n": 15,
+    "ignore_categories": [],
+}
 
 
 # FUNCTIONS
@@ -706,6 +767,193 @@ def get_sorted_categories(df_summary, limit=None):
     return df_cats.head(limit) if limit else df_cats
 
 
+# --- plots --------------------------------------------------------------
+
+
+def format_compact(x, decimals=1):
+    """
+    Format a value as a compact string, rounding to ``K`` (thousand) or
+    ``M`` (million) once the magnitude is too big to annotate as-is.
+    Local copy of ``CashFlow.format_compact`` -- see module docstring for
+    why this file doesn't import ``babilonia.accounting``.
+    """
+    value = float(x)
+    sign = "-" if value < 0 else ""
+    value = abs(value)
+
+    if value >= 1_000_000:
+        return f"{sign}{value / 1_000_000:.{decimals}f}M"
+    if value >= 1_000:
+        return f"{sign}{value / 1_000:.{decimals}f}K"
+    return f"{sign}{value:.0f}"
+
+
+def load_category_plot_config(folder):
+    """
+    Load plot style overrides from ``categorize.json`` in ``folder``.
+
+    Every key is optional, and so is the file itself: anything missing
+    falls back to :data:`CATEGORY_PLOT_DEFAULTS`.
+
+    .. code-block:: json
+
+        {
+            "figsize_mm": [150, 100],
+            "dpi": 300,
+            "color_inflows": "tab:blue",
+            "color_outflows": "tab:red",
+            "background_color": "#F7F7FB",
+            "fontsize_title": 10,
+            "fontsize_annotation": 5,
+            "fontsize_ticks": 8,
+            "bar_width_pct": 60,
+            "top_n": 15,
+            "ignore_categories": []
+        }
+
+    ``top_n`` caps how many categories each plot ranks (Entradas and
+    Saidas are ranked separately -- see :func:`plot_category_ranking`);
+    ``null`` shows every category instead. ``ignore_categories`` names
+    categories (case-insensitive) to leave out of the ranking entirely,
+    e.g. ``["outros"]`` to drop the fallback bucket.
+
+    :param folder: Account folder where ``categorize.json`` is expected
+        (the same folder the dictionary and reports live in).
+    :type folder: str or pathlib.Path
+    :return: ``CATEGORY_PLOT_DEFAULTS`` overridden by any keys present in
+        the file, or an unmodified copy if the file is absent.
+    :rtype: dict
+    """
+    config = CATEGORY_PLOT_DEFAULTS.copy()
+
+    file_config = Path(folder) / "categorize.json"
+    if file_config.exists():
+        with open(file_config, "r", encoding="utf-8") as f:
+            config.update(json.load(f))
+
+    return config
+
+
+def plot_category_ranking(df_summary, year, flow, file_out, title=None, config=None):
+    """
+    Plot one sign of the year's categories as a horizontal bar ranking,
+    highest absolute total first, and save it as a JPEG.
+
+    Entradas and Saidas categories are plotted separately (``flow``)
+    rather than sharing one axis -- a single dominant category (income
+    is typically far larger than any one expense category) would
+    otherwise compress every other bar into an unreadable sliver on a
+    shared linear scale. Bars always run left-to-right from 0 (bar
+    length is the category's *magnitude*, ``.abs()``), in
+    ``color_inflows`` for ``flow="entradas"`` or ``color_outflows`` for
+    ``flow="saidas"`` -- same convention as the cashflow plots -- so
+    both plots read as the same shape regardless of sign; the real sign
+    is kept in each bar's annotation instead (e.g. a Saidas bar still
+    reads ``"-17.5K (6%)"`` even though it extends rightward like every
+    other bar). The percentage in parentheses is that category's share
+    of total Entradas (the same ``% Entradas`` figure already in the
+    yearly summary/report), rounded to a whole number. The canvas is a
+    3:2 landscape (``figsize_mm``), but the bar *axes* themselves are
+    kept square -- the extra width beyond that square goes to a
+    left-hand margin sized for the category name labels, however long
+    they are. Any category named in ``ignore_categories``
+    (case-insensitive) is left out entirely.
+
+    :param df_summary: Yearly category summary, as returned by
+        ``build_year_report()["Summary"]``.
+    :type df_summary: pandas.DataFrame
+    :param year: Year being plotted, used only for the title.
+    :type year: int
+    :param flow: ``"entradas"`` to rank net-inflow categories (Total >=
+        0), ``"saidas"`` for net-outflow ones (Total < 0).
+    :type flow: str
+    :param file_out: Destination path for the ``.jpg`` file.
+    :type file_out: str or pathlib.Path
+    :param title: Optional leading title text (e.g. bank/account names);
+        the flow, year and category count are always appended.
+    :type title: str, optional
+    :param config: Style overrides, as returned by
+        :func:`load_category_plot_config`. Missing keys fall back to
+        :data:`CATEGORY_PLOT_DEFAULTS`.
+    :type config: dict, optional
+    :return: The ``file_out`` path, for logging by the caller.
+    :rtype: str or pathlib.Path
+    """
+    if flow not in ("entradas", "saidas"):
+        raise ValueError(f"flow must be 'entradas' or 'saidas', got {flow!r}")
+
+    config = {**CATEGORY_PLOT_DEFAULTS, **(config or {})}
+    figsize_mm_w, figsize_mm_h = config["figsize_mm"]
+    figsize = (figsize_mm_w / MM_PER_INCH, figsize_mm_h / MM_PER_INCH)
+
+    ignore = {c.strip().lower() for c in config["ignore_categories"]}
+    df_cats = get_sorted_categories(df_summary, limit=None)
+    df_cats = df_cats[~df_cats["Categoria"].str.lower().isin(ignore)]
+
+    if flow == "entradas":
+        df_cats = df_cats[df_cats["Total"] >= 0]
+        color = config["color_inflows"]
+    else:
+        df_cats = df_cats[df_cats["Total"] < 0]
+        color = config["color_outflows"]
+
+    top_n = config["top_n"]
+    df_ranked = df_cats.head(top_n) if top_n else df_cats
+    # reversed so barh (which plots bottom-up) shows the biggest on top
+    df_ranked = df_ranked.iloc[::-1]
+
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.set_facecolor(config["background_color"])
+
+    bar_height = config["bar_width_pct"] / 100
+    # always left-to-right (bar length = magnitude) so Entradas and
+    # Saidas read the same shape -- the true sign is kept in the
+    # annotation text instead of the bar's direction
+    ax.barh(
+        df_ranked["Categoria"], df_ranked["Total"].abs(), height=bar_height, color=color
+    )
+    ax.axvline(0, color="black", linewidth=0.8)
+    # extra headroom past the longest bar so its value annotation never
+    # collides with the y-axis category labels
+    ax.margins(x=0.2)
+
+    for i, (value, pct) in enumerate(zip(df_ranked["Total"], df_ranked["% Entradas"])):
+        ax.annotate(
+            f"{format_compact(value)} ({pct:.0f}%)",
+            xy=(abs(value), i),
+            xytext=(3, 0),
+            textcoords="offset points",
+            ha="left",
+            va="center",
+            fontsize=config["fontsize_annotation"],
+        )
+
+    ax.xaxis.set_major_formatter(
+        FuncFormatter(lambda val, pos: format_compact(val, decimals=0))
+    )
+    ax.tick_params(axis="both", labelsize=config["fontsize_ticks"])
+
+    flow_label = "Entradas" if flow == "entradas" else "Saidas"
+    subtitle = f"Top {len(df_ranked)} {flow_label} Categories -- {year}"
+    full_title = " -- ".join(part for part in (title, subtitle) if part)
+    fig.suptitle(full_title, fontsize=config["fontsize_title"])
+
+    # square bar axes within the (wider) landscape canvas: fix the
+    # vertical margins, then derive the matching width fraction from the
+    # figure's physical mm aspect so the result is square regardless of
+    # the configured figsize -- the leftover width is the label margin.
+    top, bottom, right = 0.88, 0.1, 0.97
+    axes_height_frac = top - bottom
+    axes_width_frac = axes_height_frac * (figsize_mm_h / figsize_mm_w)
+    left = right - axes_width_frac
+    fig.subplots_adjust(left=left, right=right, top=top, bottom=bottom)
+
+    fig.savefig(file_out, dpi=config["dpi"], format="jpg")
+    plt.close(fig)
+
+    return file_out
+
+
 def print_fallback_highlight(df_summary, fallback_category):
     """
     Print the fallback category's total and its share of total Saidas.
@@ -746,6 +994,7 @@ def run_report_phase(
     account,
     data_folder,
     char_w,
+    data_type,
 ):
     """
     Build, print, and export the category report for target_year.
@@ -775,7 +1024,19 @@ def run_report_phase(
     print(f" {target_year} -- Monthly Panel by Category")
     print("-" * char_w)
     df_pretty = format_currency_columns(df_pannel, columns=cols_to_format_pannel)
-    df_screen = df_pretty.drop(columns="Ano").set_index("Mes")
+    sum_cols_pannel = ["Fluxo", "Entradas", "Saidas"] + category_cols
+    df_extra = build_subtotal_rows(
+        df=df_pannel,
+        columns=df_pannel.columns,
+        sum_columns=sum_cols_pannel,
+        label_column="Mes",
+        formatters={col: format_currency for col in sum_cols_pannel},
+    )
+    df_screen = (
+        pd.concat([df_pretty, df_extra], ignore_index=True)
+        .drop(columns="Ano")
+        .set_index("Mes")
+    )
     with pd.option_context("display.width", screen_width, "display.max_columns", None):
         print(df_screen)
 
@@ -800,8 +1061,35 @@ def run_report_phase(
     file_anual.parent.mkdir(parents=True, exist_ok=True)
     df_summary.to_csv(file_anual, sep=";", index=False)
 
+    plot_config = load_category_plot_config(data_folder)
+    plot_title = f"{BANK_NAMES[data_type]} -- {ACCOUNT_NAMES[data_type]}"
+
+    # plots ship to the account folder itself (not the per-year
+    # subfolder), same convention as cashflow.py's .jpg outputs
+    file_plot_entradas = data_folder / f"{name}_RANKING_ENTRADAS.jpg"
+    plot_category_ranking(
+        df_summary=df_summary,
+        year=target_year,
+        flow="entradas",
+        file_out=file_plot_entradas,
+        title=plot_title,
+        config=plot_config,
+    )
+
+    file_plot_saidas = data_folder / f"{name}_RANKING_SAIDAS.jpg"
+    plot_category_ranking(
+        df_summary=df_summary,
+        year=target_year,
+        flow="saidas",
+        file_out=file_plot_saidas,
+        title=plot_title,
+        config=plot_config,
+    )
+
     print(f"\n Output : {file_mensal}")
     print(f" Output : {file_anual}")
+    print(f" Output : {file_plot_entradas}")
+    print(f" Output : {file_plot_saidas}")
 
 
 def main():
@@ -878,6 +1166,7 @@ def main():
         account,
         data_folder,
         char_w,
+        data_type,
     )
 
     print()

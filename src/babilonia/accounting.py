@@ -18,6 +18,7 @@ hold the 2025 INSS and IRRF progressive tax tables.
 # Native imports
 # =======================================================================
 import os
+import json
 import xml.etree.ElementTree as ET
 
 # ... {develop}
@@ -27,6 +28,8 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from matplotlib.ticker import FuncFormatter
 from matplotlib.gridspec import GridSpec
 
 # ... {develop}
@@ -58,7 +61,42 @@ TABELA_IRRF_2025 = [
 
 # CONSTANTS -- Module-level
 # =======================================================================
-# ... {develop}
+MM_PER_INCH = 25.4
+
+# every tunable part of plot_cashflow_bars(), plus the tool's report
+# language, all overridable via cashflow.json (see CashFlow.load_plot_config)
+# -- figsize in mm, converted to inches for matplotlib at plot time
+PLOT_CONFIG_DEFAULTS = {
+    "figsize_mm": [150, 80],
+    "dpi": 300,
+    "color_inflows": "tab:blue",
+    "color_outflows": "tab:red",
+    "background_color": "#F7F7FB",
+    "language": "en",
+    "fontsize_title": 10,
+    "fontsize_annotation": 5,
+    "fontsize_ticks": 8,
+    "bar_width_pct": 60,
+    "hist_width_pct": 33,
+    "hist_bin_size": None,
+    "color_hist": None,
+}
+
+# single-letter month labels for compact plot axes ("Jan" -> "J")
+MONTH_LETTERS = {
+    1: "J",
+    2: "F",
+    3: "M",
+    4: "A",
+    5: "M",
+    6: "J",
+    7: "J",
+    8: "A",
+    9: "S",
+    10: "O",
+    11: "N",
+    12: "D",
+}
 
 
 # FUNCTIONS
@@ -593,6 +631,41 @@ class CashFlow(DataSet):
         ]
 
     @staticmethod
+    def get_daily_summary(df, year):
+        """
+        Compute daily Entradas/Saidas totals for every calendar day in ``year``.
+
+        Unlike :meth:`get_monthly_summary`, no category breakdown is kept --
+        this is meant for plotting a full-year daily timeseries, where every
+        day must be present (as a zero bar) even without transactions.
+
+        :param df:
+            Cash flow data containing at least ``Data`` and ``Valor``.
+        :type df: pandas.DataFrame
+
+        :param year:
+            Calendar year to cover, start to end.
+        :type year: int or str
+
+        :returns:
+            One row per day of ``year``, with ``Data``, ``Entradas``,
+            ``Saidas`` and ``Fluxo`` columns.
+        :rtype: pandas.DataFrame
+        """
+        df = CashFlow.classify_flows(df)
+
+        inp = df.query("Flow == 'In'").groupby(df["Data"].dt.date)["Valor"].sum()
+        out = df.query("Flow == 'Out'").groupby(df["Data"].dt.date)["Valor"].sum()
+
+        ls_days = pd.date_range(start=f"{year}-01-01", end=f"{year}-12-31", freq="D")
+        df_daily = pd.DataFrame({"Data": ls_days})
+        df_daily["Entradas"] = df_daily["Data"].dt.date.map(inp).fillna(0)
+        df_daily["Saidas"] = df_daily["Data"].dt.date.map(out).fillna(0)
+        df_daily["Fluxo"] = df_daily["Entradas"] + df_daily["Saidas"]
+
+        return df_daily
+
+    @staticmethod
     def get_cashflow_report(df, year=None, initial_cash=None):
         """
         Build a yearly cash flow panel and summary by category.
@@ -727,6 +800,359 @@ class CashFlow(DataSet):
             out[col] = out[col].map(CashFlow.format_currency)
 
         return out
+
+    @staticmethod
+    def format_compact(x, decimals=1):
+        """
+        Format a value as a compact string, rounding to ``K`` (thousand) or
+        ``M`` (million) once the magnitude is too big to annotate as-is.
+
+        :param x: Value to format.
+        :type x: float
+        :param decimals: Decimal places kept on the ``K``/``M`` value.
+        :type decimals: int
+        :return: Compact string, e.g. ``"1.2K"``, ``"-3.4M"``, ``"850"``.
+        :rtype: str
+        """
+        value = float(x)
+        sign = "-" if value < 0 else ""
+        value = abs(value)
+
+        if value >= 1_000_000:
+            return f"{sign}{value / 1_000_000:.{decimals}f}M"
+        if value >= 1_000:
+            return f"{sign}{value / 1_000:.{decimals}f}K"
+        return f"{sign}{value:.0f}"
+
+    @staticmethod
+    def load_plot_config(folder):
+        """
+        Load tool config overrides from ``cashflow.json`` in ``folder``.
+
+        Every key is optional, and so is the file itself: anything missing
+        falls back to :data:`PLOT_CONFIG_DEFAULTS`. Figure size, bar
+        colors, bar width, background color, histogram panel size/bins/
+        color and font sizes are the tunable surface for
+        :meth:`plot_cashflow_bars`; ``language`` controls the printed
+        table headers in ``cashflow.py`` (see its ``COLUMN_LABELS``) --
+        currently ``"en"`` (default) or ``"pt-br"``.
+
+        .. code-block:: json
+
+            {
+                "figsize_mm": [150, 80],
+                "dpi": 300,
+                "color_inflows": "tab:blue",
+                "color_outflows": "tab:red",
+                "background_color": "#F7F7FB",
+                "language": "en",
+                "fontsize_title": 10,
+                "fontsize_annotation": 5,
+                "fontsize_ticks": 8,
+                "bar_width_pct": 60,
+                "hist_width_pct": 33,
+                "hist_bin_size": null,
+                "color_hist": null
+            }
+
+        ``color_hist`` is ``null`` by default, meaning the histogram
+        panel keeps the main panel's inflow/outflow color split; set it
+        to a single color (e.g. ``"tab:gray"``) to use that for both
+        sides of the histogram instead. ``hist_bin_size`` is also
+        ``null`` by default, meaning the bin width is computed from the
+        data itself via :meth:`compute_optimal_bin_size` (Scott's rule)
+        rather than fixed; set it to a number to use a fixed
+        currency-wide bin instead.
+
+        :param folder: Bank/account folder where ``cashflow.json`` is
+            expected (the same folder the plots are written to).
+        :type folder: str or pathlib.Path
+        :return: ``PLOT_CONFIG_DEFAULTS`` overridden by any keys present
+            in the file, or an unmodified copy if the file is absent.
+        :rtype: dict
+        """
+        config = PLOT_CONFIG_DEFAULTS.copy()
+
+        file_config = Path(folder) / "cashflow.json"
+        if file_config.exists():
+            with open(file_config, "r", encoding="utf-8") as f:
+                config.update(json.load(f))
+
+        return config
+
+    @staticmethod
+    def compute_optimal_bin_size(values):
+        """
+        Compute a histogram bin width via Scott's rule, rounded to a
+        clean 1/2/5 x 10^k step for a readable currency axis.
+
+        Scott's rule (``3.49 * std * n ** -1/3``) assumes a roughly
+        normal distribution and adapts to sample size -- a longer series
+        (more months) gets proportionally finer bins on its own, with no
+        manual scaling needed. Used as the default for ``hist_bin_size``
+        (``None`` in :data:`PLOT_CONFIG_DEFAULTS`) whenever it is not set
+        explicitly.
+
+        :param values: Sample to size bins for (e.g. Entradas and
+            ``Saidas.abs()`` concatenated).
+        :type values: array-like
+        :return: Bin width, always > 0.
+        :rtype: float
+        """
+        values = np.asarray(values, dtype=float)
+        if len(values) < 2:
+            return 1.0
+
+        std = values.std()
+        if std <= 0:
+            return 1.0
+
+        raw_width = 3.49 * std / (len(values) ** (1 / 3))
+
+        magnitude = 10 ** np.floor(np.log10(raw_width))
+        residual = raw_width / magnitude
+        nice = next((step for step in (1, 2, 5) if residual <= step), 10)
+
+        return nice * magnitude
+
+    @staticmethod
+    def plot_cashflow_bars(
+        df,
+        x_col,
+        file_out,
+        title=None,
+        scale=None,
+        annotate=False,
+        date_axis=False,
+        year_ticks=False,
+        ylim_default=100_000,
+        config=None,
+    ):
+        """
+        Plot Entradas/Saidas as a diverging bar chart and save it as a JPEG.
+
+        Entradas (always >= 0) are drawn above the zero line and Saidas
+        (always <= 0) below it, both anchored at the same baseline for
+        every value of ``x_col``. No legend is drawn -- the color
+        convention is stated once via ``scale`` in the title instead of
+        repeating a color key on every plot. Month ticks are single letters
+        (``"J"``, ``"F"``, ...), the y-axis is compacted to whole ``K``/``M``
+        (no decimals) via :meth:`format_compact`, and the y-limits are
+        symmetric around zero so 0 always sits at the vertical center of
+        the plot: fixed at ``ylim_default`` unless some bar would be
+        clipped by it, in which case ``1.1 * max(|Entradas|, |Saidas|)`` is
+        used instead -- this keeps the scale stable (and years comparable)
+        for ordinary months, only growing for an outlier year.
+
+        A second panel to the right (``hist_width_pct`` of the total width,
+        default a third) shares the main panel's y-axis and shows it as a
+        horizontal histogram instead -- a sideways projection of the
+        monthly series' distribution. Entradas values are binned into
+        ``hist_bin_size`` currency-wide bins (or, if unset, bins sized by
+        :meth:`compute_optimal_bin_size`) from 0 upward and drawn as
+        bars extending right from x=0 in the positive region; Saidas are
+        binned the same way (by magnitude) and mirrored into the negative
+        region, so bin position lines up directly with the main panel's
+        y-scale. The histogram's x-limit is fixed at twice its tallest
+        bar (not autoscaled), so no single bin is ever stretched
+        edge-to-edge. Both sides use ``color_inflows``/``color_outflows`` (the
+        same split as the main bars) unless ``color_hist`` is set, in
+        which case it covers both sides with a single color instead. A
+        solid horizontal line marks each series' mean (``Entradas.mean()``,
+        ``Saidas.mean()``) across the histogram panel, in that series'
+        own color regardless of ``color_hist``, annotated (in the default
+        annotation text color, like the bar annotations) with the rounded
+        value at the line's upper-right.
+
+        Every visual aspect -- figure size, bar colors, background color,
+        bar width, histogram panel width and bin size, font sizes --
+        comes from ``config`` (see :meth:`load_plot_config`), falling
+        back to :data:`PLOT_CONFIG_DEFAULTS` for anything missing.
+
+        :param df: Data with ``x_col``, ``Entradas`` and ``Saidas`` columns.
+        :type df: pandas.DataFrame
+        :param x_col: Column used for the x-axis (e.g. ``"Data"`` or ``"Mes"``).
+        :type x_col: str
+        :param file_out: Destination path for the ``.jpg`` file.
+        :type file_out: str or pathlib.Path
+        :param title: Optional chart title.
+        :type title: str, optional
+        :param scale: Granularity label (e.g. ``"Daily"``, ``"Monthly"``),
+            appended to ``title``.
+        :type scale: str, optional
+        :param annotate: If ``True``, print each bar's value at its outer
+            edge, compacted via :meth:`format_compact`. Meant for charts with
+            few bars (e.g. monthly); too dense for a daily timeseries.
+        :type annotate: bool
+        :param date_axis: If ``True``, ``x_col`` is treated as a datetime
+            axis and tick marks are placed once per month.
+        :type date_axis: bool
+        :param year_ticks: If ``True`` (meant for a multi-year ``x_col``
+            like ``"YYYY-MM"``, e.g. the full-history monthly series),
+            only January of each year gets a tick, labeled with that
+            year's number -- no per-month letters, so a many-year series
+            stays readable. Ignored when ``date_axis`` is ``True``.
+        :type year_ticks: bool
+        :param ylim_default: Fixed symmetric y-limit used as long as it
+            does not clip any bar.
+        :type ylim_default: float
+        :param config: Style overrides, as returned by
+            :meth:`load_plot_config`. Missing keys fall back to
+            :data:`PLOT_CONFIG_DEFAULTS`.
+        :type config: dict, optional
+        :return: The ``file_out`` path, for logging by the caller.
+        :rtype: str or pathlib.Path
+        """
+        config = {**PLOT_CONFIG_DEFAULTS, **(config or {})}
+        figsize_mm_w, figsize_mm_h = config["figsize_mm"]
+        figsize = (figsize_mm_w / MM_PER_INCH, figsize_mm_h / MM_PER_INCH)
+
+        hist_pct = config["hist_width_pct"]
+        fig = plt.figure(figsize=figsize)
+        gs = GridSpec(1, 2, width_ratios=[100 - hist_pct, hist_pct], wspace=0.05)
+        ax_main = fig.add_subplot(gs[0])
+        ax_hist = fig.add_subplot(gs[1], sharey=ax_main)
+
+        for axis in (ax_main, ax_hist):
+            axis.set_facecolor(config["background_color"])
+
+        bar_width = config["bar_width_pct"] / 100
+        x = df[x_col]
+        ax_main.bar(x, df["Entradas"], color=config["color_inflows"], width=bar_width)
+        ax_main.bar(x, df["Saidas"], color=config["color_outflows"], width=bar_width)
+        ax_main.axhline(0, color="black", linewidth=0.8)
+
+        max_abs_flow = max(df["Entradas"].max(), df["Saidas"].abs().max())
+        ylim = max(ylim_default, 1.1 * max_abs_flow)
+        ax_main.set_ylim(-ylim, ylim)
+
+        if annotate:
+            for xi, entrada, saida in zip(x, df["Entradas"], df["Saidas"]):
+                if entrada != 0:
+                    ax_main.annotate(
+                        CashFlow.format_compact(entrada),
+                        xy=(xi, entrada),
+                        xytext=(0, 3),
+                        textcoords="offset points",
+                        ha="center",
+                        va="bottom",
+                        fontsize=config["fontsize_annotation"],
+                    )
+                if saida != 0:
+                    ax_main.annotate(
+                        CashFlow.format_compact(saida),
+                        xy=(xi, saida),
+                        xytext=(0, -3),
+                        textcoords="offset points",
+                        ha="center",
+                        va="top",
+                        fontsize=config["fontsize_annotation"],
+                    )
+
+        if date_axis:
+            ax_main.xaxis.set_major_locator(mdates.MonthLocator())
+            ax_main.xaxis.set_major_formatter(
+                FuncFormatter(
+                    lambda val, pos: MONTH_LETTERS[mdates.num2date(val).month]
+                )
+            )
+        else:
+            months = x.astype(str).str.slice(5, 7).astype(int)
+            if year_ticks:
+                # only a January tick per year, labeled with the year --
+                # no per-month ticks, which is what a many-year series
+                # needs to stay readable
+                years = x.astype(str).str.slice(0, 4)
+                jan_positions = [i for i, m in enumerate(months) if m == 1]
+                jan_years = [y for y, m in zip(years, months) if m == 1]
+                ax_main.set_xticks(jan_positions)
+                ax_main.set_xticklabels(jan_years)
+            else:
+                ax_main.set_xticks(range(len(x)))
+                ax_main.set_xticklabels([MONTH_LETTERS[m] for m in months])
+
+        ax_main.yaxis.set_major_formatter(
+            FuncFormatter(lambda val, pos: CashFlow.format_compact(val, decimals=0))
+        )
+        ax_main.tick_params(axis="both", labelsize=config["fontsize_ticks"])
+
+        full_title = " -- ".join(part for part in (title, scale) if part)
+        if full_title:
+            # suptitle, not ax_main.set_title: centers over the whole
+            # figure (both panels), not just the main (2/3-width) axes.
+            fig.suptitle(full_title, fontsize=config["fontsize_title"])
+
+        # Side histogram -- a horizontal projection of the same series onto
+        # the shared y-axis, binned by a fixed currency interval rather than
+        # a bin count (so bin edges stay meaningful as the y-scale changes
+        # year to year). hist_bin_size=None (the default) sizes that
+        # interval from the data itself via Scott's rule.
+        bin_size = config["hist_bin_size"]
+        if bin_size is None:
+            combined = np.concatenate(
+                [df["Entradas"].values, df["Saidas"].abs().values]
+            )
+            bin_size = CashFlow.compute_optimal_bin_size(combined)
+        edges = np.arange(0, ylim + bin_size, bin_size)
+        bin_centers = (edges[:-1] + edges[1:]) / 2
+
+        inflow_counts, _ = np.histogram(df["Entradas"], bins=edges)
+        outflow_counts, _ = np.histogram(df["Saidas"].abs(), bins=edges)
+
+        # a single color_hist covers both sides; absent, each side keeps
+        # the main panel's own color (the usual inflow/outflow split)
+        hist_color_inflows = config["color_hist"] or config["color_inflows"]
+        hist_color_outflows = config["color_hist"] or config["color_outflows"]
+
+        ax_hist.barh(
+            bin_centers,
+            inflow_counts,
+            height=bin_size * 0.9,
+            color=hist_color_inflows,
+        )
+        ax_hist.barh(
+            -bin_centers,
+            outflow_counts,
+            height=bin_size * 0.9,
+            color=hist_color_outflows,
+        )
+        ax_hist.axhline(0, color="black", linewidth=0.8)
+        # fixed at 2x the tallest bar, not autoscaled, so a bin is never
+        # stretched edge-to-edge and there's always headroom to compare
+        # against
+        max_count = max(inflow_counts.max(), outflow_counts.max())
+        ax_hist.set_xlim(0, 2 * max_count)
+        ax_hist.tick_params(axis="both", labelsize=config["fontsize_ticks"])
+        plt.setp(ax_hist.get_yticklabels(), visible=False)
+
+        # Average lines -- follow the time series' own colors (not
+        # hist_color_*), so they read as "the average of that series",
+        # independent of how the histogram bars themselves are colored.
+        mean_inflow = df["Entradas"].mean()
+        mean_outflow = df["Saidas"].mean()
+
+        for mean_value, color in (
+            (mean_inflow, config["color_inflows"]),
+            (mean_outflow, config["color_outflows"]),
+        ):
+            ax_hist.axhline(mean_value, color=color, linewidth=1)
+            ax_hist.annotate(
+                CashFlow.format_compact(mean_value),
+                xy=(0.95, mean_value),
+                xycoords=ax_hist.get_yaxis_transform(),
+                xytext=(0, 3),
+                textcoords="offset points",
+                ha="right",
+                va="bottom",
+                fontsize=config["fontsize_annotation"],
+            )
+
+        fig.subplots_adjust(left=0.14, right=0.96, top=0.88, bottom=0.14)
+
+        fig.savefig(file_out, dpi=config["dpi"], format="jpg")
+        plt.close(fig)
+
+        return file_out
 
 
 class CashFlowBBCC(CashFlow):
@@ -990,6 +1416,19 @@ class CashFlowBBCCPJ(CashFlowBBCC):
         """
         Convert ``Valor`` field to float.
 
+        Two T0 export variants are supported, so a file from either
+        (or a single file spanning the transition) parses correctly:
+
+        - Legacy, marker-suffixed: sign comes from a trailing ``C``/``D``
+          marker, discarding whatever sign the string itself carries
+          (e.g. ``"5.000,00 C"`` -> credit/inflow, ``"403,00 D"`` and
+          ``"-403,00 D"`` both -> debit/outflow).
+        - Newer, plain signed value with no marker (a separate ``Tipo
+          Lançamento`` column states "Entrada"/"Saída" redundantly):
+          handled by the base :meth:`CashFlowBBCC.parse_valor`, sign
+          taken directly from the string (e.g. ``"-3.000,00"`` ->
+          outflow, ``"3.423,00"`` -> inflow).
+
         .. dropdown:: Examples
             :open:
 
@@ -1003,7 +1442,10 @@ class CashFlowBBCCPJ(CashFlowBBCC):
                  - ``5000.00``
                * - ``-403,00 D``
                  - ``-403.00``
-
+               * - ``-3.000,00``
+                 - ``-3000.00``
+               * - ``3.423,00``
+                 - ``3423.00``
 
         :param series: String series
         :type series: ``pandas.Series``
@@ -1012,29 +1454,27 @@ class CashFlowBBCCPJ(CashFlowBBCC):
         """
         s = series.str.strip()
 
-        # Identify credit / debit
-        is_credit = s.str.endswith("C")
+        has_marker = s.str.endswith("C") | s.str.endswith("D")
         is_debit = s.str.endswith("D")
 
-        # Remove currency markers and spaces
-        s = s.str.replace(r"[CD]", "", regex=True).str.strip()
+        # strip the trailing marker where present; markerless values are
+        # left untouched, carrying their own sign
+        s_clean = s.mask(has_marker, s.str.replace(r"\s*[CD]$", "", regex=True))
 
-        # Remove thousands separator and fix decimal separator
-        s = s.str.replace(".", "", regex=False)
-        s = s.str.replace(",", ".", regex=False)
+        # base class already parses a plain signed Brazilian-format number
+        values = super().parse_valor(s_clean)
 
-        # Convert to float (absolute value)
-        values = s.astype(float).abs()
-
-        # Apply sign
-        values[is_debit] *= -1
+        # marker rows: sign comes only from the marker, regardless of
+        # whatever sign the string itself carried
+        values = values.mask(has_marker, values.abs())
+        values[has_marker & is_debit] *= -1
 
         return values
 
     def apply_drops(self, df):
-        super().apply_drops(df=df)
+        df = super().apply_drops(df=df)
         df = df.query("Lançamento != 'BB Rende Fácil'")
-        df = df.query("Valor != '0,00 C'")
+        df = df.query("Valor not in ['0,00 C', '0,00']")
         return df
 
 
