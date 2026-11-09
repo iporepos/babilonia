@@ -101,6 +101,10 @@ columns:
 - ``Year``  : reference year
 - ``Value`` : initial balance at the start of the year
 
+This is not the per-year ``SALDOS_{BANK}_{ACCOUNT}_{YEAR}.csv`` read by
+:mod:`babilonia.tools.cashflow`, which sits in the year subfolders and
+holds balances by date.
+
 
 Data Levels
 -----------

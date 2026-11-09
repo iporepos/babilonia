@@ -31,6 +31,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.ticker import FuncFormatter
 from matplotlib.gridspec import GridSpec
+from matplotlib.patches import Patch
 
 # ... {develop}
 
@@ -80,6 +81,21 @@ PLOT_CONFIG_DEFAULTS = {
     "hist_width_pct": 33,
     "hist_bin_size": None,
     "color_hist": None,
+}
+
+# balance levels -- the rules file read by CashFlow.load_levels, and the
+# style of each level kind in CashFlow.plot_balance. Status colors are
+# reserved for state (never reused for a series) and always ship with a
+# text label, so the plot never relies on color alone.
+LEVELS_FILE = "levels.json"
+LEVEL_KINDS = ("reference", "warning", "critical")
+# plot_balance labels every month up to this many months (3 years), and
+# only each January (with its year) beyond it
+BALANCE_YEAR_TICKS_AFTER = 36
+LEVEL_STATUS_STYLE = {
+    "ok": {"color": "#2E8B57", "label": "OK"},
+    "warning": {"color": "#C98A00", "label": "Warning"},
+    "critical": {"color": "#C62828", "label": "Critical"},
 }
 
 # single-letter month labels for compact plot axes ("Jan" -> "J")
@@ -361,6 +377,55 @@ class CashFlow(DataSet):
             # print data
             print(dc["monthly"])
             print(dc["yearly"])
+
+    .. dropdown:: Balance vs Levels Example
+        :icon: code-square
+        :open:
+
+        Check the running balance against the levels in an optional
+        ``levels.json`` placed in the account folder (its schema is
+        documented in :meth:`load_levels`), and plot it.
+
+        .. code-block:: python
+
+            from babilonia.accounting import CashFlow
+
+            # account folder: holds the data and, optionally, levels.json
+            folder = "path/to/account"  # [change this]
+
+            # load data
+            cf = CashFlow()
+            cf.load_data(file_data=f"{folder}/file.csv")  # [change this]
+
+            # load the level rules (None if there is no levels.json)
+            levels = CashFlow.load_levels(folder=folder)
+
+            # monthly balance + one Level_<name> column per level + Status
+            panel = CashFlow.get_balance_panel(
+                df=cf.data,
+                initial_cash=30000,  # [change this] balance before the data
+                levels=levels,
+            )
+            print(panel[["Mes", "Saldo", "Status"]])
+
+            # plot, with the same style overrides as the other plots
+            config = CashFlow.load_plot_config(folder=folder)
+            CashFlow.plot_balance(
+                panel=panel,
+                file_out=f"{folder}/balance.jpg",
+                levels=levels,
+                config=config,
+            )
+
+        Levels can also be passed inline instead of from a file -- the
+        rules dict or just its list:
+
+        .. code-block:: python
+
+            levels = [
+                {"name": "target", "value": 30000, "kind": "reference"},
+                {"name": "minimum", "value": 15000, "kind": "critical"},
+            ]
 
     """
 
@@ -1148,6 +1213,641 @@ class CashFlow(DataSet):
             )
 
         fig.subplots_adjust(left=0.14, right=0.96, top=0.88, bottom=0.14)
+
+        fig.savefig(file_out, dpi=config["dpi"], format="jpg")
+        plt.close(fig)
+
+        return file_out
+
+    # todo [docs] -- move the file schema and examples to a docs page
+    @staticmethod
+    def load_levels(folder):
+        """
+        Load balance level rules from ``levels.json`` in ``folder``.
+
+        A *level* is a horizontal line the account's running balance is
+        checked against, month by month -- a target to aim at, a
+        threshold that should not be crossed, a floor that must never be
+        broken. ``levels.json`` lists them. It sits in the account
+        folder, next to ``cashflow.json``, but the two files have
+        different jobs: ``cashflow.json`` only changes how plots *look*;
+        ``levels.json`` defines what the balance *means*.
+
+        The file is optional. Without it, :meth:`get_balance_panel`
+        marks every month ``"ok"`` and :meth:`plot_balance` draws the
+        plain balance.
+
+        .. dropdown:: File structure
+            :open:
+
+            The file is one JSON object with two keys:
+
+            .. list-table::
+               :widths: auto
+               :header-rows: 1
+
+               * - Key
+                 - Type
+                 - Required
+                 - Meaning
+               * - ``title``
+                 - string
+                 - no
+                 - Plot title. A ``title`` passed to :meth:`plot_balance`
+                   overrides it.
+               * - ``levels``
+                 - list of objects
+                 - yes
+                 - The levels, one object each, in any order and any
+                   number (one is fine). A file without this key raises
+                   ``ValueError``.
+
+            Each object in ``levels`` takes these keys:
+
+            .. list-table::
+               :widths: auto
+               :header-rows: 1
+
+               * - Key
+                 - Type
+                 - Required
+                 - Default
+                 - Meaning
+               * - ``name``
+                 - string
+                 - yes
+                 - --
+                 - Suffix of the panel column ``Level_<name>``. Must be
+                   unique.
+               * - ``kind``
+                 - string
+                 - yes
+                 - --
+                 - What crossing it means. One of ``"reference"``,
+                   ``"warning"``, ``"critical"`` (see below). Any other
+                   value raises ``ValueError``.
+               * - ``value``
+                 - number
+                 - yes, unless ``follow`` is set
+                 - --
+                 - The level, in currency units (e.g. ``30000``).
+               * - ``growth_yearly``
+                 - number
+                 - no
+                 - ``0``
+                 - Compound yearly growth applied to ``value`` from the
+                   first month with data, as a fraction: ``0.045`` raises
+                   the level 4.5% a year (e.g. to keep it indexed to
+                   inflation).
+               * - ``follow``
+                 - string
+                 - no
+                 - --
+                 - ``"peak"``: ignore ``value`` and use the balance's own
+                   running peak instead -- a level that only ever moves
+                   up, for a balance that must never shrink. Any other
+                   value raises ``ValueError``.
+               * - ``fraction``
+                 - number
+                 - no
+                 - ``1.0``
+                 - Only with ``follow``. Multiplies the peak:
+                   ``0.95`` tolerates a 5% drawdown from the peak.
+
+        .. dropdown:: Level kinds
+            :open:
+
+            .. list-table::
+               :widths: auto
+               :header-rows: 1
+
+               * - ``kind``
+                 - Balance below it
+                 - Drawn as
+               * - ``"reference"``
+                 - Nothing happens -- the line is informative only
+                   (e.g. a target).
+                 - Dashed gray line.
+               * - ``"warning"``
+                 - The month's status becomes ``"warning"``.
+                 - Dashed amber line; the month gets an amber band.
+               * - ``"critical"``
+                 - The month's status becomes ``"critical"``.
+                 - Dashed red line; the month gets a red band.
+
+            When several levels are crossed in the same month, the worst
+            kind wins: ``critical`` over ``warning`` over ``ok``.
+
+        .. dropdown:: Example -- a reserve with a target and two thresholds
+            :open:
+
+            Aim at 30K, warn below 27K, treat anything under 15K as
+            critical:
+
+            .. code-block:: json
+
+                {
+                    "title": "Reserve",
+                    "levels": [
+                        {"name": "target", "value": 30000, "kind": "reference"},
+                        {"name": "alert", "value": 27000, "kind": "warning"},
+                        {"name": "minimum", "value": 15000, "kind": "critical"}
+                    ]
+                }
+
+        .. dropdown:: Example -- a single floor, indexed to inflation
+
+            One critical line starting at 10K and growing 4.5% a year:
+
+            .. code-block:: json
+
+                {
+                    "levels": [
+                        {
+                            "name": "floor",
+                            "value": 10000,
+                            "kind": "critical",
+                            "growth_yearly": 0.045
+                        }
+                    ]
+                }
+
+        .. dropdown:: Example -- a balance that must never shrink
+
+            No fixed value: the level is the balance's own running peak,
+            so any month below a previous high is critical. Add
+            ``"fraction": 0.95`` to tolerate a 5% drawdown instead.
+
+            .. code-block:: json
+
+                {
+                    "title": "Long-term portfolio",
+                    "levels": [
+                        {"name": "peak", "follow": "peak", "kind": "critical"}
+                    ]
+                }
+
+        :param folder: Account folder where ``levels.json`` is expected.
+        :type folder: str or pathlib.Path
+        :return: The parsed rules, or ``None`` if the file is absent.
+        :rtype: dict or None
+        """
+        file_levels = Path(folder) / LEVELS_FILE
+        if not file_levels.exists():
+            return None
+        with open(file_levels, "r", encoding="utf-8") as f:
+            rules = json.load(f)
+        # a typo here would otherwise read as "no levels": every month ok
+        if "levels" not in rules:
+            raise ValueError(f"{file_levels} needs a 'levels' list")
+        names = []
+        for level in rules.get("levels", []):
+            name = level.get("name")
+            if not name:
+                raise ValueError(f"every level needs a 'name': {level}")
+            if name in names:
+                raise ValueError(f"level name {name!r} is repeated")
+            names.append(name)
+            if level.get("kind") not in LEVEL_KINDS:
+                raise ValueError(f"level {name!r}: kind must be one of {LEVEL_KINDS}")
+            if level.get("follow", "peak") != "peak":
+                raise ValueError(f"level {name!r}: 'follow' can only be 'peak'")
+            if "value" not in level and level.get("follow") != "peak":
+                raise ValueError(
+                    f"level {name!r}: needs a 'value' (or 'follow': 'peak')"
+                )
+        return rules
+
+    @staticmethod
+    def get_balance_panel(df, initial_cash=0.0, levels=None, saldos=None):
+        """
+        Build a monthly balance panel, checked against optional levels.
+
+        The balance comes from one of two sources:
+
+        - **Flows only** (``saldos=None``): ``initial_cash`` plus the
+          cumulative sum of ``Valor``. Right when the flows are complete
+          and the opening balance is known.
+        - **Observed balances** (``saldos`` given): balances read from the
+          bank (e.g. the ``SALDOS_*.csv`` files) anchor the series, and
+          flows only fill the gaps between them. Each month's balance is
+          the nearest observation at or before its last day, plus the
+          flows after that observation; months before the first
+          observation are walked back from it. A balance observed on
+          ``Data`` is taken as the balance at the end of that day, after
+          its flows. ``initial_cash`` is ignored. Use this when the flows
+          miss something the bank adds on its own -- interest, fees, IR
+          withheld -- or when the opening balance is not known.
+
+        :param df: Cash flow data with typed ``Data`` and ``Valor``.
+        :type df: pandas.DataFrame
+        :param initial_cash: Balance before the first transaction. Only
+            used without ``saldos``.
+        :type initial_cash: float
+        :param levels: Level rules, as returned by :meth:`load_levels`
+            (the dict, or just its ``"levels"`` list). ``None`` for none.
+        :type levels: dict or list or None
+        :param saldos: Observed balances, with typed ``Data`` and
+            ``Valor`` (the balance on that date). Several rows per month
+            are fine; any other columns are ignored.
+        :type saldos: pandas.DataFrame or None
+        :return: One row per calendar month, always covering whole years
+            -- January of the first year with data to December of the
+            last, like :meth:`get_monthly_summary` -- with ``Mes``,
+            ``Entradas``, ``Saidas``, ``Fluxo``, ``Saldo`` (end of month),
+            ``Saldo_Fonte`` (``"observado"`` if a balance was observed in
+            that month, else ``"calculado"``), one column per level
+            holding its value that month (``Level_<name>``) and
+            ``Status`` (``"ok"``, ``"warning"`` or ``"critical"``, the
+            worst kind among the levels the balance is below). Months
+            before the first data point or after the last one (e.g. the
+            rest of the current year) are padding: zero flows, ``Saldo``
+            ``NaN``, empty ``Saldo_Fonte`` and ``Status``. Fixed levels
+            still have a value there (a target holds for the months
+            ahead); a peak-following level is empty before the data and
+            holds its last value after it. With ``saldos``, "data" also
+            includes every observation date.
+        :rtype: pandas.DataFrame
+        """
+        df = CashFlow.enrich_time_index(df=df)
+        df = CashFlow.classify_flows(df=df)
+
+        has_saldos = saldos is not None and not saldos.empty
+        # flows may be empty when only observed balances exist: the range
+        # then comes from the observations alone
+        dates = [] if df.empty else [df["Data"].min(), df["Data"].max()]
+        if not dates and not has_saldos:
+            raise ValueError("no flows and no saldos: nothing to build a balance from")
+        if has_saldos:
+            saldos = saldos[["Data", "Valor"]].sort_values("Data", kind="stable")
+            dates += [saldos["Data"].min(), saldos["Data"].max()]
+        months = pd.period_range(min(dates), max(dates), freq="M")
+        panel = pd.DataFrame({"Mes": months.strftime("%Y-%m")})
+
+        inp = df.query("Flow == 'In'").groupby("Mes")["Valor"].sum()
+        out = df.query("Flow == 'Out'").groupby("Mes")["Valor"].sum()
+        panel["Entradas"] = panel["Mes"].map(inp).fillna(0.0)
+        panel["Saidas"] = panel["Mes"].map(out).fillna(0.0)
+        panel["Fluxo"] = panel["Entradas"] + panel["Saidas"]
+
+        if has_saldos:
+            panel["Saldo"] = CashFlow._anchor_balance(
+                df=df, saldos=saldos, months=months
+            )
+            observed = set(saldos["Data"].dt.strftime("%Y-%m"))
+            panel["Saldo_Fonte"] = np.where(
+                panel["Mes"].isin(observed), "observado", "calculado"
+            )
+        else:
+            panel["Saldo"] = initial_cash + panel["Fluxo"].cumsum()
+            panel["Saldo_Fonte"] = "calculado"
+
+        # balance before the first month: the starting point of a peak
+        opening = panel["Saldo"].iloc[0] - panel["Fluxo"].iloc[0]
+
+        # pad to whole calendar years (Jan of the first year to Dec of the
+        # last), like get_monthly_summary: months outside the data get no
+        # flows, no balance (NaN) and no status -- nothing is invented
+        first, last = months[0], months[-1]
+        full = pd.period_range(f"{first.year}-01", f"{last.year}-12", freq="M")
+        panel = (
+            panel.set_index("Mes")
+            .reindex(full.strftime("%Y-%m"))
+            .rename_axis("Mes")
+            .reset_index()
+        )
+        for col in ("Entradas", "Saidas", "Fluxo"):
+            panel[col] = panel[col].fillna(0.0)
+        panel["Saldo_Fonte"] = panel["Saldo_Fonte"].fillna("")
+        has_data = panel["Saldo"].notna()
+        panel["Status"] = np.where(has_data, "ok", "")
+
+        rank = {"": -1, "ok": 0, "warning": 1, "critical": 2}
+        # months counted from the first month with data (negative before
+        # it), so growth_yearly compounds from where the data starts
+        n_months = np.arange(len(panel)) - (first.month - 1)
+        for level in CashFlow._level_list(levels=levels):
+            col = f"Level_{level['name']}"
+            if level.get("follow") == "peak":
+                # undefined before the data; holds its last value after it
+                peak = panel["Saldo"].cummax().clip(lower=opening).ffill()
+                panel[col] = peak * level.get("fraction", 1.0)
+            else:
+                growth = (1 + level.get("growth_yearly", 0.0)) ** (n_months / 12)
+                panel[col] = level["value"] * growth
+
+            kind = level["kind"]
+            if kind == "reference":
+                continue
+            # tolerance of a cent: a balance sitting exactly at its own
+            # peak is not "below" it (NaN balances compare False: no status)
+            below = has_data & (panel["Saldo"] < panel[col] - 0.005)
+            worse = panel["Status"].map(rank) < rank[kind]
+            panel.loc[below & worse, "Status"] = kind
+
+        return panel
+
+    @staticmethod
+    def _anchor_balance(df, saldos, months):
+        """
+        End-of-month balances anchored on observed balances.
+
+        For each month end ``t``, take the anchor observation ``(d, S)``:
+        the latest one with ``d <= t``, or the earliest one if none is
+        that early. Then ``balance(t) = S + C(t) - C(d)``, where ``C`` is
+        the cumulative flow up to and including a date -- forward from an
+        earlier anchor, backward from a later one.
+        """
+        flows = df.groupby(df["Data"].dt.normalize())["Valor"].sum().sort_index()
+        cum = flows.cumsum()
+
+        def cum_at(t):
+            # cumulative flow up to and including day t (0 before any flow)
+            pos = cum.index.searchsorted(t, side="right")
+            return 0.0 if pos == 0 else float(cum.iloc[pos - 1])
+
+        obs = saldos.assign(Dia=saldos["Data"].dt.normalize())
+        obs = obs.groupby("Dia")["Valor"].last()  # last reading of each day
+
+        values = []
+        for period in months:
+            t = period.end_time.normalize()
+            pos = obs.index.searchsorted(t, side="right")
+            d = obs.index[pos - 1] if pos > 0 else obs.index[0]
+            values.append(float(obs.loc[d]) + cum_at(t=t) - cum_at(t=d))
+        return values
+
+    @staticmethod
+    def _level_list(levels):
+        """Normalize ``levels`` (rules dict, list or ``None``) to a list."""
+        if levels is None:
+            return []
+        if isinstance(levels, dict):
+            return levels.get("levels", [])
+        return list(levels)
+
+    @staticmethod
+    def plot_balance(
+        panel, file_out, levels=None, title=None, year_ticks=None, config=None
+    ):
+        """
+        Plot a monthly balance against its levels and save it as a JPEG.
+
+        Top panel: the end-of-month balance (``Saldo``) as a black step
+        line. Each level is a dashed step line (so a growing or
+        peak-following level reads month by month) -- gray for
+        ``reference``, amber for ``warning``, red for ``critical`` --
+        with its value at the line's right end written inside the plot
+        (December, on a padded year). Level names are not drawn; the
+        values and colors carry them, and the names live in
+        ``levels.json``.
+
+        Trouble is shown by period, not by point: every month in
+        ``warning`` status gets a vertical amber band, every month in
+        ``critical`` a vertical red band, across both panels -- so a
+        stretch of trouble reads as one block of time, lined up with the
+        flows that caused it. Above the frame, a small key on the right
+        names the two colors and a badge on the left states the current
+        status in words, so status never relies on color alone -- and
+        neither ever covers the data.
+
+        Bottom panel: the monthly Entradas/Saidas as diverging bars, in
+        the same colors as :meth:`plot_cashflow_bars`, on their own
+        y-axis -- flows and the balance they produce never share a
+        scale.
+
+        The y-range runs down to zero (how far the balance is from
+        empty), except when a level follows the peak: then it zooms onto
+        the data, since a drawdown is small next to the total.
+
+        The x-axis adapts to the length of the series. Up to
+        :data:`BALANCE_YEAR_TICKS_AFTER` months (3 years), every month
+        gets a letter (``"J"``, ``"F"``, ...) with the year under each
+        January. Beyond that, the letters would run together: only
+        January is labeled, with its year, and the other months keep an
+        unlabeled tick mark.
+
+        :param panel: Output of :meth:`get_balance_panel`.
+        :type panel: pandas.DataFrame
+        :param file_out: Destination path for the ``.jpg`` file.
+        :type file_out: str or pathlib.Path
+        :param levels: The same level rules passed to
+            :meth:`get_balance_panel`. ``None`` plots the plain balance.
+        :type levels: dict or list or None
+        :param title: Chart title; defaults to the rules' ``"title"``.
+        :type title: str, optional
+        :param year_ticks: ``True`` labels only Januaries (with the year),
+            ``False`` labels every month; ``None`` (default) picks by
+            length, as described above.
+        :type year_ticks: bool or None
+        :param config: Style overrides, as returned by
+            :meth:`load_plot_config`.
+        :type config: dict, optional
+        :return: The ``file_out`` path, for logging by the caller.
+        :rtype: str or pathlib.Path
+        """
+        config = {**PLOT_CONFIG_DEFAULTS, **(config or {})}
+        ls_levels = CashFlow._level_list(levels=levels)
+        if year_ticks is None:
+            year_ticks = len(panel) > BALANCE_YEAR_TICKS_AFTER
+        if title is None and isinstance(levels, dict):
+            title = levels.get("title")
+
+        w_mm, h_mm = config["figsize_mm"]
+        fig = plt.figure(figsize=(w_mm / MM_PER_INCH, 1.4 * h_mm / MM_PER_INCH))
+        gs = GridSpec(2, 1, height_ratios=[3, 1.2], hspace=0.08)
+        ax = fig.add_subplot(gs[0])
+        ax_f = fig.add_subplot(gs[1], sharex=ax)
+        for axis in (ax, ax_f):
+            axis.set_facecolor(config["background_color"])
+
+        fs_ann = config["fontsize_annotation"]
+        fs_tick = config["fontsize_ticks"]
+        style = LEVEL_STATUS_STYLE
+        x = np.arange(len(panel))
+        # step edges: month i spans [i - 0.5, i + 0.5]
+        xs = np.append(x - 0.5, x[-1] + 0.5)
+
+        def _step(series):
+            values = series.to_numpy(dtype=float)
+            return np.append(values, values[-1])
+
+        saldo = _step(series=panel["Saldo"])
+        level_cols = [f"Level_{lv['name']}" for lv in ls_levels]
+        follows_peak = any(lv.get("follow") == "peak" for lv in ls_levels)
+
+        # y-range
+        hi = max([panel["Saldo"].max()] + [panel[c].max() for c in level_cols])
+        if follows_peak:
+            lo = panel["Saldo"].min()
+            pad = 0.25 * (hi - lo) if hi > lo else 0.05 * abs(hi)
+            ymin, ymax = lo - pad, hi + 1.6 * pad
+        else:
+            ymin = min(0.0, 1.1 * panel["Saldo"].min())
+            ymax = 1.15 * hi if hi > 0 else 1.0
+        ax.set_ylim(ymin, ymax)
+
+        # status bands: one vertical band per run of consecutive months in
+        # the same non-ok status, across both panels
+        band_alpha = {"warning": 0.16, "critical": 0.16}
+        status = panel["Status"].to_numpy()
+        run_start = 0
+        for i in range(1, len(status) + 1):
+            if i == len(status) or status[i] != status[run_start]:
+                kind = status[run_start]
+                if kind in ("warning", "critical"):
+                    for axis in (ax, ax_f):
+                        axis.axvspan(
+                            run_start - 0.5,
+                            i - 0.5,
+                            color=style[kind]["color"],
+                            alpha=band_alpha[kind],
+                            linewidth=0,
+                            zorder=0,
+                        )
+                run_start = i
+
+        # level lines (dashed), each with its value inside the plot at
+        # the right end, just above the line
+        level_color = {
+            "reference": "#555555",
+            "warning": style["warning"]["color"],
+            "critical": style["critical"]["color"],
+        }
+        for lv in ls_levels:
+            col = f"Level_{lv['name']}"
+            color = level_color[lv["kind"]]
+            ax.step(
+                xs,
+                _step(series=panel[col]),
+                where="post",
+                color=color,
+                linestyle="--",
+                linewidth=0.9,
+                zorder=2,
+            )
+            if pd.isna(panel[col].iloc[-1]):
+                continue
+            ax.annotate(
+                CashFlow.format_compact(x=panel[col].iloc[-1]),
+                xy=(x[-1] + 0.4, panel[col].iloc[-1]),
+                xytext=(0, 1.5),
+                textcoords="offset points",
+                va="bottom",
+                ha="right",
+                fontsize=fs_ann,
+                color=color,
+                zorder=4,
+            )
+
+        # balance
+        ax.step(xs, saldo, where="post", color="black", linewidth=1.4, zorder=3)
+
+        # key for the bands (only the kinds that actually show up)
+        present = [k for k in ("warning", "critical") if (status == k).any()]
+        if present:
+            handles = [
+                Patch(
+                    facecolor=style[k]["color"],
+                    alpha=band_alpha[k] + 0.1,
+                    edgecolor="none",
+                    label=style[k]["label"],
+                )
+                for k in present
+            ]
+            # just above the frame, right-aligned: never over the data
+            ax.legend(
+                handles=handles,
+                loc="lower right",
+                bbox_to_anchor=(1.0, 1.0),
+                ncol=len(handles),
+                fontsize=fs_ann + 1,
+                frameon=False,
+                handlelength=1.2,
+                handleheight=0.9,
+                borderaxespad=0.3,
+                columnspacing=1.0,
+            )
+        crit = status == "critical"
+
+        # current status badge (words + value, never color alone), just
+        # above the frame, left-aligned: never over the data
+        if ls_levels:
+            # the last month with a balance, not the padding after it
+            last = panel.loc[panel["Saldo"].notna()].iloc[-1]
+            st = style[last["Status"]]
+            parts = [f"Now: {st['label']}", CashFlow.format_compact(x=last["Saldo"])]
+            refs = [lv for lv in ls_levels if lv["kind"] == "reference"]
+            if refs:
+                ref_value = last[f"Level_{refs[0]['name']}"]
+                if ref_value:
+                    parts[
+                        -1
+                    ] += f" ({last['Saldo'] / ref_value:.0%} of {refs[0]['name']})"
+            n_crit = int(crit.sum())
+            parts.append(f"{n_crit} month(s) critical")
+            ax.text(
+                0.0,
+                1.02,
+                "  ·  ".join(parts),
+                transform=ax.transAxes,
+                va="bottom",
+                ha="left",
+                fontsize=fs_ann + 1,
+                color=st["color"],
+                bbox=dict(
+                    boxstyle="round,pad=0.3",
+                    facecolor="white",
+                    edgecolor=st["color"],
+                    linewidth=0.6,
+                ),
+            )
+
+        ax.yaxis.set_major_formatter(
+            FuncFormatter(lambda val, pos: CashFlow.format_compact(x=val, decimals=0))
+        )
+        ax.tick_params(axis="both", labelsize=fs_tick)
+        plt.setp(ax.get_xticklabels(), visible=False)
+
+        # flows
+        bar_width = config["bar_width_pct"] / 100
+        ax_f.bar(x, panel["Entradas"], width=bar_width, color=config["color_inflows"])
+        ax_f.bar(x, panel["Saidas"], width=bar_width, color=config["color_outflows"])
+        ax_f.axhline(0, color="black", linewidth=0.6)
+        fmax = 1.1 * max(panel["Entradas"].max(), panel["Saidas"].abs().max(), 1.0)
+        ax_f.set_ylim(-fmax, fmax)
+        ax_f.yaxis.set_major_formatter(
+            FuncFormatter(lambda val, pos: CashFlow.format_compact(x=val, decimals=0))
+        )
+        ax_f.tick_params(axis="both", labelsize=fs_tick)
+
+        months = panel["Mes"].str.slice(5, 7).astype(int).to_numpy()
+        years = panel["Mes"].str.slice(0, 4).to_numpy()
+        if year_ticks:
+            # long series: a labeled major tick on each January (the year),
+            # an unlabeled minor tick on every other month
+            jan = x[months == 1]
+            ax_f.set_xticks(jan)
+            ax_f.set_xticklabels(years[months == 1])
+            ax_f.set_xticks(x[months != 1], minor=True)
+            ax_f.tick_params(axis="x", which="minor", length=2)
+            ax.set_xticks(x[months != 1], minor=True)
+            ax.tick_params(axis="x", which="minor", length=2)
+        else:
+            # month letters, with the year under each January (and the first)
+            labels = [
+                f"{MONTH_LETTERS[m]}\n{y}" if (m == 1 or i == 0) else MONTH_LETTERS[m]
+                for i, (m, y) in enumerate(zip(months, years))
+            ]
+            ax_f.set_xticks(x)
+            ax_f.set_xticklabels(labels)
+        ax_f.set_xlim(-0.5, x[-1] + 0.5)
+
+        if title:
+            fig.suptitle(title, fontsize=config["fontsize_title"], y=0.975)
+        # top margin leaves a row between the title and the frame for the
+        # status badge (left) and the band key (right)
+        fig.subplots_adjust(left=0.10, right=0.97, top=0.88, bottom=0.11)
 
         fig.savefig(file_out, dpi=config["dpi"], format="jpg")
         plt.close(fig)
